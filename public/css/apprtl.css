@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@900&display=swap');
+
+
+[dir=ltr] .layout-sticky-subnav .page__container {
+    z-index: 0;
+    position: relative;
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+
+
+*{
+    font-family: 'Cairo', sans-serif !important;
+}
