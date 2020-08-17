@@ -18,9 +18,7 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
 
-  <link rel="stylesheet" href="{{ asset('newasset/agora/common.css') }}">
 
-  <link rel="stylesheet" href="{{ asset('newasset/agora/materialize.min.css') }}">
 
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
@@ -126,16 +124,9 @@
 <script src="{{ asset('newasset/js/playerjs.js') }}"></script>
 
 
-<script src="{{ asset('newasset/agora/materialize.min.js') }}"></script>
 
 
-<script src="{{ asset('newasset/agora/AgoraRTCSDK-3.1.2.js') }}"></script>
 
-
-<script src="{{ asset('newasset/agora/agora.js') }}"></script>
-
-
-{{ asset('newasset/agora/common.css') }}
 
 
 <!-- Select2 -->
