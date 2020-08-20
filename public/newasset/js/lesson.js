@@ -14,6 +14,7 @@ $(document).ready(function(){
         var lessonName = lesson.name.split('.').slice(0, -1).join('.');
 
         $('#name_ar').val(lessonName);
+        $('#name_en').val(lessonName);
 
         var formData = new FormData();
         formData.append('lesson_id' , lessonId);

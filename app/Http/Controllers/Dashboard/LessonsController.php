@@ -45,6 +45,9 @@ class LessonsController extends Controller
     {
         
         $lesson = Lesson::create([]);
+        $lesson->update([
+            'chapter_id' => 1,
+        ]);
         $chapters = Chapter::all();
         return view('dashboard.lessons.create')->with('chapters' , $chapters)->with('lesson' , $lesson);
     }
@@ -68,6 +71,7 @@ class LessonsController extends Controller
             
             $lesson->update([
                 'name_ar' => $request->name,
+                'name_en' => $request->name,
                 'path'  => $request->file('lesson')->store('lessons/videos', 'public'),
             ]);
     
