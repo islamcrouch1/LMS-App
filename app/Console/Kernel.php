@@ -13,7 +13,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\QueueWorkCommand::class,
+        Commands\DeleteNullableLessons::class,
+        Commands\QueueRestartCommand::class,
     ];
 
     /**
@@ -25,6 +27,19 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+
+
+        $schedule->command('queue:restartlms')
+        ->everyFiveMinutes();
+        
+        $schedule->command('queue:worklms')
+        ->everyMinute();
+        
+
+
+        $schedule->command('delete:lessons')->everyMinute();
+
+        
     }
 
     /**
@@ -38,4 +53,9 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
+
 }
+
+
+

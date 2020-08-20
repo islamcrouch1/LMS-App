@@ -28,7 +28,7 @@ Route::group(['prefix'=> '{lang}'], function(){
     Route::get('/home/{country}', 'HomeController@index')->name('home');
     Route::get('/learning_systems/{learning_system}/{country}', 'LearningSystemsController@index')->name('learning_systems');
     Route::get('/ed_classes/{ed_class}/{country}', 'EdClassesController@index')->name('ed_classes');
-    Route::get('/courses/{course}/{country}', 'coursesController@index')->name('courses');
+    Route::get('/courses/{course}/{country}', 'CoursesController@index')->name('courses');
     Route::get('/lessons/{lesson}/{country}', 'LessonsController@index')->name('lessons');
 
 
