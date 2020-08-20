@@ -38,6 +38,6 @@ class QueueWorkCommand extends Command
      */
     public function handle()
     {
-        Artisan::call('queue:work --timeout=10');
+        Artisan::call('queue:work --timeout=600');
     }
 }
