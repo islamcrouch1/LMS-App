@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\LearningSystem;
 use App\User;
+use App\Address;
+
 
 
 
@@ -38,5 +40,10 @@ class Country extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
     }
 }

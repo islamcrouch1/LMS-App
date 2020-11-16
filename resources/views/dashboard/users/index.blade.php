@@ -22,7 +22,7 @@
 
     <!-- Main content -->
     <section class="content">
-        
+
       <!-- Default box -->
 
       <div class="row">
@@ -57,7 +57,7 @@
                 @if (auth()->user()->hasPermission('users-create'))
                 <a href="{{route('users.create', app()->getLocale()  )}}"> <button type="button" class="btn btn-primary">Create user</button></a>
                 @else
-                <a href="#" disabled> <button type="button" class="btn btn-primary">Create user</button></a>  
+                <a href="#" disabled> <button type="button" class="btn btn-primary">Create user</button></a>
                 @endif
               </div>
             </div>
@@ -70,7 +70,7 @@
       <div class="card">
         <div class="card-header">
 
-           
+
         <h3 class="card-title">Users</h3>
 
           <div class="card-tools">
@@ -103,6 +103,9 @@
                       <th>
                         user Roles
                     </th>
+                    <th>
+                        Orders
+                    </th>
                       <th>
                         Created At
                     </th>
@@ -125,7 +128,7 @@
               </thead>
               <tbody>
                   <tr>
-                      
+
                       @foreach ($users as $user)
                     <td>
                         {{ $user->id }}
@@ -136,9 +139,9 @@
                         </small>
                     </td>
                     <td>
-                        
-                                <img alt="Avatar" class="table-avatar" src="{{ asset('storage/' . $user->profile) }}">
-                      
+
+                                <img alt="Avatar" class="table-avatar" src="{{ asset('storage/images/users/' . $user->profile) }}">
+
                     </td>
                     <td>
                         <small>
@@ -155,10 +158,28 @@
                           {{-- {{ implode(', ' , $user->roles->pluck('name')->toArray()) }} --}}
                           @foreach ($user->roles as $role)
                       <h5 style="display: inline-block"><span class="badge badge-primary">{{$role->name}}</span></h5>
-                              
+
                           @endforeach
                       </small>
                   </td>
+                  <td>
+                    <small>
+                        @if (auth()->user()->hasPermission('orders-read'))
+                        <a href="{{route('orders.create' , ['lang' => app()->getLocale() , 'user' => $user->id])}}" class="btn btn-sm btn-primary">add order</a>
+                        @else
+                        <a href="#" class="btn btn-sm btn-primary disabled">add order</a>
+
+                        @endif
+                    </small>
+                    <small>
+                        @if (auth()->user()->hasPermission('addresses-read'))
+                        <a href="{{route('addresses.index' , ['lang' => app()->getLocale() , 'user' => $user->id])}}" class="btn btn-sm btn-primary">add address</a>
+                        @else
+                        <a href="#" class="btn btn-sm btn-primary disabled">add address</a>
+
+                        @endif
+                    </small>
+                </td>
                     <td>
                         <small>
                             {{ $user->created_at }}
@@ -223,11 +244,11 @@
                         </a>
                         @endif
                                 @endif
-                         
+
                                 @if ((auth()->user()->hasPermission('users-delete'))| (auth()->user()->hasPermission('users-trash')))
                                     <form method="POST" action="{{route('users.destroy' , ['lang'=>app()->getLocale() , 'user'=>$user->id])}}" enctype="multipart/form-data" style="display:inline-block">
                                         @csrf
-                                        @method('DELETE')  
+                                        @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm delete">
                                                     <i class="fas fa-trash">
                                                     </i>
@@ -236,7 +257,7 @@
                                                     @else
                                                     {{ __('Trash') }}
                                                     @endif
-                                                </button>    
+                                                </button>
                                     </form>
                                     @else
                                     <button class="btn btn-danger btn-sm">
@@ -250,19 +271,19 @@
                                   </button>
                                   @endif
 
-                                
-                        
+
+
                     </td>
                 </tr>
-                      @endforeach   
-                      
-                      
+                      @endforeach
+
+
               </tbody>
           </table>
 
           <div class="row mt-3"> {{ $users->appends(request()->query())->links() }}</div>
-         
-          @else <h3 class="pl-2">No Users To Show</h3> 
+
+          @else <h3 class="pl-2">No Users To Show</h3>
           @endif
         </div>
         <!-- /.card-body -->
@@ -274,3 +295,4 @@
 
 
   @endsection
+

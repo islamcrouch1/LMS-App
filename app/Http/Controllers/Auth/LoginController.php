@@ -56,6 +56,6 @@ class LoginController extends Controller
     public function logout(Request $request)
 {
     $this->performLogout($request);
-    return redirect(route('/home', app()->getLocale()));
+    return redirect(route('home' , ['lang'=> app()->getLocale() , 'country'=> '1']));
 }
 }

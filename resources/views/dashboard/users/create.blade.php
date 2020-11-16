@@ -47,7 +47,7 @@
                             <label for="email" class="col-md-2 col-form-label text-md-right">{{ __('Account Type') }}</label>
 
                             <div class="col-md-10">
-                                
+
                                 <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" id="type" type="type" @error('type') is-invalid @enderror" name="type" value="{{ old('type') }}" required>
                                     <option selected>Choose</option>
                                     @php
@@ -68,7 +68,7 @@
                             <label for="email" class="col-md-2 col-form-label text-md-right">{{ __('Permissions') }}</label>
 
                             <div class="col-md-10">
-                            
+
                                 <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" id="role" type="role" @error('role') is-invalid @enderror" name="role" value="{{ old('role') }}" required>
                                     <option selected>Choose</option>
                                     @foreach ($roles as $role)
@@ -162,13 +162,20 @@
                             <label for="profile" class="col-md-2 col-form-label text-md-right">{{ __('Profile Picture') }}</label>
 
                             <div class="col-md-10">
-                                <input id="profile" type="file" class="form-control-file @error('profile') is-invalid @enderror" name="profile" value="{{ old('profile') }}">
+                                <input id="profile" type="file" class="form-control-file img @error('profile') is-invalid @enderror" name="profile" value="{{ old('profile') }}">
 
                                 @error('profile')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+
+                            <div class="col-md-10">
+                                <img src="{{ asset('storage/images/users/avatarmale.png') }}" style="width:100px"  class="img-thumbnail img-prev">
                             </div>
                         </div>
 

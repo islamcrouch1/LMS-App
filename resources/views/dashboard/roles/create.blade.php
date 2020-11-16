@@ -75,7 +75,7 @@
                                     </thead>
                                     <tbody>
                                         @php
-                                            $models = ['users' , 'roles' , 'settings' , 'learning_systems' , 'countries' , 'stages' , 'ed_classes' , 'courses' , 'chapters' , 'lessons']
+                                            $models = ['users' , 'roles' , 'settings' , 'learning_systems' , 'countries' , 'stages' , 'ed_classes' , 'courses' , 'chapters' , 'lessons' ,'categories' , 'orders' , 'products' , 'all_orders' , 'addresses' , 'posts' , 'ads' , 'sponsers' , 'links']
                                         @endphp
                                         @foreach ($models as $index=>$model)
                                         <tr>
@@ -94,7 +94,7 @@
                                                 @endif
                                                 <select name="permissions[]"class="form-control select4  @error('permissions') is-invalid @enderror" multiple="multiple">
                                                     @foreach ($permissions_maps as $permissions_map)
-                                                    <option value="{{$model . '-' . $permissions_map}}">{{$permissions_map}}</option>   
+                                                    <option value="{{$model . '-' . $permissions_map}}">{{$permissions_map}}</option>
                                                     @endforeach
                                                 </select>
                                                 @error('permissions')
@@ -103,7 +103,7 @@
                                                 </span>
                                                 @enderror
                                             </td>
-                                        </tr> 
+                                        </tr>
                                         @endforeach
 
                                     </tbody>

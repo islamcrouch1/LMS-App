@@ -11,7 +11,7 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="{{ asset('storage/' . Auth::user()->profile) }}" class="img-circle elevation-2" alt="User Image">
+          <img src="{{ asset('storage/images/users/' . Auth::user()->profile) }}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <a href="#" class="d-block">{{ Auth::user()->name }}</a>
@@ -28,7 +28,7 @@
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
-                
+
               </p>
             </a>
           </li>
@@ -64,7 +64,7 @@
 
 
 
-          @if (auth()->user()->hasPermission('roles-read'))          
+          @if (auth()->user()->hasPermission('roles-read'))
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-user-tag"></i>
@@ -240,9 +240,177 @@
                           </li>
                           @endif
             </ul>
+
+
+
+
+            @if (auth()->user()->hasPermission('countries-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p>
+                  Live Stream
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{route('live_stream.index' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Live Stream</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{route('live_stream.trashed' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Trashed Countries</p>
+                    </a>
+                  </li>
+              </ul>
+            </li>
+            @endif
+
+
+            @if (auth()->user()->hasPermission('categories-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p>
+                  Library
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+
+              <ul class="nav nav-treeview">
+                @if (auth()->user()->hasPermission('categories-read'))
+                <li class="nav-item">
+                  <a href="{{route('categories.index' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Categories</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{route('categories.trashed' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Trashed Categories</p>
+                    </a>
+                  </li>
+                  @endif
+
+                  @if (auth()->user()->hasPermission('products-read'))
+                  <li class="nav-item">
+                    <a href="{{route('products.index' , app()->getLocale())}}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Products</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{{route('products.trashed' , app()->getLocale())}}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Trashed Products</p>
+                      </a>
+                    </li>
+                    @endif
+                    @if (auth()->user()->hasPermission('all_orders-read'))
+                    <li class="nav-item">
+                      <a href="{{route('all_orders.index' , app()->getLocale())}}" class="nav-link">
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Orders</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{route('all_orders.trashed' , app()->getLocale())}}" class="nav-link">
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Trashed Orders</p>
+                        </a>
+                      </li>
+                      @endif
+              </ul>
+
+            </li>
+            @endif
+
+
+
+            @if (auth()->user()->hasPermission('categories-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p>
+                  Home Page Sections
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+
+              <ul class="nav nav-treeview">
+                    @if (auth()->user()->hasPermission('posts-read'))
+                    <li class="nav-item">
+                      <a href="{{route('posts.index' , app()->getLocale())}}" class="nav-link">
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>news</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{route('posts.trashed' , app()->getLocale())}}" class="nav-link">
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Trashed news</p>
+                        </a>
+                      </li>
+                      @endif
+                      @if (auth()->user()->hasPermission('ads-read'))
+                      <li class="nav-item">
+                        <a href="{{route('ads.index' , app()->getLocale())}}" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>ads</p>
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a href="{{route('ads.trashed' , app()->getLocale())}}" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Trashed ads</p>
+                          </a>
+                        </li>
+                        @endif
+                        @if (auth()->user()->hasPermission('sponsers-read'))
+                        <li class="nav-item">
+                          <a href="{{route('sponsers.index' , app()->getLocale())}}" class="nav-link">
+                              <i class="far fa-circle nav-icon"></i>
+                              <p>sponsers</p>
+                            </a>
+                          </li>
+                          <li class="nav-item">
+                            <a href="{{route('sponsers.trashed' , app()->getLocale())}}" class="nav-link">
+                              <i class="far fa-circle nav-icon"></i>
+                              <p>Trashed sponsers</p>
+                            </a>
+                          </li>
+                          @endif
+                          @if (auth()->user()->hasPermission('links-read'))
+                          <li class="nav-item">
+                            <a href="{{route('links.index' , app()->getLocale())}}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>links</p>
+                              </a>
+                            </li>
+                            <li class="nav-item">
+                              <a href="{{route('links.trashed' , app()->getLocale())}}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Trashed links</p>
+                              </a>
+                            </li>
+                            @endif
+              </ul>
+
+            </li>
+            @endif
+
+
           </li>
           @endif
-          
+
 
         </ul>
       </nav>

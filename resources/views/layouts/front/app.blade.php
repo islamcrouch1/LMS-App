@@ -13,7 +13,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-   
+
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -21,20 +21,22 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
     <!-- Styles -->
-    
-    
+
+
     <?php $locale = App::getLocale(); ?>
 
-    <?php if (App::isLocale('en')) {  ?> 
+    <?php if (App::isLocale('en')) {  ?>
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <?php  }else{ ?>
         <link href="{{ asset('css/apprtl.css') }}" rel="stylesheet">
-    <?php  } ?> 
+    <?php  } ?>
 
 
-	
+
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto:400,500%7CExo+2:600&display=swap" rel="stylesheet">
 
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
     <!-- Perfect Scrollbar -->
     <link type="text/css" href="{{ asset('newasset/vendor/perfect-scrollbar.css') }}" rel="stylesheet">
 
@@ -59,35 +61,110 @@
 
 
 
+    <link rel="stylesheet" href="{{ asset('newasset/noty/noty.css') }}">
+    <script src="{{ asset('newasset/noty/noty.min.js') }}"></script>
+
+
+    <style>
+
+
+        p , h1 , h2 , h3 , h4 , h5 , h6 , span , a {
+            font-family: 'Cairo', sans-serif !important;
+
+        }
+
+        .mr-2{
+            margin-right: 5px;
+        }
+
+        .loaderr {
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #367FA9;
+            width: 60px;
+            height: 60px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+
+        /* Safari */
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .modal .popover, .modal .tooltip {
+            z-index:100000000;
+        }
+        .carousel{
+            width : 100% !important;
+        }
+
+        .badge {
+  padding-left: 9px;
+  padding-right: 9px;
+  -webkit-border-radius: 9px;
+  -moz-border-radius: 9px;
+  border-radius: 9px;
+}
+
+.label-warning[href],
+.badge-warning[href] {
+  background-color: #c67605;
+}
+#lblCartCount {
+    font-size: 14px;
+    background: #ff0000;
+    color: #fff;
+    padding: 0 5px;
+    vertical-align: top;
+    margin-left: -10px;
+}
+
+
+[dir=ltr] .fa, [dir=ltr] .far, [dir=ltr] .fas {
+    font-family: Font Awesome\ 5 Free !important;
+    font-size: 30px;
+    color: hsla(0,0%,100%,.7);;
+}
+
+.social i {
+    color: blue !important;
+    font-size: 20px !important;
+}
+.modal-backdrop{
+    display:none !important;
+}
+.navbar-expand .nav-link {
+    height: 64px;
+    color: #fff;
+}
+
+.navbar-expand .nav-link:hover {
+    height: 64px;
+    color: #fff;
+}
+
+    </style>
+
+
+
 
 
 </head>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -102,7 +179,7 @@
 
 
     <div id="app">
-        
+
 
 
 
@@ -114,7 +191,7 @@
 
 @include('layouts.front._header')
 
-                
+
             <!-- Header Layout Content -->
             <div class="mdk-header-layout__content page-content ">
                     <main class="">
@@ -125,7 +202,7 @@
 
 
 
-@include('layouts.front._footer')
+
 
 
         </div>
@@ -134,13 +211,22 @@
 
 @include('layouts.front._aside')
 
+@include('layouts.front._footer')
+
 
     </div>
-    <!-- jQuery -->
-    <script src="{{ asset('newasset/vendor/jquery.min.js') }}"></script>
+
+
+        <!-- jQuery -->
+        <script src="{{ asset('newasset/vendor/jquery.min.js') }}"></script>
+
+        <script src="{{ asset('newasset/js/orderFront.js') }}"></script>
+        <script src="{{ asset('newasset/js/cart.js') }}"></script>
+
+
+        <script src="{{ asset('newasset/vendor/popper.min.js') }}"></script>
 
     <!-- Bootstrap -->
-    <script src="{{ asset('newasset/vendor/popper.min.js') }}"></script>
     <script src="{{ asset('newasset/vendor/bootstrap.min.js') }}"></script>
 
     <!-- Perfect Scrollbar -->
@@ -161,6 +247,11 @@
     <script src="{{ asset('newasset/js/playerjs.js') }}"></script>
 
 
+
+
+
+
+
     {{-- <script src="{{ asset('js/app.js') }}" defer></script> --}}
 
     <script>
@@ -178,7 +269,18 @@
                 })
             })
         })()
+
+
+
+        $(function () {
+            $('[data-toggle="popover"]').popover({
+                trigger: 'focus'
+                })
+            })
+
     </script>
+
+
 
 @stack('scripts-front')
 

@@ -1,9 +1,9 @@
 @extends('layouts.dashboard.app')
 
 @section('adminContent')
- 
-   
-   
+
+
+
    <!-- Main content -->
    <section class="content">
     <div class="container-fluid">
@@ -15,7 +15,7 @@
             <div class="card-body box-profile">
               <div class="text-center">
                 <img class="profile-user-img img-fluid img-circle"
-                     src="{{ asset('storage/' . $user->profile) }}"
+                     src="{{ asset('storage/images/users/' . $user->profile) }}"
                      alt="User profile picture">
               </div>
 

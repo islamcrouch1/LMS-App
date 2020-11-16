@@ -16,7 +16,7 @@
                             </button>
 
                             <!-- Navbar Brand -->
-                            <a href="{{ route('home' , ['lang'=> app()->getLocale() , 'country'=> 'eg']) }}" class="navbar-brand mr-16pt">
+                            <a href="{{ route('home' , ['lang'=> app()->getLocale() , 'country'=> '1']) }}" class="navbar-brand mr-16pt">
                                 <!-- <img class="navbar-brand-icon" src="assets/images/logo/white-100@2x.png" width="30" alt="Luma"> -->
 
                                 <span class="avatar avatar-sm navbar-brand-icon mr-0 mr-lg-8pt">
@@ -52,7 +52,7 @@
                                         @foreach ($countries as $country)
                                         @if ($scountry->id == $country->id)
 
-                                        @else   
+                                        @else
 
                                         <a href="{{route('home' , ['lang'=>app()->getLocale() , 'country'=>$country->id])}}" class="dropdown-item"><img style="width:20px" class="m-1" alt="country-flag" src="{{ asset('storage/' . $country->image) }}">{{ app()->getLocale() == 'ar' ? $country->name_ar : $country->name_en}}</a>
                                         @endif
@@ -64,6 +64,12 @@
 
                             <ul class="nav navbar-nav ml-auto mr-0">
                                 <li class="nav-item">
+                                    <a href="{{ route('cart',['lang'=>app()->getLocale() , 'user'=>"islam" , 'country'=>$scountry->id ] ) }}">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <span class='badge badge-warning' id='lblCartCount'>{{Auth::check() ? Auth::user()->cart->products->count() : '0'}}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="{{ route('login' , app()->getLocale()) }}" class="nav-link" data-toggle="tooltip" data-title="{{ __('Login') }}" data-placement="bottom" data-boundary="window"><i class="material-icons">lock_open</i></a>
                                 </li>
                                 @if (Route::has('register'))
@@ -72,6 +78,13 @@
                                 </li>
                                 @endif
                                 @else
+                                <li class="nav-item">
+                                    <a href="{{ route('cart',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'country'=>$scountry->id ] ) }}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <span class='badge badge-warning' id='lblCartCount'>{{Auth::check() ? Auth::user()->cart->products->count() : '0'}}</span>
+                                    </a>
+
+                                </li>
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                         {{ Auth::user()->name }} <span class="caret"></span>
@@ -87,6 +100,13 @@
                                         <form id="logout-form" action="{{ route('logout' , app()->getLocale()) }}" method="POST" style="display: none;">
                                             @csrf
                                         </form>
+
+                                        <a class="dropdown-item" href="{{route('addresses' , ['lang'=>app()->getLocale() , 'user'=>Auth::id() ,  'country'=>$scountry->id])}}">{{__('Addresses')}}</a>
+                                        <a class="dropdown-item" href="{{ route('logout'  , app()->getLocale()) }}">{{__('Orders')}}</a>
+
+
+
+
                                     </div>
                                 </li>
                             </ul>

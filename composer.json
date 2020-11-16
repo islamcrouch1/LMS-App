@@ -18,8 +18,11 @@
         "laravel/framework": "^7.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.1",
+        "nexmo/client": "^2.4",
+        "nexmo/laravel": "^2.3",
         "pbmedia/laravel-ffmpeg": "^7.0",
-        "santigarcor/laratrust": "^6.1"
+        "santigarcor/laratrust": "^6.1",
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

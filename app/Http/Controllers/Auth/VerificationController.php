@@ -26,7 +26,17 @@ class VerificationController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+     protected $redirectTo = RouteServiceProvider::HOME;
+
+    // function redirectTo() {
+    //     return route('home' , ['lang'=> app()->getLocale() , 'country'=> '1']);
+    // }
+
+
+
+    // public function show(){
+    //     return view('auth.verify');
+    // }
 
     /**
      * Create a new controller instance.

@@ -13,7 +13,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-   
+
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -21,18 +21,18 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
     <!-- Styles -->
-    
-    
+
+
     <?php $locale = App::getLocale(); ?>
 
-    <?php if (App::isLocale('en')) {  ?> 
+    <?php if (App::isLocale('en')) {  ?>
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <?php  }else{ ?>
         <link href="{{ asset('css/apprtl.css') }}" rel="stylesheet">
-    <?php  } ?> 
+    <?php  } ?>
 
 
-	
+
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto:400,500%7CExo+2:600&display=swap" rel="stylesheet">
 
     <!-- Perfect Scrollbar -->
@@ -102,7 +102,7 @@
 
 
     <div id="app">
-        
+
 
 
 
@@ -177,7 +177,7 @@
 
                 <!-- // END Header -->
 
-                
+
             <!-- Header Layout Content -->
             <div class="mdk-header-layout__content page-content ">
                     <main class="">
@@ -288,7 +288,7 @@
                         </form>
                     </div>
 
-   
+
                 </div>
             </div>
         </div>

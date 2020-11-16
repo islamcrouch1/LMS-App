@@ -18,7 +18,7 @@ class UsersTableSeeder extends Seeder
             'phone' => '01121184148',
             'country_id' => '1',
             'gender' => 'male',
-            'profile' => 'images/3nk6F9x3XDRjtQqivwrETbfykg39YRBkNKfqJ7ul.jpeg',
+            'profile' => 'avatarmale.png',
             'type' => 'admin',
         ]);
 

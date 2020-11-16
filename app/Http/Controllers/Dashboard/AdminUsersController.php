@@ -5,9 +5,14 @@ use App\Http\Controllers\Controller;
 use App\User;
 use App\Role;
 use App\Country;
+use App\Cart;
+
 use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+use Intervention\Image\ImageManagerStatic as Image;
 
 class AdminUsersController extends Controller
 {
@@ -65,7 +70,7 @@ class AdminUsersController extends Controller
     public function store(Request $request)
     {
 
-        
+
         $request->validate([
 
             'name' => "required|string|max:255",
@@ -74,11 +79,35 @@ class AdminUsersController extends Controller
             'country' => "required",
             'phone' => "required|string",
             'gender' => "required",
-            'profile' => "required|image",
+            'profile' => "image",
             'type' => "required|string",
             'role' => "required|string"
 
             ]);
+
+            if($request['profile'] == ''){
+                if($request['gender'] == 'male'){
+                    $request['profile'] = 'avatarmale.png' ;
+                }else{
+                    $request['profile'] = 'avatarfemale.png' ;
+                }
+            }else{
+
+
+                Image::make($request['profile'])->resize(300, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                })->save(public_path('storage/images/users/' . $request['profile']->hashName()) , 60);
+            }
+
+
+
+            if($request['profile'] == 'avatarmale.png' || $request['profile'] == 'avatarfemale.png'){
+                $image = $request['profile'];
+            }else{
+                $image = $request['profile']->hashName();
+            }
+
+
 
 
             $user = User::create([
@@ -88,7 +117,7 @@ class AdminUsersController extends Controller
                 'country_id' => $request['country'],
                 'phone' => $request['phone'],
                 'gender' => $request['gender'],
-                'profile' => $request['profile']->store('images', 'public'),
+                'profile' => $image,
                 'type' => $request['type']
             ]);
 
@@ -100,8 +129,12 @@ class AdminUsersController extends Controller
                 }
 
 
-       
-            
+
+                Cart::create([
+                    'user_id' => $user->id,
+                ]);
+
+
             session()->flash('success' , 'user created successfully');
 
             $countries = Country::all();
@@ -125,9 +158,10 @@ class AdminUsersController extends Controller
      */
     public function show( $lang , User $user)
     {
-        
+
         return view('dashboard.users.show')->with('user' , $user);
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -137,6 +171,7 @@ class AdminUsersController extends Controller
      */
     public function edit($lang , $user)
     {
+
         $countries = Country::all();
         $roles = Role::WhereRoleNot(['superadministrator' , 'administrator'])->get();
         $user = User::find($user);
@@ -167,10 +202,29 @@ class AdminUsersController extends Controller
 
 
             if($request->hasFile('profile')){
-                
-                \Storage::disk('public')->delete($user->profile);
+
+                if($user->profile == 'avatarmale.png' || $user->profile == 'avatarfemale.png'){
+
+                    Image::make($request['profile'])->resize(300, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    })->save(public_path('storage/images/users/' . $request['profile']->hashName()) , 60);
+
+                }else{
+                    Storage::disk('public')->delete('/images/users/' . $user->profile);
+
+                    Image::make($request['profile'])->resize(300, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    })->save(public_path('storage/images/users/' . $request['profile']->hashName()) , 60);
+
+                }
+
+
+                Storage::disk('public')->delete('/images/use/' . $user->profile);
+
+
+                Storage::disk('public')->delete($user->profile);
                 $user->update([
-                    'profile' => $request['profile']->store('images', 'public'),
+                    'profile' => $request['profile']->hashName(),
                 ]);
             }
 
@@ -185,8 +239,8 @@ class AdminUsersController extends Controller
                     'gender' => $request['gender'],
                     'type' => $request['type']
                 ]);
-                
-               
+
+
             }else{
                 $user->update([
                     'name' => $request['name'],
@@ -200,13 +254,13 @@ class AdminUsersController extends Controller
 
             }
 
-            
+
 
 
 
 
             $user->syncRoles(['administrator' , $request['role']]);
-            
+
             session()->flash('success' , 'user updated successfully');
 
             $countries = Country::all();
@@ -228,12 +282,16 @@ class AdminUsersController extends Controller
      */
     public function destroy($lang , $user)
     {
-        
+
         $user = User::withTrashed()->where('id' , $user)->first();
 
         if($user->trashed()){
 
             if(auth()->user()->hasPermission('users-delete')){
+
+
+                Storage::disk('public')->delete('/images/users/' . $user->profile);
+
                 $user->forceDelete();
 
                 session()->flash('success' , 'user Deleted successfully');
@@ -246,8 +304,8 @@ class AdminUsersController extends Controller
                 ->whenCountry(request()->country_id)
                 ->with('roles')
                 ->paginate(5);
-                
-           
+
+
             return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
@@ -260,8 +318,8 @@ class AdminUsersController extends Controller
                 ->whenCountry(request()->country_id)
                 ->with('roles')
                 ->paginate(5);
-                
-           
+
+
             return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
             }
 
@@ -292,7 +350,7 @@ class AdminUsersController extends Controller
                 ->paginate(5);
                 return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
             }
-  
+
         }
 
 
@@ -311,10 +369,10 @@ class AdminUsersController extends Controller
             ->whenCountry(request()->country_id)
             ->with('roles')
             ->paginate(5);
-            
-       
+
+
         return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
-        
+
     }
 
     public function restore( $lang , $user)

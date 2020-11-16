@@ -7,10 +7,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laratrust\Traits\LaratrustUserTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 use App\Country;
+use App\Order;
+use App\post;
 
-class User extends Authenticatable
+use App\Address;
+
+
+class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
     use LaratrustUserTrait;
     use Notifiable;
@@ -41,6 +47,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'phone_verified_at' => 'datetime',
     ];
 
 
@@ -58,7 +65,7 @@ class User extends Authenticatable
             ->orWhere('name' , 'like' , "%$search%");
         });
     }
-    
+
     public function scopeWhenRole($query , $role_id)
     {
         return $query->when($role_id , function($q) use($role_id) {
@@ -93,5 +100,37 @@ class User extends Authenticatable
     public function country()
     {
         return $this->belongsTo(Country::class);
+    }
+
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

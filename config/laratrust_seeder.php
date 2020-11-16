@@ -23,6 +23,16 @@ return [
             'courses' => 'c,r,u,d,t,s',
             'chapters' => 'c,r,u,d,t,s',
             'lessons' => 'c,r,u,d,t,s',
+            'categories' => 'c,r,u,d,t,s',
+            'products' => 'c,r,u,d,t,s',
+            'orders' => 'c,r,u,d,t,s',
+            'all_orders' => 'c,r,u,d,t,s',
+            'addresses' => 'c,r,u,d,t,s',
+            'posts' => 'c,r,u,d,t,s',
+            'ads' => 'c,r,u,d,t,s',
+            'sponsers' => 'c,r,u,d,t,s',
+            'links' => 'c,r,u,d,t,s',
+
 
         ],
         'administrator' => [],

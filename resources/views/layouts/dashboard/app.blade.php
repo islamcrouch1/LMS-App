@@ -10,13 +10,20 @@
   <meta name="csrf-token" content="{{csrf_token()}}">
 
   <!-- Font Awesome -->
+
+
   <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
+
+
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- icheck bootstrap -->
   <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
+
+
+
 
 
 
@@ -31,22 +38,59 @@
   <link rel="stylesheet" href="{{ asset('newasset/noty/noty.css') }}">
   <script src="{{ asset('newasset/noty/noty.min.js') }}"></script>
 
-  
+  <style>
+    .mr-2{
+        margin-right: 5px;
+    }
+
+    .loader {
+        border: 5px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 5px solid #367FA9;
+        width: 60px;
+        height: 60px;
+        -webkit-animation: spin 1s linear infinite; /* Safari */
+        animation: spin 1s linear infinite;
+    }
+
+    /* Safari */
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+</style>
+
+
 
   {{-- <?php $locale = App::getLocale(); ?>
 
-  <?php if (App::isLocale('en')) {  ?> 
+  <?php if (App::isLocale('en')) {  ?>
       <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   <?php  }else{ ?>
       <link href="{{ asset('css/apprtl.css') }}" rel="stylesheet">
-  <?php  } ?> 
+  <?php  } ?>
 
    --}}
 
    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 
 
- @stack('style')
+   @stack('style')
+
 
 </head>
 <body class="hold-transition login-page">
@@ -55,7 +99,7 @@
     <div class="wrapper" style="width:100%">
 
 @include('layouts.dashboard._header')
-        
+
           <!-- Main Sidebar Container -->
 
 
@@ -66,7 +110,7 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-        
+
 @include('layouts.dashboard._flash')
 
 
@@ -80,7 +124,7 @@
     <!-- Control sidebar content goes here -->
     </aside>
       <!-- /.control-sidebar -->
-    
+
       <!-- Main Footer -->
       <footer class="main-footer">
         <strong>Copyright &copy; 2020 <a href="{{route('dashboard' , app()->getLocale())}}">AMLS Admin</a>.</strong>
@@ -114,14 +158,23 @@
 <!-- ChartJS -->
 <script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
 
+<script src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
+
 
 <!-- PAGE SCRIPTS -->
 <script src="{{ asset('dist/js/pages/dashboard2.js') }}"></script>
 
 
 <script src="{{ asset('newasset/js/lesson.js') }}"></script>
+<script src="{{ asset('newasset/js/order.js') }}"></script>
+<script src="{{ asset('newasset/js/printThis.js') }}"></script>
+
+
 
 <script src="{{ asset('newasset/js/playerjs.js') }}"></script>
+
+
+
 
 
 
@@ -132,17 +185,23 @@
 <!-- Select2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
+
+
+
+
 <script>
-  
+
       $.ajaxSetup({
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
       });
 
-      
+      $(document).ready(function(){
 
-      $('.delete').on('click' , function(e){
+
+
+        $('.delete').on('click' , function(e){
           e.preventDefault();
           var that = $(this);
           var n = new Noty({
@@ -161,16 +220,57 @@
           n.show();
       });
 
-    
-  
+
+
 
 
   $('.select4').select2({
         width: '100%'
       });
+
+
+
+
+
+        $(".img").change(function() {
+
+            if (this.files && this.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+            $('.img-prev').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(this.files[0]); // convert to base64 string
+            }
+
+        });
+
+
+
+            $('.radio1').on('click' ,function(){
+
+                $('.down_link').css('display' , 'block');
+
+                });
+
+                $('.radio2').on('click' ,function(){
+
+                    $('.down_link').css('display' , 'none');
+
+                    $('input[name=down_link]').val('#');
+
+                    });
+
+
+      });
+
+
+
 </script>
 
 @stack('scripts')
+
 
 
 </body>

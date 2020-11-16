@@ -48,7 +48,7 @@
                             <label for="email" class="col-md-2 col-form-label text-md-right">{{ __('Account Type') }}</label>
 
                             <div class="col-md-10">
-                                
+
                                 <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref"  type="type" class="form-control @error('type') is-invalid @enderror" name="type"  required>
                                     @php
                                         $types = ['student','teatcher','employee']
@@ -68,7 +68,7 @@
                             <label for="email" class="col-md-2 col-form-label text-md-right">{{ __('Permissions') }}</label>
 
                             <div class="col-md-10">
-                            
+
                                 <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" id="role" type="role" class="form-control @error('role') is-invalid @enderror" name="role" value="{{ $user->role }}" required>
                                     @foreach ($roles as $role)
                                     <option value="{{$role->id}}"  {{ $user->hasRole($role->name) ? 'selected' : ''}}>{{$role->name}}</option>
@@ -169,17 +169,22 @@
 
                         <div class="form-group row">
                             <label for="profile" class="col-md-2 col-form-label text-md-right">{{ __('Profile Picture') }}</label>
-
-                            <img class="img-thumbnail" style="width:50%" src="{{ asset('storage/' . $user->profile) }}">
-
                             <div class="col-md-10">
-                                <input id="profile" type="file" class="form-control-file @error('profile') is-invalid @enderror" name="profile" value="{{ old('profile') }}">
+                                <input id="profile" type="file" class="form-control-file img @error('profile') is-invalid @enderror" name="profile" value="{{ old('profile') }}">
 
                                 @error('profile')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+
+                            <div class="col-md-10">
+                                <img src="{{ asset('storage/images/users/' . $user->profile) }}" style="width:100px"  class="img-thumbnail img-prev">
                             </div>
                         </div>
 

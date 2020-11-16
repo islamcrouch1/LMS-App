@@ -12,4 +12,16 @@
 
 *{
     font-family: 'Cairo', sans-serif !important;
+    letter-spacing: 0px !important;
+
+}
+
+
+.rounded-circle{
+    margin-left: 8px !important;
+}
+
+
+.popover {
+    direction: rtl !important;
 }

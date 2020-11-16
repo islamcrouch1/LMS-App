@@ -13,7 +13,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-   
+
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -21,18 +21,18 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
     <!-- Styles -->
-    
-    
+
+
     <?php $locale = App::getLocale(); ?>
 
-    <?php if (App::isLocale('en')) {  ?> 
+    <?php if (App::isLocale('en')) {  ?>
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <?php  }else{ ?>
         <link href="{{ asset('css/apprtl.css') }}" rel="stylesheet">
-    <?php  } ?> 
+    <?php  } ?>
 
 
-	
+
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto:400,500%7CExo+2:600&display=swap" rel="stylesheet">
 
     <!-- Perfect Scrollbar -->
@@ -102,7 +102,7 @@
 
 
     <div id="app">
-        
+
 
 
 
@@ -182,7 +182,7 @@
                 </div>
 
                 <!-- // END Header -->
-                
+
             <!-- Header Layout Content -->
             <div class="mdk-header-layout__content page-content ">
                     <main class="">
@@ -228,7 +228,7 @@
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Account Type') }}</label>
 
                             <div class="col-md-6">
-                                
+
                                 <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" id="type" type="type" @error('type') is-invalid @enderror" name="type" value="{{ old('type') }}" required>
                                     <option selected>Choose</option>
                                     <option value="student">Student</option>
@@ -246,10 +246,10 @@
                         <div class="form-group row">
                             <label for="country" class="col-md-4 col-form-label text-md-right">{{ __('Country select') }}</label>
                             <div class="col-md-6">
-                                <select class="form-control @error('country') is-invalid @enderror" id="country" name="country" value="{{ old('country') }}" required autocomplete="country">
-                                <option>KSA</option>
-                                <option>Egypt</option>
-                                <option>Kuwait</option>
+                                <select class=" form-control @error('country') is-invalid @enderror" id="country" name="country" value="{{ old('country') }}" required autocomplete="country">
+                                @foreach ($countries as $country)
+                                <option value="{{ $country->id }}" >{{ $country->name_en }}</option>
+                                @endforeach
                                 </select>
                                 @error('country')
                                 <span class="invalid-feedback" role="alert">
@@ -386,7 +386,7 @@
 
 
 
-  
+
                 </div>
             </div>
         </div>

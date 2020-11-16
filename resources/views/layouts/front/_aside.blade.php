@@ -26,7 +26,7 @@
                     </a>
                     <ul class="sidebar-menu">
                         <li class="sidebar-menu-item active">
-                            <a class="sidebar-menu-button" href="fixed-index.html">
+                            <a class="sidebar-menu-button" href="{{route('home' , ['lang'=>app()->getLocale() , 'country'=>$scountry->id])}}">
                                 <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">home</span>
                                 <span class="sidebar-menu-text">{{__('Home')}}</span>
                             </a>
@@ -38,11 +38,11 @@
                                 <span class="ml-auto sidebar-menu-toggle-icon"></span>
                             </a>
                             <ul class="sidebar-submenu collapse sm-indent" id="language_menu">
-    
+
                                 <li class="sidebar-menu-item {{ app()->getLocale() == 'en' ? 'active' : ''}}" >
                                     <a class="sidebar-menu-button dropdown-item" href="{{route('home' , ['lang'=>'en' , 'country'=>'1']) }}"><span class="sidebar-menu-text">{{ __('English') }}</span></a>
                                 </li>
-                                
+
                                 <li class="sidebar-menu-item {{ app()->getLocale() == 'ar' ? 'active' : ''}}" >
                                     <a class="sidebar-menu-button dropdown-item" href="{{route('home' , ['lang'=>'ar' , 'country'=>'1']) }}"><span class="sidebar-menu-text">{{ __('Arabic') }}</span></a>
                                 </li>
@@ -55,7 +55,7 @@
                                 <span class="ml-auto sidebar-menu-toggle-icon"></span>
                             </a>
                             <ul class="sidebar-submenu collapse sm-indent" id="country_menu">
-    
+
                                 @foreach ($countries as $country)
                                 <li class="sidebar-menu-item {{$scountry->id == $country->id ? 'active' : ''}}">
                                 <a class="sidebar-menu-button" href="{{route('home', ['lang'=>app()->getLocale() , 'country'=>$country->id])}}" class="dropdown-item"><span class="sidebar-menu-text">{{ app()->getLocale() == 'ar' ? $country->name_ar : $country->name_en}}</span></a>
@@ -71,7 +71,7 @@
                                 <span class="ml-auto sidebar-menu-toggle-icon"></span>
                             </a>
                             <ul class="sidebar-submenu collapse sm-indent" id="enterprise_menu">
-                                
+
                                     @foreach ($scountry->learning_systems as $learning_system)
                                     <li class="sidebar-menu-item">
                                         <a class="sidebar-menu-button" href="{{route('learning_systems' , ['lang'=>app()->getLocale() , 'learning_system'=>$learning_system->id , 'country'=>$scountry->id])}}" class="dropdown-item"><span class="sidebar-menu-text">{{ app()->getLocale() == 'ar' ? $learning_system->name_ar : $learning_system->name_en}}</span></a>
@@ -80,7 +80,14 @@
 
                             </ul>
                         </li>
-                    </ul>    
+                        <li class="sidebar-menu-item active">
+                            <a class="sidebar-menu-button" href="{{route('library' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}">
+                                <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">store_mall_directory
+                                </span>
+                                <span class="sidebar-menu-text">{{ __('Library') }}</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
