@@ -50,13 +50,13 @@
 
                         @foreach ($user->addresses as $address)
                         <tr>
-                            <td style="width:70%;">{{$address->country->name . '-' .  $address->province . '-' . $address->city . '-' . $address->district . '-' . $address->street . '-' . $address->building . '-' . $address->phone . '-' . $address->notes . '-' }}</td>
+                            <td style="width:70%;">{{ app()->getLocale() == 'ar' ? $user->country->name_ar : $user->country->name_en}} {{'-' .  $address->province . '-' . $address->city . '-' . $address->district . '-' . $address->street . '-' . $address->building . '-' . $address->phone . '-' . $address->notes . '-' }}</td>
                             <td>
 
                                 <a class="btn btn-info btn-sm" href="{{route('user.addresses.edit' , ['lang'=>app()->getLocale() , 'address'=>$address->id , 'user'=>$user->id , 'country'=>$scountry->id])}}">
                                     <i class="fas fa-pencil-alt">
                                     </i>
-                                    Edit
+                                    {{__('Edit')}}
                                 </a>
 
                                 <form method="POST" action="{{route('user.addresses.destroy' , ['lang'=>app()->getLocale() , 'address'=>$address->id , 'user'=>$user->id , 'country'=>$scountry->id])}}" enctype="multipart/form-data" style="display:inline-block">

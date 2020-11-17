@@ -19,16 +19,36 @@
         @endforeach
         </tbody>
     </table>
-    <h3>total price <span>{{ number_format($order->total_price, 2) }}</span></h3>
-
+    <h3  style="padding:10px">total price <span>{{ number_format($order->total_price, 2) }}</span></h3>
 
     <div class="card">
-        <h5 class="card-title">Order Address</h5>
+        <h5  style="padding:10px" class="card-title">Order status</h5>
+        <div class="card-body">
+            @switch($order->status)
+            @case('recieved')
+            {{__('Awaiting review from management')}}
+                @break
+            @case("processing")
+            {{__('Your order is under review')}}
+            @break
+            @case("shipped")
+            {{__('Your order has been shipped')}}
+            @break
+            @case("completed")
+            {{__('You have successfully received your request')}}
+            @break
+            @default
+        @endswitch
+        </div>
+    </div>
+
+    <div class="card">
+        <h5  style="padding:10px" class="card-title">Order Address</h5>
         <div class="card-body">
             @php
-               $address =  $order->address
+               $address =  $order->address;
             @endphp
-            {{$address->country->name . '-' .  $address->province . '-' . $address->city . '-' . $address->district . '-' . $address->street . '-' . $address->building . '-' . $address->phone . '-' . $address->notes . '-' }}
+            {{$user->country->name_en . '-' .  $address->province . '-' . $address->city . '-' . $address->district . '-' . $address->street . '-' . $address->building . '-' . $address->phone . '-' . $address->notes . '-' }}
         </div>
     </div>
 

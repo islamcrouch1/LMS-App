@@ -19,7 +19,7 @@
             <div class="card-body">
             <h5 class="card-title">{{__('Thank you for completing your order')}}</h5>
               <p class="card-text">{{__('you can track your arder and review all previos orders from your order page')}}</p>
-              <a href="#" class="btn btn-primary">{{__('Go To Your Orders Page')}}</a>
+              <a href="{{route('my-orders' , ['lang'=>app()->getLocale() , 'user'=>Auth::id() ,  'country'=>$scountry->id])}}" class="btn btn-primary">{{__('Go To Your Orders Page')}}</a>
             </div>
           </div>
 

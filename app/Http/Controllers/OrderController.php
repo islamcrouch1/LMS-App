@@ -65,7 +65,8 @@ class OrderController extends Controller
     {
         $order = $user->orders()->create([
             'total_price' => 0 ,
-            'address_id' => $request->address_id
+            'address_id' => $request->address_id,
+            'status' => 'recieved',
         ]);
 
         $order->products()->attach($request->products);

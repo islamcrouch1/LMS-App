@@ -108,6 +108,42 @@
 
                         {{-- @include('partials._errors') --}}
 
+                        <h4 style="padding:10px">Select order address</h4>
+
+                        <select class="form-control form-control-lg" id="address_id" name="address_id" required>
+                            @foreach ($user->addresses as $address)
+                            <option value="{{$address->id}}" {{ ($address->id == $order->address->id) ? 'selected' : '' }}>{{$address->country->name . '-' .  $address->province . '-' . $address->city . '-' . $address->district . '-' . $address->street . '-' . $address->building . '-' . $address->phone . '-' . $address->notes . '-' }}</option>
+                            @endforeach
+                        </select>
+
+
+                        <h4 style="padding:10px">order status</h4>
+
+                        @php
+                        $order_status = ['recieved' , 'processing' , 'shipped' , 'completed']
+                        @endphp
+
+                        <select class="form-control form-control-lg" id="status" name="status" required>
+                            @foreach ($order_status as $order_status)
+
+                            @switch($order_status)
+                                @case('recieved')
+                                <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('Awaiting review from management')}}</option>
+                                    @break
+                                @case("processing")
+                                <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('Your order is under review')}}</option>
+                                @break
+                                @case("shipped")
+                                <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('Your order has been shipped')}}</option>
+                                @break
+                                @case("completed")
+                                <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('You have successfully received your request')}}</option>
+                                @break
+                                @default
+                            @endswitch
+                            @endforeach
+                        </select>
+
                         <table class="table table-hover">
                             <thead>
                             <tr>
@@ -137,7 +173,7 @@
 
                         </table><!-- end of table -->
 
-                        <h4>Total : <span class="total-price">{{ number_format($order->total_price, 2) }}</span></h4>
+                        <h4 style="padding:10px">Total : <span class="total-price">{{ number_format($order->total_price, 2) }}</span></h4>
 
                         <button class="btn btn-primary btn-block disabled" id="add-order-form-btn"><i class="fa fa-plus"></i> Edit order</button>
 

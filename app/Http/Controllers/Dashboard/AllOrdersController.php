@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Order;
+use App\User;
+
 
 
 class AllOrdersController extends Controller
@@ -40,10 +42,13 @@ class AllOrdersController extends Controller
         }
 
 
-        public function products($lang , Order $order)
+        public function products($lang , Order $order , Request $request)
         {
+
+            $user = User::find($request->user);
+
             $products = $order->products;
-            return view('dashboard.all_orders._products', compact('order', 'products'));
+            return view('dashboard.all_orders._products', compact('order', 'products' , 'user'));
 
         }//end of products
 

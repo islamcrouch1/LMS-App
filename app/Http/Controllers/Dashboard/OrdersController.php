@@ -71,6 +71,8 @@ class OrdersController extends Controller
 
         $request->validate([
             'products' => 'required|array',
+            'address_id' => 'required|string',
+            'status' => 'required|string',
         ]);
 
         $this->attach_order($request, $user);
@@ -143,6 +145,7 @@ class OrdersController extends Controller
         $request->validate([
             'products' => 'required|array',
             'address_id' => 'required|string',
+            'status' => 'required|string',
         ]);
 
         $this->detach_order($order);
@@ -176,7 +179,8 @@ class OrdersController extends Controller
     {
         $order = $user->orders()->create([
             'total_price' => 0 ,
-            'address_id' => $request->address_id
+            'address_id' => $request->address_id ,
+            'status' => $request->status,
         ]);
 
         $order->products()->attach($request->products);

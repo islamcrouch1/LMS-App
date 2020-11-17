@@ -20,7 +20,7 @@ class LibraryController extends Controller
         $links = Link::all();
 
 
-        $products = Product::paginate(4);
+        $products = Product::paginate(8);
         $categories = Category::with('products')->get();
         $scountry = Country::findOrFail($scountry);
         $countries = Country::all();
@@ -38,7 +38,7 @@ class LibraryController extends Controller
 
         $products = Product::where('category_id' , $scategory->id)
         ->whenSearch(request()->search)
-        ->paginate(1);
+        ->paginate(8);
 
         $categories = Category::with('products')->get();
         $scountry = Country::findOrFail($scountry);

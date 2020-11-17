@@ -38,6 +38,15 @@
   <link rel="stylesheet" href="{{ asset('newasset/noty/noty.css') }}">
   <script src="{{ asset('newasset/noty/noty.min.js') }}"></script>
 
+  {{-- @if (app()->getLocale() == 'ar')
+
+  <style>
+
+
+  </style>
+
+  @endif --}}
+
   <style>
     .mr-2{
         margin-right: 5px;

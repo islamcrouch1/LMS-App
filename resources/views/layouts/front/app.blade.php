@@ -33,6 +33,9 @@
 
 
 
+
+
+
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto:400,500%7CExo+2:600&display=swap" rel="stylesheet">
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -135,10 +138,17 @@
 }
 
 
-[dir=ltr] .fa, [dir=ltr] .far, [dir=ltr] .fas {
+[dir=ltr] .nav-item .fa, [dir=ltr] .nav-item .far, [dir=ltr] .nav-item .fas {
     font-family: Font Awesome\ 5 Free !important;
     font-size: 30px;
-    color: hsla(0,0%,100%,.7);;
+    color: hsla(0,0%,100%,.7);
+}
+
+[dir=ltr] .fa, [dir=ltr] .far, [dir=ltr] .fas {
+    font-family: Font Awesome\ 5 Free !important;
+    font-size: 20px;
+    color: hsla(0,0%,100%,.7);
+    padding: 5px;
 }
 
 .social i {
@@ -158,9 +168,35 @@
     color: #fff;
 }
 
+
+
     </style>
 
 
+@if (App::isLocale('ar'))
+<style>
+
+    .dropdown-menu{
+        direction: rtl;
+    }
+
+
+    .modal-content{
+        direction: rtl;
+    }
+
+    .products-div{
+        direction: rtl;
+        text-align: right;
+    }
+
+    .close{
+        left: 0px;
+        position: absolute;
+    }
+
+</style>
+@endif
 
 
 

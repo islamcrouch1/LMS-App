@@ -3,7 +3,7 @@
     <a href="{{route('dashboard' , app()->getLocale())}}" class="brand-link">
       <img src="{{ asset('newasset/images/illustration/student/128/white.svg') }}" class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">ALMS Admin</span>
+      <span class="brand-text font-weight-light">{{__('ALMS Admin')}}</span>
     </a>
 
     <!-- Sidebar -->
@@ -27,7 +27,7 @@
             <a href="{{route('dashboard' , app()->getLocale())}}" class="nav-link active">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
-                Dashboard
+                {{__('Dashboard')}}
 
               </p>
             </a>
@@ -38,7 +38,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
               <p>
-                All Users
+                {{__('All Users')}}
                 <i class="fas fa-angle-left right"></i>
                 <span class="badge badge-info right">
                   {{ $userscount - 1}}
@@ -49,13 +49,13 @@
               <li class="nav-item">
                 <a href="{{url(app()->getLocale() . '/dashboard/users' )}}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Users</p>
+                    <p>{{__('Users')}}</p>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="{{route('users.trashed' , app()->getLocale())}}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Trashed Users</p>
+                    <p>{{__('Trashed Users')}}</p>
                   </a>
                 </li>
             </ul>
@@ -69,7 +69,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-user-tag"></i>
               <p>
-                Roles
+                {{__('Roles')}}
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -77,13 +77,13 @@
               <li class="nav-item">
                 <a href="{{route('roles.index' , app()->getLocale())}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Roles for users</p>
+                  <p>{{__('Roles for users')}}</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{{route('roles.trashed' , app()->getLocale())}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Trashed Roles</p>
+                  <p>{{__('Trashed Roles')}}</p>
                 </a>
               </li>
             </ul>
@@ -100,7 +100,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cogs"></i>
               <p>
-                Settings
+                {{__('Settings')}}
                 <i class="fas fa-angle-left right"></i>
 
               </p>
@@ -109,7 +109,7 @@
               <li class="nav-item">
                 <a href="{{route('settings.social_links' , app()->getLocale())}}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Social Links</p>
+                    <p>{{__('Social Links')}}</p>
                   </a>
                 </li>
             </ul>
@@ -122,7 +122,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-graduation-cap"></i>
               <p>
-                Countries
+                {{__('Countries')}}
                 <i class="fas fa-angle-left right"></i>
 
               </p>
@@ -131,13 +131,13 @@
               <li class="nav-item">
                 <a href="{{route('countries.index' , app()->getLocale())}}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Countries</p>
+                    <p>{{__('Countries')}}</p>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="{{route('countries.trashed' , app()->getLocale())}}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Trashed Countries</p>
+                    <p>{{__('Trashed Countries')}}</p>
                   </a>
                 </li>
             </ul>
@@ -149,7 +149,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-graduation-cap"></i>
               <p>
-                Learning Systems
+                {{__('Learning Systems')}}
                 <i class="fas fa-angle-left right"></i>
 
               </p>
@@ -158,26 +158,26 @@
               <li class="nav-item">
                 <a href="{{route('learning_systems.index' , app()->getLocale())}}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Learning Systems</p>
+                    <p>{{__('Learning Systems')}}</p>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="{{route('learning_systems.trashed' , app()->getLocale())}}" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Trashed Systems</p>
+                    <p>{{__('Trashed Systems')}}</p>
                   </a>
                 </li>
                 @if (auth()->user()->hasPermission('stages-read'))
                 <li class="nav-item">
                   <a href="{{route('stages.index' , app()->getLocale())}}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>stages</p>
+                      <p>{{__('stages')}}</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="{{route('stages.trashed' , app()->getLocale())}}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Trashed Stages</p>
+                      <p>{{__('Trashed Stages')}}</p>
                     </a>
                   </li>
                   @endif
@@ -185,13 +185,13 @@
                   <li class="nav-item">
                     <a href="{{route('ed_classes.index' , app()->getLocale())}}" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Classes</p>
+                        <p>{{__('Classes')}}</p>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a href="{{route('ed_classes.trashed' , app()->getLocale())}}" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Trashed Classes</p>
+                        <p>{{__('Trashed Classes')}}</p>
                       </a>
                     </li>
                     @endif
@@ -199,13 +199,13 @@
                     <li class="nav-item">
                       <a href="{{route('courses.index' , app()->getLocale())}}" class="nav-link">
                           <i class="far fa-circle nav-icon"></i>
-                          <p>Courses</p>
+                          <p>{{__('Courses')}}</p>
                         </a>
                       </li>
                       <li class="nav-item">
                         <a href="{{route('courses.trashed' , app()->getLocale())}}" class="nav-link">
                           <i class="far fa-circle nav-icon"></i>
-                          <p>Trashed Courses</p>
+                          <p>{{__('Trashed Courses')}}</p>
                         </a>
                       </li>
                       @endif
@@ -214,13 +214,13 @@
                       <li class="nav-item">
                         <a href="{{route('chapters.index' , app()->getLocale())}}" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>chapters</p>
+                            <p>{{__('chapters')}}</p>
                           </a>
                         </li>
                         <li class="nav-item">
                           <a href="{{route('chapters.trashed' , app()->getLocale())}}" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>Trashed chapters</p>
+                            <p>{{__('Trashed chapters')}}</p>
                           </a>
                         </li>
                         @endif
@@ -229,13 +229,13 @@
                         <li class="nav-item">
                           <a href="{{route('lessons.index' , app()->getLocale())}}" class="nav-link">
                               <i class="far fa-circle nav-icon"></i>
-                              <p>lessons</p>
+                              <p>{{__('lessons')}}</p>
                             </a>
                           </li>
                           <li class="nav-item">
                             <a href="{{route('lessons.trashed' , app()->getLocale())}}" class="nav-link">
                               <i class="far fa-circle nav-icon"></i>
-                              <p>Trashed lessons</p>
+                              <p>{{__('Trashed lessons')}}</p>
                             </a>
                           </li>
                           @endif
@@ -249,7 +249,7 @@
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-graduation-cap"></i>
                 <p>
-                  Live Stream
+                  {{__('Live Stream')}}
                   <i class="fas fa-angle-left right"></i>
 
                 </p>
@@ -258,13 +258,7 @@
                 <li class="nav-item">
                   <a href="{{route('live_stream.index' , app()->getLocale())}}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Live Stream</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{route('live_stream.trashed' , app()->getLocale())}}" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Trashed Countries</p>
+                      <p>{{__('Live Stream')}}</p>
                     </a>
                   </li>
               </ul>
@@ -277,7 +271,7 @@
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-graduation-cap"></i>
                 <p>
-                  Library
+                  {{__('Library')}}
                   <i class="fas fa-angle-left right"></i>
 
                 </p>
@@ -288,13 +282,13 @@
                 <li class="nav-item">
                   <a href="{{route('categories.index' , app()->getLocale())}}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Categories</p>
+                      <p>{{__('Categories')}}</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="{{route('categories.trashed' , app()->getLocale())}}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Trashed Categories</p>
+                      <p>{{__('Trashed Categories')}}</p>
                     </a>
                   </li>
                   @endif
@@ -303,13 +297,13 @@
                   <li class="nav-item">
                     <a href="{{route('products.index' , app()->getLocale())}}" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Products</p>
+                        <p>{{__('Products')}}</p>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a href="{{route('products.trashed' , app()->getLocale())}}" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Trashed Products</p>
+                        <p>{{__('Trashed Products')}}</p>
                       </a>
                     </li>
                     @endif
@@ -317,13 +311,13 @@
                     <li class="nav-item">
                       <a href="{{route('all_orders.index' , app()->getLocale())}}" class="nav-link">
                           <i class="far fa-circle nav-icon"></i>
-                          <p>Orders</p>
+                          <p>{{__('Orders')}}</p>
                         </a>
                       </li>
                       <li class="nav-item">
                         <a href="{{route('all_orders.trashed' , app()->getLocale())}}" class="nav-link">
                           <i class="far fa-circle nav-icon"></i>
-                          <p>Trashed Orders</p>
+                          <p>{{__('Trashed Orders')}}</p>
                         </a>
                       </li>
                       @endif
@@ -339,7 +333,7 @@
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-graduation-cap"></i>
                 <p>
-                  Home Page Sections
+                  {{__('Home Page Sections')}}
                   <i class="fas fa-angle-left right"></i>
 
                 </p>
@@ -350,13 +344,13 @@
                     <li class="nav-item">
                       <a href="{{route('posts.index' , app()->getLocale())}}" class="nav-link">
                           <i class="far fa-circle nav-icon"></i>
-                          <p>news</p>
+                          <p>{{__('news')}}</p>
                         </a>
                       </li>
                       <li class="nav-item">
                         <a href="{{route('posts.trashed' , app()->getLocale())}}" class="nav-link">
                           <i class="far fa-circle nav-icon"></i>
-                          <p>Trashed news</p>
+                          <p>{{__('Trashed news')}}</p>
                         </a>
                       </li>
                       @endif
@@ -364,13 +358,13 @@
                       <li class="nav-item">
                         <a href="{{route('ads.index' , app()->getLocale())}}" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>ads</p>
+                            <p>{{__('ads')}}</p>
                           </a>
                         </li>
                         <li class="nav-item">
                           <a href="{{route('ads.trashed' , app()->getLocale())}}" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>Trashed ads</p>
+                            <p>{{__('Trashed ads')}}</p>
                           </a>
                         </li>
                         @endif
@@ -378,13 +372,13 @@
                         <li class="nav-item">
                           <a href="{{route('sponsers.index' , app()->getLocale())}}" class="nav-link">
                               <i class="far fa-circle nav-icon"></i>
-                              <p>sponsers</p>
+                              <p>{{__('sponsers')}}</p>
                             </a>
                           </li>
                           <li class="nav-item">
                             <a href="{{route('sponsers.trashed' , app()->getLocale())}}" class="nav-link">
                               <i class="far fa-circle nav-icon"></i>
-                              <p>Trashed sponsers</p>
+                              <p>{{__('Trashed sponsers')}}</p>
                             </a>
                           </li>
                           @endif
@@ -392,13 +386,13 @@
                           <li class="nav-item">
                             <a href="{{route('links.index' , app()->getLocale())}}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>links</p>
+                                <p>{{__('links')}}</p>
                               </a>
                             </li>
                             <li class="nav-item">
                               <a href="{{route('links.trashed' , app()->getLocale())}}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Trashed links</p>
+                                <p>{{__('Trashed links')}}</p>
                               </a>
                             </li>
                             @endif

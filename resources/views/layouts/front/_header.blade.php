@@ -66,7 +66,7 @@
                                 <li class="nav-item">
                                     <a href="{{ route('cart',['lang'=>app()->getLocale() , 'user'=>"islam" , 'country'=>$scountry->id ] ) }}">
                                     <i class="fas fa-shopping-cart"></i>
-                                    <span class='badge badge-warning' id='lblCartCount'>{{Auth::check() ? Auth::user()->cart->products->count() : '0'}}</span>
+                                    <span class='badge badge-warning' id='lblCartCount'>0</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -78,19 +78,29 @@
                                 </li>
                                 @endif
                                 @else
-                                <li class="nav-item">
-                                    <a href="{{ route('cart',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'country'=>$scountry->id ] ) }}">
+                                @php
+                                    $userid = Auth::id() ;
+                                @endphp
+                                <li style="list-style: none" class="nav-item">
+                                    <a href="{{ route('cart',['lang'=>app()->getLocale() , 'user'=>$userid, 'country'=>$scountry->id ] ) }}">
                                         <i class="fas fa-shopping-cart"></i>
                                         <span class='badge badge-warning' id='lblCartCount'>{{Auth::check() ? Auth::user()->cart->products->count() : '0'}}</span>
                                     </a>
 
                                 </li>
-                                <li class="nav-item dropdown">
+                                <li style="list-style: none; margin-top: 15px;" class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                         {{ Auth::user()->name }} <span class="caret"></span>
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+
+                                        <a class="dropdown-item" href="{{route('my-orders' , ['lang'=>app()->getLocale() , 'user'=>Auth::id() ,  'country'=>$scountry->id])}}">{{__('Orders and downloads')}}</a>
+
+
+                                        <a class="dropdown-item" href="{{route('addresses' , ['lang'=>app()->getLocale() , 'user'=>Auth::id() ,  'country'=>$scountry->id])}}">{{__('Addresses')}}</a>
+
+
                                         <a class="dropdown-item" href="{{ route('logout'  , app()->getLocale()) }}"
                                         onclick="event.preventDefault();
                                                         document.getElementById('logout-form').submit();">
@@ -101,8 +111,7 @@
                                             @csrf
                                         </form>
 
-                                        <a class="dropdown-item" href="{{route('addresses' , ['lang'=>app()->getLocale() , 'user'=>Auth::id() ,  'country'=>$scountry->id])}}">{{__('Addresses')}}</a>
-                                        <a class="dropdown-item" href="{{ route('logout'  , app()->getLocale()) }}">{{__('Orders')}}</a>
+
 
 
 

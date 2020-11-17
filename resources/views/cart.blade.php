@@ -68,8 +68,9 @@
                             <td style="width:20%; text-align:center;"><img style="width:30%" alt="Avatar" class="table-avatar" src="{{ asset('storage/images/products/' . $product->image) }}"></td>
                             <td>{{ app()->getLocale() == 'ar' ? $product->name_ar : $product->name_en}}</td>
                             <td class="product-price">{{$product->sale_price}}</td>
-                            <td><input style="width:50%" type="number" name="products[{{$product->id}}][quantity]" data-price="{{$product->sale_price}}" class="form-control input-sm product-quantity" min="1" value="1"></td>
+                            <td><input style="width:50%" type="number" name="products[{{$product->id}}][quantity]" data-stock="{{$product->stock}}" data-price="{{$product->sale_price}}" class="form-control input-sm product-quantity" min="1" value="1"></td>
                             <td><a href="{{ route('cart.remove',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'product'=>$product->id , 'country'=>$scountry->id ] ) }}" class="btn btn-danger btn-sm remove-product-btn"><span class="fa fa-trash"></span></a></td>
+
 
 
                         </tr>
@@ -107,7 +108,7 @@
             <div class="col-md-12">
                 <select style="margin-bottom: 20px" class="form-control form-control-lg" id="address_id" name="address_id" required>
                     @foreach ($user->addresses as $address)
-                    <option value="{{$address->id}}">{{$address->country->name . '-' .  $address->province . '-' . $address->city . '-' . $address->district . '-' . $address->street . '-' . $address->building . '-' . $address->phone . '-' . $address->notes . '-' }}</option>
+                    <option value="{{$address->id}}">{{ app()->getLocale() == 'ar' ? $user->country->name_ar : $user->country->name_en}} {{'-' .  $address->province . '-' . $address->city . '-' . $address->district . '-' . $address->street . '-' . $address->building . '-' . $address->phone . '-' . $address->notes . '-' }}</option>
                     @endforeach
                 </select>
                 <span style="padding:5px">{{__('OR')}}</span>
@@ -135,6 +136,23 @@
 
     </div>
 </div>
+
+
+<div style="z-index: 10000000000000000 !important" class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">{{__('Alert')}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {{__("The required quantity is not available in stock .. The quantity available for order now is:")}} <span class="available-quantity"></span>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 

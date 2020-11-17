@@ -17,7 +17,7 @@ class Order extends Model
 
 
     protected $fillable = [
-        'total_price', 'address_id' ,
+        'total_price', 'address_id' , 'status' ,
     ];
 
 

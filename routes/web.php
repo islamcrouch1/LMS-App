@@ -71,6 +71,11 @@ Route::group(['prefix'=> '{lang}'], function(){
 
     Route::post('/addresses/{user}/{address}/{country}', 'AddressesController@update')->name('user.addresses.update');
 
+    Route::get('/my-orders/{user}/{country}', 'MyOrdersController@index')->name('my-orders');
+    Route::get('/my-orders/order/{order}/{country}', 'MyOrdersController@products')->name('my-orders.products');
+
+
+
 
 
 

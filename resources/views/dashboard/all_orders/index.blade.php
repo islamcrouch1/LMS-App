@@ -147,7 +147,7 @@
                             <td class="project-actions">
 
                                 <button class="btn btn-primary btn-sm order-products"
-                                data-url="{{ route('all_orders.products',[app()->getLocale() , $order->id ] ) }}"
+                                data-url="{{ route('all_orders.products',['lang'=> app()->getLocale() , 'order'=> $order->id , 'user'=> $order->user->id ] ) }}"
                                 data-method="get"
                                 >
                                     <i class="fa fa-list"></i>

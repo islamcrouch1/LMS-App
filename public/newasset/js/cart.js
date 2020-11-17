@@ -20,7 +20,7 @@ $(document).ready(function(){
       var check = $(this).data('check');
 
       var method = $(this).data('method');
-      productid
+
       var loader = $(this).data('product');
       var cartbtn = $(this).data('cart');
 
@@ -67,16 +67,74 @@ $(document).ready(function(){
 
     var quantity = Number($(this).val()); //2
 
-    console.log(quantity);
+    var stock = $(this).data('stock');
 
-    var unitPrice = parseFloat($(this).data('price')); //150
-    console.log(unitPrice);
-    $(this).closest('tr').find('.product-price').html((quantity * unitPrice).toFixed(2));
-    calculateTotal();
+    if ( quantity > stock){
+
+        $('#exampleModalCenter1').modal({
+            keyboard: false
+          });
+
+          $('.available-quantity').empty();
+          $('.available-quantity').html(stock);
+
+          $(this).val(stock);
+
+    }else {
+
+        var unitPrice = parseFloat($(this).data('price')); //150
+        $(this).closest('tr').find('.product-price').html((quantity * unitPrice).toFixed(2));
+        calculateTotal();
+    }
+
 
 
 });//end of product quantity change
 
+
+
+
+$('.order-products').on('click', function(e) {
+
+    e.preventDefault();
+
+
+
+    var url = $(this).data('url');
+
+    var method = $(this).data('method');
+
+    var loader = $(this).data('loader');
+
+    console.log(loader);
+
+    loader = '#' + loader;
+
+    console.log(loader);
+
+
+    $(loader).css('display', 'flex');
+
+
+
+    $.ajax({
+        url: url,
+        method: method,
+        success: function(data) {
+
+
+            $('#exampleModalCenter2').modal({
+                keyboard: false
+              });
+
+            $(loader).css('display', 'none');
+            $('#order-product-list').empty();
+            $('#order-product-list').append(data);
+
+        }
+    })
+
+});//end of order products click
 
 });
 
