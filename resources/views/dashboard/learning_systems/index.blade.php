@@ -8,7 +8,9 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Learning Systems</h1>
+
+            <h1>Learning Systems -  {{ app()->getLocale() == 'ar' ? $country->name_ar : $country->name_en}}</h1>
+
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -22,7 +24,7 @@
 
     <!-- Main content -->
     <section class="content">
-        
+
       <!-- Default box -->
 
       <div class="row">
@@ -34,14 +36,22 @@
                 <input type="text" name="search" autofocus placeholder="Search.." class="form-control" value="{{request()->search}}">
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>Search</button>
                 @if (auth()->user()->hasPermission('learning_systems-create'))
-                <a href="{{route('learning_systems.create', app()->getLocale()  )}}"> <button type="button" class="btn btn-primary">Create Learning System</button></a>
-
+                <a href="{{route('learning_systems.create', ['lang'=> app()->getLocale() , 'country'=>$country->id]  )}}"> <button type="button" class="btn btn-primary">Create Learning System</button></a>
                 @else
                 <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Create Learning System</button></a>
-
+                @endif
+                @if (auth()->user()->hasPermission('learning_systems-read'))
+                <a href="{{route('learning_systems.index', ['lang'=> app()->getLocale() , 'country'=>$country->id]  )}}"> <button type="button" class="btn btn-primary">Learning Systems</button></a>
+                @else
+                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Learning Systems</button></a>
+                @endif
+                @if (auth()->user()->hasPermission('learning_systems-read'))
+                <a href="{{route('learning_systems.trashed', ['lang'=> app()->getLocale() , 'country'=>$country->id]  )}}"> <button type="button" class="btn btn-primary">Trash</button></a>
+                @else
+                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Trash</button></a>
                 @endif
               </div>
             </div>
@@ -50,11 +60,10 @@
       </div>
 
 
-
       <div class="card">
         <div class="card-header">
 
-           
+
         <h3 class="card-title">Learning Systems</h3>
 
           <div class="card-tools">
@@ -103,15 +112,15 @@
               </thead>
               <tbody>
                   <tr>
-                      
-                      @foreach ($learning_systems as $learning_system)
+
+                      @foreach ($learning_systems->reverse() as $learning_system)
                     <td>
                         {{ $learning_system->id }}
                     </td>
                     <td>
-                        
+
                       <img alt="Avatar" class="table-avatar" src="{{ asset('storage/' . $learning_system->image) }}">
-            
+
                   </td>
                     <td>
                         <small>
@@ -124,12 +133,7 @@
                       </small>
                   </td>
                   <td>
-                        
-                    @foreach ($learning_system->countries as $country)
-                    <h5 style="display: inline-block"><span class="badge badge-info">{{$country->name_en}}</span></h5>
-                        
-                    @endforeach
-                    
+                    <h5 style="display: inline-block"><span class="badge badge-info">{{$learning_system->country->name_en}}</span></h5>
                   </td>
                     <td>
                         <small>
@@ -151,8 +155,14 @@
                     <td class="project-actions">
 
                         @if (!$learning_system->trashed())
+                            @if (auth()->user()->hasPermission('stages-read'))
+                                <a href="{{route('stages.index' , ['lang'=>app()->getLocale() , 'learning_system'=>$learning_system->id , 'country'=>$country->id])}}" class="btn btn-danger btn-sm">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    {{__('stages')}}
+                                </a>
+                            @endif
                         @if (auth()->user()->hasPermission('learning_systems-update'))
-                        <a class="btn btn-info btn-sm" href="{{route('learning_systems.edit' , ['lang'=>app()->getLocale() , 'learning_system'=>$learning_system->id])}}">
+                        <a class="btn btn-info btn-sm" href="{{route('learning_systems.edit' , ['lang'=>app()->getLocale() , 'learning_system'=>$learning_system->id , 'country'=>$country->id])}}">
                             <i class="fas fa-pencil-alt">
                             </i>
                             Edit
@@ -167,7 +177,7 @@
                         @else
                         @if (auth()->user()->hasPermission('learning_systems-restore'))
 
-                        <a class="btn btn-info btn-sm" href="{{route('learning_systems.restore' , ['lang'=>app()->getLocale() , 'learning_system'=>$learning_system->id])}}">
+                        <a class="btn btn-info btn-sm" href="{{route('learning_systems.restore' , ['lang'=>app()->getLocale() , 'learning_system'=>$learning_system->id , 'country'=>$country->id])}}">
                           <i class="fas fa-pencil-alt">
                           </i>
                           Restore
@@ -180,12 +190,12 @@
                     </a>
                     @endif
                                 @endif
-                         
+
                                 @if ((auth()->user()->hasPermission('learning_systems-delete'))| (auth()->user()->hasPermission('learning_systems-trash')))
 
-                                    <form method="POST" action="{{route('learning_systems.destroy' , ['lang'=>app()->getLocale() , 'learning_system'=>$learning_system->id])}}" enctype="multipart/form-data" style="display:inline-block">
+                                    <form method="POST" action="{{route('learning_systems.destroy' , ['lang'=>app()->getLocale() , 'learning_system'=>$learning_system->id , 'country'=>$country->id])}}" enctype="multipart/form-data" style="display:inline-block">
                                         @csrf
-                                        @method('DELETE')  
+                                        @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm delete">
                                                     <i class="fas fa-trash">
                                                     </i>
@@ -194,7 +204,7 @@
                                                     @else
                                                     {{ __('Trash') }}
                                                     @endif
-                                                </button>    
+                                                </button>
                                     </form>
                                     @else
                                     <button  class="btn btn-danger btn-sm">
@@ -205,21 +215,21 @@
                                       @else
                                       {{ __('Trash') }}
                                       @endif
-                                  </button> 
+                                  </button>
                                   @endif
-                                
-                        
+
+
                     </td>
                 </tr>
-                      @endforeach   
-                      
-                      
+                      @endforeach
+
+
               </tbody>
           </table>
 
           <div class="row mt-3"> {{ $learning_systems->appends(request()->query())->links() }}</div>
-         
-          @else <h3 class="pl-2">No Learning Systems To Show</h3> 
+
+          @else <h3 class="pl-2">No Learning Systems To Show</h3>
           @endif
         </div>
         <!-- /.card-body -->

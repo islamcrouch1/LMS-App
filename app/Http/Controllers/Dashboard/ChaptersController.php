@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Course;
 use App\Chapter;
 
+use App\Country;
+
+
 class ChaptersController extends Controller
 {
     public function __construct()
@@ -23,12 +26,16 @@ class ChaptersController extends Controller
     }
 
 
-    public function index()
+    public function index($lang ,Request $request)
     {
-        $chapters = Chapter::whenSearch(request()->search)
+        $country = Country::findOrFail($request->country);
+
+        $course = Course::findOrFail($request->course);
+
+        $chapters = Chapter::where('course_id' , $request->course)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.chapters.index')->with('chapters' , $chapters);
+        return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('country' , $country)->with('course' , $course);
     }
 
     /**
@@ -36,10 +43,12 @@ class ChaptersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($lang ,Request $request)
     {
-        $courses = Course::all();
-        return view('dashboard.chapters.create')->with('courses' , $courses);
+        $country = Country::findOrFail($request->country);
+
+        $course = Course::findOrFail($request->course);
+        return view('dashboard.chapters.create')->with('country' , $country)->with('course' , $course);
     }
 
     /**
@@ -52,10 +61,8 @@ class ChaptersController extends Controller
     {
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:chapters",
-            'name_en' => "required|string|max:255|unique:chapters",
-            'course_id' => "required",
-
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
 
             ]);
 
@@ -63,18 +70,23 @@ class ChaptersController extends Controller
             $chapter = Chapter::create([
                 'name_ar' => $request['name_ar'],
                 'name_en' => $request['name_en'],
-                'course_id' => $request['course_id'],
-            ]);
-       
-            
-            session()->flash('success' , 'Chapter created successfully');
+                'course_id' => $request['course'],
+                'country_id' => $request['country'],
 
-            
-            $courses = Course::all();
-            $chapters = Chapter::whenSearch(request()->search)
+            ]);
+
+
+            session()->flash('success' , 'chapter created successfully');
+
+
+            $country = Country::findOrFail($request->country);
+
+            $course = Course::findOrFail($request->course);
+
+            $chapters = Chapter::where('course_id' , $request->course)->whenSearch(request()->search)
             ->paginate(5);
-    
-            return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('courses' , $courses);
+
+            return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('country' , $country)->with('course' , $course);
     }
 
     /**
@@ -94,11 +106,12 @@ class ChaptersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($lang , $chapter)
+    public function edit($lang , $chapter ,Request $request)
     {
-        $courses = Course::all();
         $chapter = Chapter::find($chapter);
-        return view('dashboard.chapters.edit ')->with('chapter', $chapter)->with('courses' , $courses);
+        $country = Country::findOrFail($request->country);
+        $course = Course::findOrFail($request->course);
+        return view('dashboard.chapters.edit ')->with('chapter', $chapter)->with('course' , $course)->with('country' , $country);
     }
 
     /**
@@ -113,9 +126,8 @@ class ChaptersController extends Controller
 
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:chapters,name_ar," .$chapter->id,
-            'name_en' => "required|string|max:255|unique:chapters,name_en," .$chapter->id,
-            'course_id' => "required",
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
 
 
 
@@ -126,7 +138,6 @@ class ChaptersController extends Controller
             $chapter->update([
                 'name_ar' => $request['name_ar'],
                 'name_en' => $request['name_en'],
-                'course_id' => $request['course_id'],
 
             ]);
 
@@ -135,13 +146,17 @@ class ChaptersController extends Controller
 
 
 
-            
-            session()->flash('success' , 'Chapter updated successfully');
 
-            $chapters = Chapter::whenSearch(request()->search)
+            session()->flash('success' , 'chapter updated successfully');
+
+            $country = Country::findOrFail($request->country);
+
+            $course = Course::findOrFail($request->course);
+
+            $chapters = Chapter::where('course_id' , $request->course)->whenSearch(request()->search)
             ->paginate(5);
-    
-            return view('dashboard.chapters.index')->with('chapters' , $chapters);
+
+            return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('country' , $country)->with('course' , $course);
 
 
     }
@@ -152,9 +167,9 @@ class ChaptersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($lang , $chapter)
+    public function destroy($lang , $chapter ,Request $request)
     {
-        
+
         $chapter = Chapter::withTrashed()->where('id' , $chapter)->first();
 
         if($chapter->trashed()){
@@ -162,15 +177,24 @@ class ChaptersController extends Controller
             if(auth()->user()->hasPermission('chapters-delete')){
                 $chapter->forceDelete();
 
-                session()->flash('success' , 'Chapter Deleted successfully');
-    
-                $chapters = Chapter::onlyTrashed()->paginate(5);
-                return view('dashboard.chapters.index' , ['chapters' => $chapters]);
+                session()->flash('success' , 'chapter Deleted successfully');
+
+                $chapters = Chapter::where('course_id' , $request->course)->onlyTrashed()->paginate(5);
+
+                $country = Country::findOrFail($request->country);
+
+                $course = Course::findOrFail($request->course);
+
+                return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('country' , $country)->with('course' , $course);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-    
-                $chapters = Chapter::onlyTrashed()->paginate(5);
-                return view('dashboard.chapters.index' , ['chapters' => $chapters]);
+
+                $chapters = Chapter::where('course_id' , $request->course)->onlyTrashed()->paginate(5);
+                $country = Country::findOrFail($request->country);
+
+                $course = Course::findOrFail($request->course);
+
+                return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('country' , $country)->with('course' , $course);
             }
 
 
@@ -180,45 +204,61 @@ class ChaptersController extends Controller
             if(auth()->user()->hasPermission('chapters-trash')){
                 $chapter->delete();
 
-                session()->flash('success' , 'Chapter trashed successfully');
-        
-                $chapters = Chapter::whenSearch(request()->search)
+                session()->flash('success' , 'chapter trashed successfully');
+
+                $country = Country::findOrFail($request->country);
+
+                $course = Course::findOrFail($request->course);
+
+                $chapters = Chapter::where('course_id' , $request->course)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.chapters.index')->with('chapters' , $chapters);
+
+                return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('country' , $country)->with('course' , $course);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-        
-                $chapters = Chapter::whenSearch(request()->search)
+
+                $country = Chapter::findOrFail($request->country);
+
+                $course = Course::findOrFail($request->course);
+
+                $chapters = Chapter::where('course_id' , $request->course)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.chapters.index')->with('chapters' , $chapters);
+
+                return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('country' , $country)->with('course' , $course);
             }
- 
+
         }
 
 
     }
 
 
-    public function trashed()
+    public function trashed(Request $request)
     {
-       
-        $chapters = Chapter::onlyTrashed()->paginate(5);
-        return view('dashboard.chapters.index' , ['chapters' => $chapters]);
-        
+
+        $chapters = Chapter::where('course_id' , $request->course)->onlyTrashed()->paginate(5);
+        $country = Country::findOrFail($request->country);
+
+        $course = Course::findOrFail($request->course);
+
+        return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('country' , $country)->with('course' , $course);
+
     }
 
-    public function restore( $lang , $chapter)
+    public function restore( $lang , $chapter , Request $request)
     {
 
         $chapter = Chapter::withTrashed()->where('id' , $chapter)->first()->restore();
 
-        session()->flash('success' , 'Chapter restored successfully');
-    
-        $chapters = Chapter::whenSearch(request()->search)
+        session()->flash('success' , 'chapter restored successfully');
+
+        $country = Country::findOrFail($request->country);
+
+        $course = Course::findOrFail($request->course);
+
+        $chapters = Chapter::where('course_id' , $request->course)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.chapters.index')->with('chapters' , $chapters);
+        return view('dashboard.chapters.index')->with('chapters' , $chapters)->with('country' , $country)->with('course' , $course);
     }
 }

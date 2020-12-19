@@ -28,7 +28,7 @@
                 <div class="card-header">{{ __('Add Courses') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{url(app()->getLocale() . '/dashboard/courses' )}}" enctype="multipart/form-data">
+                    <form method="POST" action="{{route('courses.store', ['lang'=> app()->getLocale() , 'country'=>$country->id , 'ed_class'=>$ed_class->id]  )}}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="form-group row">
@@ -61,7 +61,7 @@
                             <label for="description_ar" class="col-md-2 col-form-label">{{ __('Arabic Description') }}</label>
 
                             <div class="col-md-10">
-                                <input id="description_ar" type="text" class="form-control @error('description_ar') is-invalid @enderror" name="description_ar" value="{{ old('description_ar') }}"  autocomplete="description">
+                                <textarea id="description_ar" type="text" class="form-control ckeditor @error('description_ar') is-invalid @enderror" name="description_ar" value="{{ old('description_ar') }}"  autocomplete="description"></textarea>
 
                                 @error('description_ar')
                                     <span class="invalid-feedback" role="alert">
@@ -74,7 +74,7 @@
                             <label for="description_en" class="col-md-2 col-form-label">{{ __('English Description') }}</label>
 
                             <div class="col-md-10">
-                                <input id="description_en" type="text" class="form-control @error('description_en') is-invalid @enderror" name="description_en" value="{{ old('description_en') }}"  autocomplete="description">
+                                <textarea id="description_en" type="text" class="form-control ckeditor @error('description_en') is-invalid @enderror" name="description_en" value="{{ old('description_en') }}"  autocomplete="description"></textarea>
 
                                 @error('description_en')
                                     <span class="invalid-feedback" role="alert">
@@ -84,24 +84,52 @@
                             </div>
                         </div>
 
-                        
+                        <div class="form-group row">
+                            <label for="course_price" class="col-md-2 col-form-label">{{ __('Course Price') }}</label>
+
+                            <div class="col-md-10">
+                                <input id="course_price" type="number" class="form-control @error('course_price') is-invalid @enderror" name="course_price" value="{{ old('course_price') }}"  autocomplete="course_price">
+
+                                @error('course_price')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="homework_price" class="col-md-2 col-form-label">{{ __('homework price') }}</label>
+
+                            <div class="col-md-10">
+                                <input id="homework_price" type="number" class="form-control @error('homework_price') is-invalid @enderror" name="homework_price" value="{{ old('homework_price') }}"  autocomplete="homework_price">
+
+                                @error('homework_price')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
 
 
                         <div class="form-group row">
-                            <label for="ed_class" class="col-md-2 col-form-label">{{ __('Class select') }}</label>
+                            <label for="teacher_commission" class="col-md-2 col-form-label">{{ __('teacher commision') }}</label>
+
                             <div class="col-md-10">
-                                <select class="form-control @error('ed_class') is-invalid @enderror" id="ed_class_id" name="ed_class_id" value="{{ old('ed_class_id') }}" required autocomplete="ed_class">
-                                @foreach ($ed_classes as $ed_class)
-                                <option value="{{ $ed_class->id }}" >{{ $ed_class->name_en }}</option>
-                                @endforeach
-                                </select>
-                                @error('ed_class')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                                <input id="teacher_commission" type="number" class="form-control @error('teacher_commission') is-invalid @enderror" name="teacher_commission" value="{{ old('teacher_commission') }}"  autocomplete="teacher_commission">
+
+                                @error('teacher_commission')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                         </div>
+
+
+
+
 
 
                         <div class="form-group row">
@@ -120,7 +148,7 @@
 
 
 
-                        
+
 
 
                         <div class="form-group row mb-0">

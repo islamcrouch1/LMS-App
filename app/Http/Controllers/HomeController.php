@@ -32,15 +32,18 @@ class HomeController extends Controller
     public function index($lang , $scountry)
     {
 
+
         $ads = Ad::all();
         $links = Link::all();
 
         $sponsers = Sponser::all();
 
-        $posts = Post::all();
         $scountry = Country::findOrFail($scountry);
+        $posts = Post::where('country_id' , $scountry->id)->orderBy('id', 'desc')->limit(3)->get();
+
         $learning_systems = LearningSystem::all();
         $countries = Country::all();
         return view('home' , compact('learning_systems' , 'countries' , 'scountry' , 'posts', 'ads' , 'sponsers' , 'links' ));
     }
 }
+

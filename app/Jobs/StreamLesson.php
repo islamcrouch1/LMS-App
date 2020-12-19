@@ -33,6 +33,7 @@ class StreamLesson implements ShouldQueue
         $this->lesson = $lesson;
     }
 
+
     /**
      * Execute the job.
      *
@@ -44,7 +45,7 @@ class StreamLesson implements ShouldQueue
             $lowBitrate = (new X264('aac'))->setKiloBitrate(100);
             $midBitrate = (new X264('aac'))->setKiloBitrate(250);
             $highBitrate = (new X264('aac'))->setKiloBitrate(500);
-    
+
             FFMpeg::fromDisk('public')
                 ->open($this->lesson->path)
                 ->exportForHLS()

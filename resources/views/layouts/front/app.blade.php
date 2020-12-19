@@ -61,11 +61,14 @@
     <!-- App CSS -->
     <link type="text/css" href="{{ asset('newasset/css/app.css') }}" rel="stylesheet">
 
+    <link type="text/css" href="{{ asset('newasset/css/intlTelInput.css') }}" rel="stylesheet">
+
 
 
 
     <link rel="stylesheet" href="{{ asset('newasset/noty/noty.css') }}">
     <script src="{{ asset('newasset/noty/noty.min.js') }}"></script>
+
 
 
     <style>
@@ -138,6 +141,16 @@
 }
 
 
+#fav_count{
+    font-size: 14px;
+    background: #ff0000;
+    color: #fff;
+    padding: 0 5px;
+    vertical-align: top;
+    margin-left: -10px;
+}
+
+
 [dir=ltr] .nav-item .fa, [dir=ltr] .nav-item .far, [dir=ltr] .nav-item .fas {
     font-family: Font Awesome\ 5 Free !important;
     font-size: 30px;
@@ -168,6 +181,49 @@
     color: #fff;
 }
 
+.user-panel img {
+    height: auto;
+    width: 2.1rem;
+    margin-left: 10px;
+}
+
+.img-circle {
+    border-radius: 50%;
+}
+
+.iti__flag {background-image: url("/newasset/images/flags.png");}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .iti__flag {background-image: url("/newasset/images/flags@2x.png");}
+}
+
+.iti__selected-flag{
+    direction: ltr;
+}
+
+.iti__country {
+    padding: 5px 10px;
+    outline: none;
+    direction: ltr;
+}
+
+
+#phone{
+    direction: ltr !important;
+}
+
+.iti {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+#parent_phone{
+    direction: ltr !important;
+}
+
+
+
 
 
     </style>
@@ -175,6 +231,15 @@
 
 @if (App::isLocale('ar'))
 <style>
+
+
+
+    .form-check-label{
+        padding-right:10px;
+    }
+    .remember-label{
+        padding-right:20px;
+    }
 
     .dropdown-menu{
         direction: rtl;
@@ -198,6 +263,8 @@
 </style>
 @endif
 
+
+@stack('style')
 
 
 </head>
@@ -225,14 +292,19 @@
         <!-- Header Layout -->
         <div class="mdk-header-layout js-mdk-header-layout">
 
-@include('layouts.front._header')
+            @include('layouts.front._header')
 
 
             <!-- Header Layout Content -->
             <div class="mdk-header-layout__content page-content ">
                     <main class="">
+                        @include('layouts.front._flash')
                         @yield('content')
                     </main>
+
+
+
+                    @include('layouts.front._footer')
             </div>
             <!-- // END Header Layout Content -->
 
@@ -245,9 +317,7 @@
         <!-- // END Header Layout -->
 
 
-@include('layouts.front._aside')
-
-@include('layouts.front._footer')
+        @include('layouts.front._aside')
 
 
     </div>
@@ -281,6 +351,72 @@
     <script src="{{ asset('newasset/js/app.js') }}"></script>
 
     <script src="{{ asset('newasset/js/playerjs.js') }}"></script>
+    <script src="{{ asset('newasset/js/intlTelInput.js') }}"></script>
+
+    <script src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
+
+    <script src="{{ asset('newasset/js/video.js') }}"></script>
+
+    <script src="{{ asset('newasset/js/fav.js') }}"></script>
+
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+
+    <script src="{{ asset('newasset/js/notification.js') }}"></script>
+
+
+    <script>
+
+
+
+
+
+
+
+                    $.ajaxSetup({
+                        headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+
+
+                    // Enable pusher logging - don't include this in production
+                    Pusher.logToConsole = true;
+
+                    var pusher = new Pusher('3b86a4ecdc7d63b3224e', {
+                    cluster: 'mt1'
+                    });
+
+
+
+
+
+                    var input = document.querySelector("#phone");
+                    window.intlTelInput(input, {
+                        separateDialCode: true,
+                        preferredCountries:["kw"],
+                        utilsScript: "/newasset/js/utils.js?<%= time %>"
+                    });
+
+
+
+
+
+
+                    var input1 = document.querySelector("#parent_phone");
+                    window.intlTelInput(input1, {
+                        separateDialCode: true,
+                        preferredCountries:["kw"],
+                        utilsScript: "/newasset/js/utils.js?<%= time %>"
+
+                    });
+
+
+
+
+
+
+
+    </script>
 
 
 
@@ -291,6 +427,10 @@
     {{-- <script src="{{ asset('js/app.js') }}" defer></script> --}}
 
     <script>
+
+
+
+
         (function() {
             'use strict';
             var headerNode = document.querySelector('.mdk-header')
@@ -304,21 +444,127 @@
                     navbarNode.classList.toggle('bg-transparent', progress <= 0.2)
                 })
             })
-        })()
-
+        })();
 
 
         $(function () {
             $('[data-toggle="popover"]').popover({
                 trigger: 'focus'
                 })
-            })
+            });
+
+
+
+
+
+
+            $(document).ready(function(){
+
+
+
+
+                $('.btn').on('click' , function(){
+
+                    $("#phone").val($(".iti__selected-dial-code").html() + $("#phone").val());
+
+                    $("#parent_phone").val($(".iti__selected-dial-code").html() + $("#parent_phone").val());
+
+                    $(this).closest('form').submit();
+
+                    $(".btn").attr("disabled", true);
+
+                });
+
+
+                CKEDITOR.config.language = "{{ app()->getLocale() }}";
+
+
+
+
+
+                // if($('.type-select').value == "teacher"){
+                //     $('.parent-phone-div').css('display', 'none');
+                // }
+
+
+
+
+                $(".img").change(function() {
+
+                if (this.files && this.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                $('.img-prev').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(this.files[0]); // convert to base64 string
+                }
+
+                });
+
+                $(".img1").change(function() {
+
+                if (this.files && this.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                $('.img-prev1').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(this.files[0]); // convert to base64 string
+                }
+
+                });
+
+
+                $('.type-select').on('change', function() {
+
+                    if(this.value == "teacher"){
+                        $('.parent-phone-div').css('display', 'none');
+                        $('#parent_phone').val("#");
+
+                    }else{
+                        $('.parent-phone-div').css('display', 'flex');
+                        $('#parent_phone').val("");
+                    }
+
+                });
+
+            });
+
+
 
     </script>
 
 
 
+
 @stack('scripts-front')
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyAsdkghKrxIAQaGYjJmx_AYZKaNsYLiWr8",
+    authDomain: "lmsystem-987d1.firebaseapp.com",
+    projectId: "lmsystem-987d1",
+    storageBucket: "lmsystem-987d1.appspot.com",
+    messagingSenderId: "637359442760",
+    appId: "1:637359442760:web:687b8bd0ca739aa1de417d",
+    measurementId: "G-9VTY0P4F4N"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
 
 </body>
 

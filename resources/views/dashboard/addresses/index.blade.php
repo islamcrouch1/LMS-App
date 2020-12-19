@@ -121,7 +121,7 @@
               <tbody>
                   <tr>
 
-                      @foreach ($addresses as $address)
+                      @foreach ($addresses->reverse() as $address)
                     <td>
                         {{ $address->id }}
                     </td>

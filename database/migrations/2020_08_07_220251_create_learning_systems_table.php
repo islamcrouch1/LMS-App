@@ -22,6 +22,7 @@ class CreateLearningSystemsTable extends Migration
             $table->string('description_en');
             $table->string('description_ar');
             $table->string('image');
+            $table->string('country_id');
             $table->rememberToken();
             $table->timestamps();
         });

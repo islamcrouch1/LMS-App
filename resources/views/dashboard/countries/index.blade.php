@@ -22,7 +22,7 @@
 
     <!-- Main content -->
     <section class="content">
-        
+
       <!-- Default box -->
 
       <div class="row">
@@ -54,7 +54,7 @@
       <div class="card">
         <div class="card-header">
 
-           
+
         <h3 class="card-title">Countries</h3>
 
           <div class="card-tools">
@@ -106,15 +106,15 @@
               </thead>
               <tbody>
                   <tr>
-                      
-                      @foreach ($countries as $country)
+
+                      @foreach ($countries->reverse() as $country)
                     <td>
                         {{ $country->id }}
                     </td>
                     <td>
-                        
+
                       <img alt="Avatar" class="table-avatar" src="{{ asset('storage/' . $country->image) }}">
-            
+
                   </td>
                     <td>
                         <small>
@@ -185,12 +185,12 @@
                     </a>
                     @endif
                                 @endif
-                         
+
                                 @if ((auth()->user()->hasPermission('countries-delete'))| (auth()->user()->hasPermission('countries-trash')))
 
                                     <form method="POST" action="{{route('countries.destroy' , ['lang'=>app()->getLocale() , 'country'=>$country->id])}}" enctype="multipart/form-data" style="display:inline-block">
                                         @csrf
-                                        @method('DELETE')  
+                                        @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm delete">
                                                     <i class="fas fa-trash">
                                                     </i>
@@ -199,7 +199,7 @@
                                                     @else
                                                     {{ __('Trash') }}
                                                     @endif
-                                                </button>    
+                                                </button>
                                     </form>
                                     @else
                                     <button  class="btn btn-danger btn-sm">
@@ -210,21 +210,21 @@
                                       @else
                                       {{ __('Trash') }}
                                       @endif
-                                  </button> 
+                                  </button>
                                   @endif
-                                
-                        
+
+
                     </td>
                 </tr>
-                      @endforeach   
-                      
-                      
+                      @endforeach
+
+
               </tbody>
           </table>
 
           <div class="row mt-3"> {{ $countries->appends(request()->query())->links() }}</div>
-         
-          @else <h3 class="pl-2">No Countries To Show</h3> 
+
+          @else <h3 class="pl-2">No Countries To Show</h3>
           @endif
         </div>
         <!-- /.card-body -->

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\LearningSystem;
 
 use App\Stage;
+use App\Country;
 
 class StagesController extends Controller
 {
@@ -24,12 +25,16 @@ class StagesController extends Controller
     }
 
 
-    public function index()
+    public function index($lang ,Request $request)
     {
-        $stages = Stage::whenSearch(request()->search)
+        $country = Country::findOrFail($request->country);
+
+        $learning_system = LearningSystem::findOrFail($request->learning_system);
+
+        $stages = Stage::where('learning_system_id' , $request->learning_system)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.stages.index')->with('stages' , $stages);
+        return view('dashboard.stages.index')->with('stages' , $stages)->with('country' , $country)->with('learning_system' , $learning_system);
     }
 
     /**
@@ -37,10 +42,12 @@ class StagesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($lang ,Request $request)
     {
-        $learning_systems = LearningSystem::all();
-        return view('dashboard.stages.create')->with('learning_systems' , $learning_systems);
+        $country = Country::findOrFail($request->country);
+
+        $learning_system = LearningSystem::findOrFail($request->learning_system);
+        return view('dashboard.stages.create')->with('country' , $country)->with('learning_system' , $learning_system);
     }
 
     /**
@@ -53,10 +60,8 @@ class StagesController extends Controller
     {
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:stages",
-            'name_en' => "required|string|max:255|unique:stages",
-            'learning_system_id' => "required",
-
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
 
             ]);
 
@@ -64,18 +69,23 @@ class StagesController extends Controller
             $stage = Stage::create([
                 'name_ar' => $request['name_ar'],
                 'name_en' => $request['name_en'],
-                'learning_system_id' => $request['learning_system_id'],
+                'learning_system_id' => $request['learning_system'],
+                'country_id' => $request['country'],
+
             ]);
-       
-            
+
+
             session()->flash('success' , 'Stage created successfully');
 
-            
-            $learning_systems = LearningSystem::all();
-            $stages = Stage::whenSearch(request()->search)
+
+            $country = Country::findOrFail($request->country);
+
+            $learning_system = LearningSystem::findOrFail($request->learning_system);
+
+            $stages = Stage::where('learning_system_id' , $request->learning_system)->whenSearch(request()->search)
             ->paginate(5);
-    
-            return view('dashboard.stages.index')->with('stages' , $stages)->with('learning_systems' , $learning_systems);
+
+            return view('dashboard.stages.index')->with('stages' , $stages)->with('country' , $country)->with('learning_system' , $learning_system);
     }
 
     /**
@@ -95,11 +105,12 @@ class StagesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($lang , $stage)
+    public function edit($lang , $stage ,Request $request)
     {
-        $learning_systems = LearningSystem::all();
         $stage = Stage::find($stage);
-        return view('dashboard.stages.edit ')->with('stage', $stage)->with('learning_systems' , $learning_systems);
+        $country = Country::findOrFail($request->country);
+        $learning_system = LearningSystem::findOrFail($request->learning_system);
+        return view('dashboard.stages.edit ')->with('stage', $stage)->with('learning_system' , $learning_system)->with('country' , $country);
     }
 
     /**
@@ -114,9 +125,8 @@ class StagesController extends Controller
 
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:stages,name_ar," .$stage->id,
-            'name_en' => "required|string|max:255|unique:stages,name_en," .$stage->id,
-            'learning_system_id' => "required",
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
 
 
 
@@ -127,7 +137,6 @@ class StagesController extends Controller
             $stage->update([
                 'name_ar' => $request['name_ar'],
                 'name_en' => $request['name_en'],
-                'learning_system_id' => $request['learning_system_id'],
 
             ]);
 
@@ -136,13 +145,17 @@ class StagesController extends Controller
 
 
 
-            
+
             session()->flash('success' , 'Stage updated successfully');
 
-            $stages = Stage::whenSearch(request()->search)
+            $country = Country::findOrFail($request->country);
+
+            $learning_system = LearningSystem::findOrFail($request->learning_system);
+
+            $stages = Stage::where('learning_system_id' , $request->learning_system)->whenSearch(request()->search)
             ->paginate(5);
-    
-            return view('dashboard.stages.index')->with('stages' , $stages);
+
+            return view('dashboard.stages.index')->with('stages' , $stages)->with('country' , $country)->with('learning_system' , $learning_system);
 
 
     }
@@ -153,9 +166,9 @@ class StagesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($lang , $stage)
+    public function destroy($lang , $stage ,Request $request)
     {
-        
+
         $stage = Stage::withTrashed()->where('id' , $stage)->first();
 
         if($stage->trashed()){
@@ -164,14 +177,23 @@ class StagesController extends Controller
                 $stage->forceDelete();
 
                 session()->flash('success' , 'Stage Deleted successfully');
-    
-                $stages = Stage::onlyTrashed()->paginate(5);
-                return view('dashboard.stages.index' , ['stages' => $stages]);
+
+                $stages = Stage::where('learning_system_id' , $request->learning_system)->onlyTrashed()->paginate(5);
+
+                $country = Country::findOrFail($request->country);
+
+                $learning_system = LearningSystem::findOrFail($request->learning_system);
+
+                return view('dashboard.stages.index')->with('stages' , $stages)->with('country' , $country)->with('learning_system' , $learning_system);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-    
-                $stages = Stage::onlyTrashed()->paginate(5);
-                return view('dashboard.stages.index' , ['stages' => $stages]);
+
+                $stages = Stage::where('learning_system_id' , $request->learning_system)->onlyTrashed()->paginate(5);
+                $country = Country::findOrFail($request->country);
+
+                $learning_system = LearningSystem::findOrFail($request->learning_system);
+
+                return view('dashboard.stages.index')->with('stages' , $stages)->with('country' , $country)->with('learning_system' , $learning_system);
             }
 
 
@@ -182,44 +204,60 @@ class StagesController extends Controller
                 $stage->delete();
 
                 session()->flash('success' , 'Stage trashed successfully');
-        
-                $stages = Stage::whenSearch(request()->search)
+
+                $country = Country::findOrFail($request->country);
+
+                $learning_system = LearningSystem::findOrFail($request->learning_system);
+
+                $stages = Stage::where('learning_system_id' , $request->learning_system)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.stages.index')->with('stages' , $stages);
+
+                return view('dashboard.stages.index')->with('stages' , $stages)->with('country' , $country)->with('learning_system' , $learning_system);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-        
-                $stages = Stage::whenSearch(request()->search)
+
+                $country = Country::findOrFail($request->country);
+
+                $learning_system = LearningSystem::findOrFail($request->learning_system);
+
+                $stages = Stage::where('learning_system_id' , $request->learning_system)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.stages.index')->with('stages' , $stages);
+
+                return view('dashboard.stages.index')->with('stages' , $stages)->with('country' , $country)->with('learning_system' , $learning_system);
             }
- 
+
         }
 
 
     }
 
 
-    public function trashed()
+    public function trashed(Request $request)
     {
-       
-        $stages = Stage::onlyTrashed()->paginate(5);
-        return view('dashboard.stages.index' , ['stages' => $stages]);
-        
+
+        $stages = Stage::where('learning_system_id' , $request->learning_system)->onlyTrashed()->paginate(5);
+        $country = Country::findOrFail($request->country);
+
+        $learning_system = LearningSystem::findOrFail($request->learning_system);
+
+        return view('dashboard.stages.index')->with('stages' , $stages)->with('country' , $country)->with('learning_system' , $learning_system);
+
     }
 
-    public function restore( $lang , $stage)
+    public function restore( $lang , $stage , Request $request)
     {
 
         $stage = Stage::withTrashed()->where('id' , $stage)->first()->restore();
 
         session()->flash('success' , 'Stage restored successfully');
-    
-        $stages = Stage::whenSearch(request()->search)
+
+        $country = Country::findOrFail($request->country);
+
+        $learning_system = LearningSystem::findOrFail($request->learning_system);
+
+        $stages = Stage::where('learning_system_id' , $request->learning_system)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.stages.index')->with('stages' , $stages);
+        return view('dashboard.stages.index')->with('stages' , $stages)->with('country' , $country)->with('learning_system' , $learning_system);
     }
 }

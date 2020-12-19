@@ -117,7 +117,7 @@
                                 <h3 class="title"><a href="#" class="viewbtn" data-toggle="popover" data-trigger="click" title="{{__('Product Description')}}" data-content="{{ app()->getLocale() == 'ar' ? $product->description_ar : $product->description_en}}" data-tip="{{__('Quick View')}}">
                                     {{ app()->getLocale() == 'ar' ? $product->name_ar : $product->name_en}}</a></h3>
                                 <div class="price">
-                                    <p class="flex text-50 lh-1 mb-0"><small>{{__('Price')}} {{ ' : ' . $product->sale_price}}</small></p>
+                                    <p class="flex text-50 lh-1 mb-0"><small>{{__('Price')}} {{ ' : ' . $product->sale_price . ' ' . $product->country->currency}}</small></p>
                                     <p class="flex text-50 lh-1 mb-0"><small>{{__('Stock')}} {{ ' : ' . $product->stock}}</small></p>
                                 </div>
                                 <a id="cart-{{$product->id}}" class="add-to-cart" href="{{ route('cart',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'country'=>$scountry->id ] ) }}">
@@ -129,7 +129,7 @@
                                 <h3 class="title"><a href="#" class="viewbtn" data-toggle="popover" data-trigger="click" title="{{__('Product Description')}}" data-content="{{ app()->getLocale() == 'ar' ? $product->description_ar : $product->description_en}}" data-tip="{{__('Quick View')}}">
                                     {{ app()->getLocale() == 'ar' ? $product->name_ar : $product->name_en}}</a></h3>
                                 <div class="price">
-                                    <p class="flex text-50 lh-1 mb-0"><small>{{__('Price')}} {{ ' : ' . $product->sale_price}}</small></p>
+                                    <p class="flex text-50 lh-1 mb-0"><small>{{__('Price')}} {{ ' : ' . $product->sale_price . ' ' . $product->country->currency}}</small></p>
                                     <p class="flex text-50 lh-1 mb-0"><small>{{__('Stock')}} {{ ' : ' . $product->stock}}</small></p>
                                 </div>
                                 <a id="cart-{{$product->id}}" class="add-to-cart add-cart" href="#"
@@ -138,6 +138,8 @@
                                         @endif
                                         data-check="{{Auth::check() ? $check = 'true' : $check = 'false'}}"
                                         data-method="get"
+                                        data-product_country="{{$product->country->id}}"
+                                        data-user_country="{{Auth::check() ? Auth::user()->country->id : ''}}"
                                         data-product="loader-{{$product->id}}"
                                         data-cart="cart-{{$product->id}}"
                                         data-productid="{{$product->id}}"
@@ -151,7 +153,7 @@
                                     <h3 class="title"><a href="#" class="viewbtn" data-toggle="popover" data-trigger="click" title="{{__('Product Description')}}" data-content="{{ app()->getLocale() == 'ar' ? $product->description_ar : $product->description_en}}" data-tip="{{__('Quick View')}}">
                                         {{ app()->getLocale() == 'ar' ? $product->name_ar : $product->name_en}}</a></h3>
                                     <div class="price">
-                                        <p class="flex text-50 lh-1 mb-0"><small>{{__('Price')}} {{ ' : ' . $product->sale_price}}</small></p>
+                                        <p class="flex text-50 lh-1 mb-0"><small>{{__('Price')}} {{ ' : ' . $product->sale_price . ' ' . $product->country->currency}}</small></p>
                                         <p class="flex text-50 lh-1 mb-0"><small>{{__('Stock')}} {{ ' : ' . $product->stock}}</small></p>
                                     </div>
                                     <a id="cart-{{$product->id}}" class="add-to-cart add-cart" href="#"
@@ -160,6 +162,8 @@
                                             @endif
                                             data-check="{{Auth::check() ? $check = 'true' : $check = 'false'}}"
                                             data-method="get"
+                                            data-product_country="{{$product->country->id}}"
+                                            data-user_country="{{Auth::check() ? Auth::user()->country->id : ''}}"
                                             data-product="loader-{{$product->id}}"
                                             data-cart="cart-{{$product->id}}"
                                             data-productid="{{$product->id}}"
@@ -201,13 +205,37 @@
           {{__("Please login to add products to cart, if you don't have account please register one now ....")}}
         </div>
         <div class="modal-footer">
-        <a href="{{ route('login' , app()->getLocale()) }}" class="btn btn-primary">{{__("Login")}}</a>
-          <a href="{{ route('register' , app()->getLocale()) }}" class="btn btn-success">{{__("Register")}}</a>
+        <a href="{{ route('login' , ['lang'=> app()->getLocale() , 'country'=> $scountry->id]) }}" class="btn btn-primary">{{__("Login")}}</a>
+          <a href="{{ route('register' , ['lang'=> app()->getLocale() , 'country'=> $scountry->id]) }}" class="btn btn-success">{{__("Register")}}</a>
         </div>
       </div>
     </div>
   </div>
 
+
+
+      <!-- Modal -->
+      <div style="z-index: 10000000000000000 !important" class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">{{__('Alert')}}</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              {{__("Sorry this product not available in your country!")}}
+            </div>
+            <div class="modal-footer">
+                @auth
+                <a href="{{route('library' , ['lang'=>app()->getLocale() ,  'country'=>Auth::check() ? Auth::user()->country->id : ''])}}" class="btn btn-success">{{__("Your Country Library")}}</a>
+                @else
+                <a href="{{route('library' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}" class="btn btn-success">{{__("Your Country Library")}}</a>
+                @endauth                </div>
+          </div>
+        </div>
+      </div>
 
 
 @endsection

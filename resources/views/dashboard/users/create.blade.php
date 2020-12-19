@@ -48,10 +48,10 @@
 
                             <div class="col-md-10">
 
-                                <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" id="type" type="type" @error('type') is-invalid @enderror" name="type" value="{{ old('type') }}" required>
+                                <select class="custom-select type-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" id="type" type="type" @error('type') is-invalid @enderror" name="type" value="{{ old('type') }}" required>
                                     <option selected>Choose</option>
                                     @php
-                                    $types = ['student','teatcher','employee']
+                                    $types = ['student','teacher','employee']
                                     @endphp
                                     @foreach ($types as $type)
                                     <option value="{{ $type }}">{{ $type }}</option>
@@ -69,10 +69,9 @@
 
                             <div class="col-md-10">
 
-                                <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" id="role" type="role" @error('role') is-invalid @enderror" name="role" value="{{ old('role') }}" required>
-                                    <option selected>Choose</option>
+                                <select class="custom-select my-1 mr-sm-2 @error('role') is-invalid @enderror" id="inlineFormCustomSelectPref" id="role" type="role" name="role" value="{{ old('role') }}" required>
                                     @foreach ($roles as $role)
-                                    <option value="{{$role->id}}">{{$role->name}}</option>
+                                    <option value="{{$role->id}}" {{ old('role') == $role->id ? 'selected' : ''}}>{{$role->name}}</option>
                                     @endforeach
                                 </select>
                                 @error('role')
@@ -85,7 +84,7 @@
 
 
                         <div class="form-group row">
-                            <label for="country" class="col-md-2 col-form-label">{{ __('Country select') }}</label>
+                            <label for="country" class="col-md-2 col-form-label text-md-right">{{ __('Country select') }}</label>
                             <div class="col-md-10">
                                 <select class=" form-control @error('country') is-invalid @enderror" id="country" name="country" value="{{ old('country') }}" required autocomplete="country">
                                 @foreach ($countries as $country)
@@ -107,6 +106,20 @@
                                 <input id="phone" type="txt" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" required autocomplete="email">
 
                                 @error('phone')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row parent-phone-div">
+                            <label for="parent_phone" class="col-md-2 col-form-label text-md-right">{{ __('Parent Phone') }}</label>
+
+                            <div class="col-md-10">
+                                <input id="parent_phone" type="tel" class="form-control @error('parent_phone') is-invalid @enderror" name="parent_phone" value="{{ old('parent_phone') }}" autocomplete="parent_phone">
+
+                                @error('parent_phone')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

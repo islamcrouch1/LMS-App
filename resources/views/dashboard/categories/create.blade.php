@@ -85,6 +85,23 @@
                         </div>
 
 
+                        <div class="form-group row">
+                            <label for="country" class="col-md-2 col-form-label">{{ __('Country select') }}</label>
+                            <div class="col-md-10">
+                                <select class=" form-control @error('country') is-invalid @enderror" id="country" name="country" value="{{ old('country') }}" required autocomplete="country">
+                                @foreach ($countries as $country)
+                                <option value="{{ $country->id }}" >{{ $country->name_en }}</option>
+                                @endforeach
+                                </select>
+                                @error('country')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                            </div>
+                        </div>
+
+
 
 
                         <div class="form-group row">

@@ -5,7 +5,9 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Course;
+
 use App\Lesson;
+use App\Country;
 
 
 
@@ -13,7 +15,7 @@ class Chapter extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-        'name_en', 'name_ar', 'course_id',
+        'name_en', 'name_ar', 'course_id', 'country_id',
     ];
     public function course()
     {
@@ -23,6 +25,11 @@ class Chapter extends Model
     public function lessons()
     {
         return $this->hasMany(Lesson::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
     }
 
     public function scopeWhenSearch($query , $search)

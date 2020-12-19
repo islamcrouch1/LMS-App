@@ -104,7 +104,7 @@
               <tbody>
                   <tr>
 
-                      @foreach ($sponsers as $sponser)
+                      @foreach ($sponsers->reverse() as $sponser)
                     <td>
                         {{ $sponser->id }}
                     </td>

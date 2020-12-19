@@ -7,16 +7,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\LearningSystem;
 use App\EdClass;
+use App\Country;
 
 class Stage extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-        'name_en', 'name_ar', 'learning_system_id',
+        'name_en', 'name_ar', 'learning_system_id', 'country_id',
     ];
     public function learning_system()
     {
         return $this->belongsTo(LearningSystem::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
     }
 
     public function ed_classes()

@@ -1,14 +1,14 @@
 @extends('layouts.dashboard.app')
 
 @section('adminContent')
- 
+
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Lessons</h1>
+            <h1>Lessons - {{ app()->getLocale() == 'ar' ? $country->name_ar : $country->name_en}} - {{ app()->getLocale() == 'ar' ? $chapter->name_ar : $chapter->name_en}}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -19,10 +19,39 @@
         </div>
       </div><!-- /.container-fluid -->
     </section>
-   
-   
+
+
    <!-- Main content -->
    <section class="content">
+
+
+    <div class="row p-5">
+        <div class="col-md-12">
+          <form action="">
+            <div class="row">
+              <div class="col-md-4">
+                @if (auth()->user()->hasPermission('lessons-create'))
+                <a href="{{route('lessons.create' , ['lang'=> app()->getLocale() , 'country'=>$country->id , 'chapter' => $chapter->id])}} "> <button type="button" class="btn btn-primary">Create Lesson</button></a>
+                @else
+                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Create Lesson</button></a>
+                @endif
+                @if (auth()->user()->hasPermission('lessons-read'))
+                <a href="{{route('lessons.index' , ['lang'=>app()->getLocale() , 'chapter'=>$chapter->id , 'country'=>$country->id])}}"> <button type="button" class="btn btn-primary">lessons</button></a>
+                @else
+                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">lessons</button></a>
+                @endif
+                @if (auth()->user()->hasPermission('lessons-read'))
+                <a href="{{route('lessons.trashed', ['lang'=> app()->getLocale() , 'country'=>$country->id , 'chapter' => $chapter->id]  )}}"> <button type="button" class="btn btn-primary">Trash</button></a>
+                @else
+                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Trash</button></a>
+                @endif
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-3">
@@ -53,7 +82,7 @@
               </ul>
 
               @if (auth()->user()->hasPermission('lessons-update'))
-                        <a class="btn btn-primary btn-block" href="{{route('lessons.edit' , ['lang'=>app()->getLocale() , 'lesson'=>$lesson->id])}}">
+                        <a class="btn btn-primary btn-block" href="{{route('lessons.edit' , ['lang'=>app()->getLocale() , 'lesson'=>$lesson->id , 'country'=>$country->id , 'chapter' => $chapter->id])}}">
                             <i class="fas fa-pencil-alt">
                             </i>
                             Edit
@@ -106,7 +135,7 @@
             default_quality: "Auto",
         });
 
-        
+
 
 
     </script>

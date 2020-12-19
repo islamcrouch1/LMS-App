@@ -8,12 +8,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Roles</h1>
+            <h1>{{__('Roles')}}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Roles</li>
+              <li class="breadcrumb-item"><a href="#">{{__('Home')}}</a></li>
+              <li class="breadcrumb-item active">{{__('Roles')}}</li>
             </ol>
           </div>
         </div>
@@ -22,7 +22,7 @@
 
     <!-- Main content -->
     <section class="content">
-        
+
       <!-- Default box -->
 
       <div class="row">
@@ -35,12 +35,12 @@
                 </div>
               </div>
               <div class="col-md-4">
-                <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>Search</button>
+                <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>{{__('Search')}}</button>
                 @if (auth()->user()->hasPermission('roles-create'))
-                <a href="{{route('roles.create', app()->getLocale()  )}}"> <button type="button" class="btn btn-primary">Create Role</button></a>
+                <a href="{{route('roles.create', app()->getLocale()  )}}"> <button type="button" class="btn btn-primary">{{__('Create Role')}}</button></a>
 
                 @else
-                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Create Role</button></a>
+                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">{{__('Create Role')}}</button></a>
 
                 @endif
               </div>
@@ -54,8 +54,8 @@
       <div class="card">
         <div class="card-header">
 
-           
-        <h3 class="card-title">Roles</h3>
+
+        <h3 class="card-title">{{__('Roles')}}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
@@ -73,38 +73,38 @@
                           #id
                       </th>
                       <th>
-                          Role Name
+                          {{__('Role Name')}}
                       </th>
                       <th>
-                          Role Description
+                          {{__('Role Description')}}
                       </th>
                       <th>
-                        permissions
+                        {{__('permissions')}}
                     </th>
                     <th>
-                      Users Count
+                      {{__('Users Count')}}
                   </th>
                       <th>
-                        Created At
+                        {{__('Created At')}}
                     </th>
                     <th>
-                      Updated At
+                      {{__('Updated At')}}
                   </th>
                   <?php if($roles !== Null){$role = $roles[0];} ?>
                   @if ($role->trashed())
                   <th>
-                    Deleted At
+                    {{__('Deleted At')}}
                   </th>
                   @endif
                       <th style="" class="">
-                        Actions
+                        {{__('Actions')}}
                       </th>
                   </tr>
               </thead>
               <tbody>
                   <tr>
-                      
-                      @foreach ($roles as $role)
+
+                      @foreach ($roles->reverse() as $role)
                     <td>
                         {{ $role->id }}
                     </td>
@@ -114,23 +114,23 @@
                         </small>
                     </td>
                     <td>
-                        
+
                       {{ $role->description }}
-                      
+
                     </td>
                     <td>
-                        
+
                       @foreach ($role->permissions as $permission)
                       <h5 style="display: inline-block"><span class="badge badge-info">{{$permission->name}}</span></h5>
-                          
+
                       @endforeach
-                      
+
                     </td>
                     <td>
-                        
+
                       {{-- {{ $role->users()->count() }} --}}
                       {{ $role->users_count }}
-                      
+
                     </td>
                     <td>
                         <small>
@@ -156,13 +156,13 @@
                         <a class="btn btn-info btn-sm" href="{{route('roles.edit' , ['lang'=>app()->getLocale() , 'role'=>$role->id])}}">
                             <i class="fas fa-pencil-alt">
                             </i>
-                            Edit
+                            {{__('Edit')}}
                         </a>
                         @else
                         <a class="btn btn-info btn-sm" href="#" aria-disabled="true">
                           <i class="fas fa-pencil-alt">
                           </i>
-                          Edit
+                          {{__('Edit')}}
                       </a>
                       @endif
                         @else
@@ -171,22 +171,22 @@
                         <a class="btn btn-info btn-sm" href="{{route('roles.restore' , ['lang'=>app()->getLocale() , 'role'=>$role->id])}}">
                           <i class="fas fa-pencil-alt">
                           </i>
-                          Restore
+                          {{__('Restore')}}
                       </a>
                       @else
                       <a class="btn btn-info btn-sm" href="#" aria-disabled="true">
                         <i class="fas fa-pencil-alt">
                         </i>
-                        Restore
+                        {{__('Restore')}}
                     </a>
                     @endif
                                 @endif
-                         
+
                                 @if ((auth()->user()->hasPermission('roles-delete'))| (auth()->user()->hasPermission('roles-trash')))
 
                                     <form method="POST" action="{{route('roles.destroy' , ['lang'=>app()->getLocale() , 'role'=>$role->id])}}" enctype="multipart/form-data" style="display:inline-block">
                                         @csrf
-                                        @method('DELETE')  
+                                        @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm delete">
                                                     <i class="fas fa-trash">
                                                     </i>
@@ -195,7 +195,7 @@
                                                     @else
                                                     {{ __('Trash') }}
                                                     @endif
-                                                </button>    
+                                                </button>
                                     </form>
                                     @else
                                     <button  class="btn btn-danger btn-sm">
@@ -206,21 +206,21 @@
                                       @else
                                       {{ __('Trash') }}
                                       @endif
-                                  </button> 
+                                  </button>
                                   @endif
-                                
-                        
+
+
                     </td>
                 </tr>
-                      @endforeach   
-                      
-                      
+                      @endforeach
+
+
               </tbody>
           </table>
 
           <div class="row mt-3"> {{ $roles->appends(request()->query())->links() }}</div>
-         
-          @else <h3>No Roles To Show</h3> 
+
+          @else <h3>{{__('No Roles To Show')}}</h3>
           @endif
         </div>
         <!-- /.card-body -->

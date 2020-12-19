@@ -18,6 +18,7 @@ class CreateStagesTable extends Migration
             $table->string('name_en');
             $table->string('name_ar');
             $table->integer('learning_system_id');
+            $table->integer('country_id');
             $table->rememberToken();
             $table->timestamps();
         });

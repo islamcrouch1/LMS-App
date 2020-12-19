@@ -23,6 +23,9 @@ class CreateLessonsTable extends Migration
             $table->integer('percent')->default(0);
             $table->string('path')->nullable();
             $table->integer('chapter_id')->nullable();
+            $table->integer('country_id')->nullable();
+            $table->integer('type')->default(0);
+            $table->string('lesson_file')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

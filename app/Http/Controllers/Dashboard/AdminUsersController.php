@@ -6,7 +6,11 @@ use App\User;
 use App\Role;
 use App\Country;
 use App\Cart;
-
+use App\Monitor;
+use App\Teacher;
+use App\Course;
+use App\BankInformation;
+use Carbon\Traits\Timestamp;
 use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Http\Request;
@@ -39,14 +43,16 @@ class AdminUsersController extends Controller
     public function index()
     {
         $countries = Country::all();
+        $courses = Course::all();
         $roles = Role::WhereRoleNot('superadministrator')->get();
         $users = User::whereRoleNot('superadministrator')
         ->whenSearch(request()->search)
         ->whenRole(request()->role_id)
         ->whenCountry(request()->country_id)
+        ->whenType(request()->type)
         ->with('roles')
         ->paginate(5);
-        return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
+        return view('dashboard.users.index' , compact('users' , 'roles' , 'countries','courses'));
     }
 
     /**
@@ -71,6 +77,7 @@ class AdminUsersController extends Controller
     {
 
 
+
         $request->validate([
 
             'name' => "required|string|max:255",
@@ -78,10 +85,12 @@ class AdminUsersController extends Controller
             'password' => "required|string|min:8|confirmed",
             'country' => "required",
             'phone' => "required|string",
+            'parent_phone' => "string",
             'gender' => "required",
             'profile' => "image",
             'type' => "required|string",
             'role' => "required|string"
+
 
             ]);
 
@@ -108,6 +117,7 @@ class AdminUsersController extends Controller
             }
 
 
+            $request->phone = str_replace(' ', '', $request->phone);
 
 
             $user = User::create([
@@ -115,10 +125,11 @@ class AdminUsersController extends Controller
                 'email' => $request['email'],
                 'password' => Hash::make($request['password']),
                 'country_id' => $request['country'],
-                'phone' => $request['phone'],
+                'phone' => $request->phone,
                 'gender' => $request['gender'],
                 'profile' => $image,
-                'type' => $request['type']
+                'type' => $request['type'],
+                'parent_phone' => $request['parent_phone'],
             ]);
 
                 if($request['role'] == '3'){
@@ -126,8 +137,23 @@ class AdminUsersController extends Controller
                 }else{
                     $user->attachRoles(['administrator' , $request['role']]);
 
+                    $monitor = Monitor::create([
+                        'user_id'=>$user->id
+                    ]);
+
                 }
 
+
+                if($user->type == 'teacher'){
+                    Teacher::create([
+                        'user_id' => $user->id,
+                    ]);
+
+                    BankInformation::create([
+                        'user_id' => $user->id,
+                    ]);
+
+                }
 
 
                 Cart::create([
@@ -137,15 +163,10 @@ class AdminUsersController extends Controller
 
             session()->flash('success' , 'user created successfully');
 
-            $countries = Country::all();
-            $roles = Role::WhereRoleNot('superadministrator')->get();
-            $users = User::whereRoleNot('superadministrator')
-            ->whenSearch(request()->search)
-            ->whenRole(request()->role_id)
-            ->whenCountry(request()->country_id)
-            ->with('roles')
-            ->paginate(5);
-            return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
+            $user->callToVerifyAdmin();
+
+
+            return redirect()->route('users.index' , app()->getLocale());
 
 
     }
@@ -160,6 +181,32 @@ class AdminUsersController extends Controller
     {
 
         return view('dashboard.users.show')->with('user' , $user);
+    }
+
+    public function activate( $lang , User $user)
+    {
+
+        $user->markPhoneAsVerified();
+
+        return redirect()->route('users.index' , app()->getLocale());
+
+
+
+    }
+
+
+    public function deactivate( $lang , User $user)
+    {
+
+        $user->forceFill([
+            'phone_verified_at' => NULL ,
+
+        ])->save();
+
+
+        return redirect()->route('users.index' , app()->getLocale());
+
+
     }
 
 
@@ -196,7 +243,9 @@ class AdminUsersController extends Controller
             'gender' => "required",
             'profile' => "image",
             'type' => "required|string",
-            'role' => "required|string"
+            'role' => "required|string",
+            'parent_phone' => "string",
+
 
             ]);
 
@@ -219,14 +268,25 @@ class AdminUsersController extends Controller
                 }
 
 
-                Storage::disk('public')->delete('/images/use/' . $user->profile);
-
-
-                Storage::disk('public')->delete($user->profile);
                 $user->update([
                     'profile' => $request['profile']->hashName(),
                 ]);
             }
+
+            if($user->type == 'student' && $request['type'] == 'teacher'){
+
+                Teacher::create([
+                    'user_id' => $user->id,
+                ]);
+
+            }elseif($user->type == 'teacher' && $request['type'] == 'student'){
+
+                Teacher::where('user_id', $user->id)->delete();
+
+            }
+
+            $request->phone = str_replace(' ', '', $request->phone);
+
 
             if($request->password == NULL){
 
@@ -235,9 +295,10 @@ class AdminUsersController extends Controller
                     'name' => $request['name'],
                     'email' => $request['email'],
                     'country_id' => $request['country'],
-                    'phone' => $request['phone'],
+                    'phone' => $request->phone,
                     'gender' => $request['gender'],
-                    'type' => $request['type']
+                    'type' => $request['type'],
+                    'parent_phone' => $request['parent_phone'],
                 ]);
 
 
@@ -246,10 +307,11 @@ class AdminUsersController extends Controller
                     'name' => $request['name'],
                     'email' => $request['email'],
                     'country_id' => $request['country'],
-                    'phone' => $request['phone'],
+                    'phone' => $request->phone,
                     'gender' => $request['gender'],
                     'password' => Hash::make($request['password']),
-                    'type' => $request['type']
+                    'type' => $request['type'],
+                    'parent_phone' => $request['parent_phone'],
                 ]);
 
             }
@@ -259,19 +321,19 @@ class AdminUsersController extends Controller
 
 
 
-            $user->syncRoles(['administrator' , $request['role']]);
+            if($request['role'] == '3'){
+                $user->detachRoles($user->roles);
+                $user->attachRole($request['role']);
+            }else{
+                $user->detachRoles($user->roles);
+                $user->attachRoles(['administrator' , $request['role']]);
+
+            }
 
             session()->flash('success' , 'user updated successfully');
 
-            $countries = Country::all();
-            $roles = Role::WhereRoleNot('superadministrator')->get();
-            $users = User::whereRoleNot('superadministrator')
-            ->whenSearch(request()->search)
-            ->whenRole(request()->role_id)
-            ->whenCountry(request()->country_id)
-            ->with('roles')
-            ->paginate(5);
-            return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
+            return redirect()->route('users.index' , app()->getLocale());
+
     }
 
     /**
@@ -296,31 +358,35 @@ class AdminUsersController extends Controller
 
                 session()->flash('success' , 'user Deleted successfully');
                 $countries = Country::all();
+                $courses = Course::all();
                 $roles = Role::WhereRoleNot('superadministrator')->get();
                 $users = User::onlyTrashed()
                 ->whereRoleNot('superadministrator')
                 ->whenSearch(request()->search)
                 ->whenRole(request()->role_id)
                 ->whenCountry(request()->country_id)
+                ->whenType(request()->type)
                 ->with('roles')
                 ->paginate(5);
 
 
-            return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
+            return view('dashboard.users.index' , compact('users' , 'roles' , 'countries' ,'courses'));
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
                 $countries = Country::all();
+                $courses = Course::all();
                 $roles = Role::WhereRoleNot('superadministrator')->get();
                 $users = User::onlyTrashed()
                 ->whereRoleNot('superadministrator')
                 ->whenSearch(request()->search)
                 ->whenRole(request()->role_id)
                 ->whenCountry(request()->country_id)
+                ->whenType(request()->type)
                 ->with('roles')
                 ->paginate(5);
 
 
-            return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
+            return view('dashboard.users.index' , compact('users' , 'roles' , 'countries' ,'courses'));
             }
 
 
@@ -329,26 +395,12 @@ class AdminUsersController extends Controller
                 $user->delete();
 
                 session()->flash('success' , 'user trashed successfully');
-                $countries = Country::all();
-                $roles = Role::WhereRoleNot('superadministrator')->get();
-                $users = User::whereRoleNot('superadministrator')
-                ->whenSearch(request()->search)
-                ->whenRole(request()->role_id)
-                ->whenCountry(request()->country_id)
-                ->with('roles')
-                ->paginate(5);
-                return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
+                return redirect()->route('users.index' , app()->getLocale());
+
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-                $countries = Country::all();
-                $roles = Role::WhereRoleNot('superadministrator')->get();
-                $users = User::whereRoleNot('superadministrator')
-                ->whenSearch(request()->search)
-                ->whenRole(request()->role_id)
-                ->whenCountry(request()->country_id)
-                ->with('roles')
-                ->paginate(5);
-                return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
+                return redirect()->route('users.index' , app()->getLocale());
+
             }
 
         }
@@ -361,17 +413,19 @@ class AdminUsersController extends Controller
     public function trashed()
     {
         $countries = Country::all();
+        $courses = Course::all();
         $roles = Role::WhereRoleNot('superadministrator')->get();
             $users = User::onlyTrashed()
             ->whereRoleNot('superadministrator')
             ->whenSearch(request()->search)
             ->whenRole(request()->role_id)
             ->whenCountry(request()->country_id)
+            ->whenType(request()->type)
             ->with('roles')
             ->paginate(5);
 
 
-        return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
+        return view('dashboard.users.index' , compact('users' , 'roles' , 'countries' ,'courses'));
 
     }
 
@@ -381,14 +435,29 @@ class AdminUsersController extends Controller
         $user = User::withTrashed()->where('id' , $user)->first()->restore();
 
         session()->flash('success' , 'user restored successfully');
-        $countries = Country::all();
-        $roles = Role::WhereRoleNot('superadministrator')->get();
-            $users = User::whereRoleNot('superadministrator')
-            ->whenSearch(request()->search)
-            ->whenRole(request()->role_id)
-            ->whenCountry(request()->country_id)
-            ->with('roles')
-            ->paginate(5);
-            return view('dashboard.users.index' , compact('users' , 'roles' , 'countries'));
+        return redirect()->route('users.index' , app()->getLocale());
+
+    }
+
+    public function monitor($lang ,Request $request, User $user){
+
+        $request->validate([
+
+            'countries' => "array",
+            'courses'=> "array",
+            'teachers' =>"array",
+
+            ]);
+
+
+
+            $user->monitor->countries()->sync($request->countries);
+            $user->monitor->courses()->sync($request->courses);
+            $user->monitor->teachers()->sync($request->teachers);
+
+
+            session()->flash('success' , 'user updated successfully');
+            return redirect()->route('users.index' , app()->getLocale());
+
     }
 }

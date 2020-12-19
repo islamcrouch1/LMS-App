@@ -62,11 +62,12 @@
                                                 <tr>
                                                     <td>{{ $product->name_en }}</td>
                                                     <td>{{ $product->stock }}</td>
-                                                    <td>{{ number_format($product->sale_price, 2) }}</td>
+                                                    <td>{{ number_format($product->sale_price, 2) . ' ' . $product->country->currency }}</td>
                                                     <td>
                                                         <a href=""
                                                            id="product-{{ $product->id }}"
                                                            data-name="{{ $product->name_en }}"
+                                                           data-currency="{{ $product->country->currency }}"
                                                            data-id="{{ $product->id }}"
                                                            data-price="{{ $product->sale_price }}"
                                                            class="btn btn-success btn-sm add-product-btn">
@@ -173,7 +174,7 @@
 
                         </table><!-- end of table -->
 
-                        <h4 style="padding:10px">Total : <span class="total-price">0</span></h4>
+                        <h4 style="padding:10px">Total : <span class="total-price">0</span>{{' ' . $product->country->currency }}</h4>
 
                         <button class="btn btn-primary btn-block disabled" id="add-order-form-btn"><i class="fa fa-plus"></i> Add order</button>
 
@@ -190,7 +191,7 @@
                     <div class="card-header">
 
                         <h3 class="box-title" style="margin-bottom: 10px">All orders for {{$user-> name}}
-                            <small>{{ $orders->total() }}</small>
+                            <small>{{ '( ' . $orders->total() . ' )' }}</small>
                         </h3>
 
                     </div><!-- end of box header -->

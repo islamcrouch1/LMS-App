@@ -32,6 +32,16 @@ return [
             'ads' => 'c,r,u,d,t,s',
             'sponsers' => 'c,r,u,d,t,s',
             'links' => 'c,r,u,d,t,s',
+            'home_page' => 'c,r,u,d,t,s',
+            'questions' => 'c,r,u,d,t,s',
+            'withdrawals' => 'c,r,u,d,t,s',
+            'courses_orders' => 'c,r,u,d,t,s',
+            'homeworks_orders' => 'c,r,u,d,t,s',
+            'reports' => 'c,r,u,d,t,s',
+            'homeworks_monitor' => 'c,r,u,d,t,s',
+            'finances' => 'c,r,u,d,t,s',
+            'teachers' => 'c,r,u,d,t,s',
+
 
 
         ],

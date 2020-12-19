@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Lesson;
 use App\Chapter;
+use App\Country;
+use App\UserLesson;
+
+use App\CourseOrder;
+use App\Exam;
+
+
+
 
 use App\Jobs\StreamLesson;
 
@@ -28,12 +36,18 @@ class LessonsController extends Controller
     }
 
 
-    public function index()
+    public function index($lang ,Request $request)
     {
-        $lessons = Lesson::whenSearch(request()->search)
+
+
+        $country = Country::findOrFail($request->country);
+
+        $chapter = Chapter::findOrFail($request->chapter);
+
+        $lessons = Lesson::where('chapter_id' , $request->chapter)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.lessons.index')->with('lessons' , $lessons);
+        return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('country' , $country)->with('chapter' , $chapter);
     }
 
     /**
@@ -43,13 +57,53 @@ class LessonsController extends Controller
      */
     public function create(Request $request)
     {
-        
+
         $lesson = Lesson::create([]);
         $lesson->update([
-            'chapter_id' => 1,
+            'chapter_id' => $request['chapter'],
+            'country_id' => $request['country'],
         ]);
-        $chapters = Chapter::all();
-        return view('dashboard.lessons.create')->with('chapters' , $chapters)->with('lesson' , $lesson);
+
+
+        Exam::create([
+
+            'lesson_id' => $lesson->id,
+
+        ]);
+
+        $orders = CourseOrder::where('status' , 'done')->get();
+
+        foreach($orders as $order){
+            $course = $order->course;
+
+            foreach($course->chapters as $chapter){
+
+                foreach($chapter->lessons as $lesson){
+
+                    $user_lesson_check = UserLesson::where('lesson_id' , $lesson->id)
+                    ->where('user_id' , $order->user_id)
+                    ->first();
+
+
+                    if($user_lesson_check == null){
+
+                        $user_lesson = UserLesson::create([
+
+                            'user_id' => $order->user_id,
+                            'lesson_id' => $lesson->id,
+                            'course_id' => $course->id,
+                            'watched' => 0,
+
+                        ]);
+
+                    }
+                }
+            }
+        }
+
+        $country = Country::findOrFail($request->country);
+        $chapter = Chapter::findOrFail($request->chapter);
+        return view('dashboard.lessons.create')->with('chapter' , $chapter)->with('lesson' , $lesson)->with('country' , $country);
     }
 
     /**
@@ -62,38 +116,40 @@ class LessonsController extends Controller
     {
 
 
-      
+
 
         $lesson = Lesson::findOrFail($request->lesson_id);
 
 
         if($lesson->path == NULL){
-            
+
             $lesson->update([
                 'name_ar' => $request->name,
                 'name_en' => $request->name,
                 'path'  => $request->file('lesson')->store('lessons/videos', 'public'),
             ]);
-    
-    
+
             $this->disPatch(new StreamLesson($lesson));
             return $lesson;
-            
+
         }else{
-            
+
             $request->validate([
 
-                'name_ar' => "required|string|max:255|unique:lessons,name_ar," .$lesson->id,
-                'name_en' => "required|string|max:255|unique:lessons,name_en," .$lesson->id,
+                'name_ar' => "required|string|max:255",
+                'name_en' => "required|string|max:255",
                 'description_ar' => "string",
                 'description_en' => "string",
-                'chapter_id' => "required",
                 'image' => "required|image",
-    
+                'type' => "required|integer",
+                'lesson_file' => "nullable|file",
+
+
+
                 ]);
 
 
-    
+
                 if($request->hasFile('image')){
 
                     \Storage::disk('public')->delete($lesson->image);
@@ -101,7 +157,7 @@ class LessonsController extends Controller
                     $img = Image::make($request->image)
                     ->resize(500, 500)
                     ->encode('jpg', 50);
-    
+
                     Storage::disk('public')->put('images/lessons/' . $request->image->hashName(), (string)$img, 'public');
                     $image = $request->image->hashName();
 
@@ -109,28 +165,39 @@ class LessonsController extends Controller
                         'image' => $image,
                     ]);
                 }
-    
-    
-    
+
+                if($request->hasFile('lesson_file')){
+
+
+                    $fileName = time(). '-' . '.'.$request['lesson_file']->extension();
+
+                    $request['lesson_file']->move(public_path('storage/lessons/files'), $fileName);
+                }else{
+                    $fileName = '#';
+                }
+
+
+
                 $lesson->update([
                     'name_ar' => $request['name_ar'],
                     'name_en' => $request['name_en'],
                     'description_ar' => $request['description_ar'],
                     'description_en' => $request['description_en'],
-                    'chapter_id' => $request['chapter_id'],
+                    'type' => $request['type'],
+                    'lesson_file' => $fileName,
+
                 ]);
-    
-    
-    
-    
-    
+
                 session()->flash('success' , 'Lesson created successfully');
-                
-                $chapters = Chapter::all();
-                $lessons = Lesson::whenSearch(request()->search)
+
+                $country = Country::findOrFail($request->country);
+
+                $chapter = Chapter::findOrFail($request->chapter);
+
+                $lessons = Lesson::where('chapter_id' , $request->chapter)->whenSearch(request()->search)
                 ->paginate(5);
-       
-                return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('chapters' , $chapters);
+
+                return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('country' , $country)->with('chapter' , $chapter);
         }
 
 
@@ -147,8 +214,13 @@ class LessonsController extends Controller
         return $lesson;
     }
 
-    public function display($lang ,Lesson $lesson){
-        return view('dashboard.lessons.show')->with('lesson' , $lesson);
+    public function display($lang ,Lesson $lesson , Request $request){
+
+        $country = Country::findOrFail($request->country);
+
+        $chapter = Chapter::findOrFail($request->chapter);
+
+        return view('dashboard.lessons.show')->with('lesson' , $lesson)->with('country' , $country)->with('chapter' , $chapter);
     }
 
     /**
@@ -157,11 +229,12 @@ class LessonsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($lang , $lesson)
+    public function edit($lang , $lesson ,Request $request)
     {
-        $chapters = Chapter::all();
+        $country = Country::findOrFail($request->country);
+        $chapter = Chapter::findOrFail($request->chapter);
         $lesson = Lesson::find($lesson);
-        return view('dashboard.lessons.edit ')->with('lesson', $lesson)->with('chapters' , $chapters);
+        return view('dashboard.lessons.edit ')->with('lesson', $lesson)->with('chapter' , $chapter)->with('country' , $country);
     }
 
     /**
@@ -176,17 +249,19 @@ class LessonsController extends Controller
 
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:lessons,name_en," .$lesson->id,
-            'name_en' => "required|string|max:255|unique:lessons,name_en," .$lesson->id,
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
             'description_ar' => "string",
             'description_en' => "string",
-            'chapter_id' => "required",
             'image' => "image",
+            'type' => "required|integer",
+            'lesson_file' => "nullable|file",
+
 
             ]);
 
             if($request->hasFile('image')){
-                
+
                 \Storage::disk('public')->delete($lesson->image);
 
                 $img = Image::make($request->image)
@@ -202,13 +277,37 @@ class LessonsController extends Controller
             }
 
 
+            if($request->hasFile('lesson_file')){
+
+                if($lesson->lesson_file == '#'){
+
+                    $fileName = time(). '-' . '.'.$request['lesson_file']->extension();
+
+                    $request['lesson_file']->move(public_path('storage/lessons/files'), $fileName);
+
+                }else{
+
+                    Storage::disk('public')->delete('/lessons/files/' . $lesson->lesson_file);
+
+                    $fileName = time(). '-' . '.'.$request['lesson_file']->extension();
+
+                    $request['lesson_file']->move(public_path('storage/lessons/files'), $fileName);
+                }
+
+            }else{
+                $fileName = $lesson->lesson_file;
+            }
+
+
 
             $lesson->update([
                 'name_ar' => $request['name_ar'],
                 'name_en' => $request['name_en'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_en'],
-                'chapter_id' => $request['chapter_id'],
+                'type' => $request['type'],
+                'lesson_file' => $fileName,
+
             ]);
 
 
@@ -216,13 +315,17 @@ class LessonsController extends Controller
 
 
 
-            
+
             session()->flash('success' , 'Lesson updated successfully');
 
-            $lessons = Lesson::whenSearch(request()->search)
+            $country = Country::findOrFail($request->country);
+
+            $chapter = Chapter::findOrFail($request->chapter);
+
+            $lessons = Lesson::where('chapter_id' , $request->chapter)->whenSearch(request()->search)
             ->paginate(5);
-    
-            return view('dashboard.lessons.index')->with('lessons' , $lessons);
+
+            return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('country' , $country)->with('chapter' , $chapter);
 
 
     }
@@ -233,9 +336,9 @@ class LessonsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($lang , $lesson)
+    public function destroy($lang , $lesson , Request $request)
     {
-        
+
         $lesson = Lesson::withTrashed()->where('id' , $lesson)->first();
 
         if($lesson->trashed()){
@@ -245,21 +348,32 @@ class LessonsController extends Controller
 
                 Storage::disk('public')->delete('images/lessons/' . $lesson->image);
                 Storage::disk('public')->delete($lesson->path);
-        
+
                 Storage::disk('public')->deleteDirectory('lessons/videos/' . $lesson->id);
 
+                $lesson->exam->delete();
 
                 $lesson->forceDelete();
 
                 session()->flash('success' , 'Lesson Deleted successfully');
-    
-                $lessons = Lesson::onlyTrashed()->paginate(5);
-                return view('dashboard.lessons.index' , ['lessons' => $lessons]);
+
+                $lessons = Lesson::where('chapter_id' , $request->chapter)->onlyTrashed()->paginate(5);
+
+                $country = Country::findOrFail($request->country);
+
+                $chapter = Chapter::findOrFail($request->chapter);
+
+                return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('country' , $country)->with('chapter' , $chapter);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-    
-                $lessons = Lesson::onlyTrashed()->paginate(5);
-                return view('dashboard.lessons.index' , ['lessons' => $lessons]);
+
+                $lessons = Lesson::where('chapter_id' , $request->chapter)->onlyTrashed()->paginate(5);
+
+                $country = Country::findOrFail($request->country);
+
+                $chapter = Chapter::findOrFail($request->chapter);
+
+                return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('country' , $country)->with('chapter' , $chapter);
             }
 
 
@@ -270,44 +384,82 @@ class LessonsController extends Controller
                 $lesson->delete();
 
                 session()->flash('success' , 'Lesson trashed successfully');
-        
-                $lessons = Lesson::whenSearch(request()->search)
+
+                $country = Country::findOrFail($request->country);
+
+                $chapter = Chapter::findOrFail($request->chapter);
+
+                $lessons = Lesson::where('chapter_id' , $request->chapter)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.lessons.index')->with('lessons' , $lessons);
+
+                return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('country' , $country)->with('chapter' , $chapter);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-        
-                $lessons = Lesson::whenSearch(request()->search)
+
+                $country = Country::findOrFail($request->country);
+
+                $chapter = Chapter::findOrFail($request->chapter);
+
+                $lessons = Lesson::where('chapter_id' , $request->chapter)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.lessons.index')->with('lessons' , $lessons);
+
+                return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('country' , $country)->with('chapter' , $chapter);
             }
- 
+
         }
 
 
     }
 
 
-    public function trashed()
+    public function trashed(Request $request)
     {
-       
-        $lessons = Lesson::onlyTrashed()->paginate(5);
-        return view('dashboard.lessons.index' , ['lessons' => $lessons]);
-        
+
+        $lessons = Lesson::where('chapter_id' , $request->chapter)->onlyTrashed()->paginate(5);
+
+        $country = Country::findOrFail($request->country);
+
+        $chapter = Chapter::findOrFail($request->chapter);
+
+        return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('country' , $country)->with('chapter' , $chapter);
+
     }
 
-    public function restore( $lang , $lesson)
+    public function restore( $lang , $lesson , Request $request)
     {
 
         $lesson = Lesson::withTrashed()->where('id' , $lesson)->first()->restore();
 
         session()->flash('success' , 'Lesson restored successfully');
-    
-        $lessons = Lesson::whenSearch(request()->search)
+
+        $country = Country::findOrFail($request->country);
+
+        $chapter = Chapter::findOrFail($request->chapter);
+
+        $lessons = Lesson::where('chapter_id' , $request->chapter)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.lessons.index')->with('lessons' , $lessons);
+        return view('dashboard.lessons.index')->with('lessons' , $lessons)->with('country' , $country)->with('chapter' , $chapter);
     }
+
+
+
+
+    public function changeStatus ($lang , $user , $country , Request $request)
+    {
+
+
+        $user_lesson = UserLesson::where('leeson_id' , $request->lesson)->where('user_id' , $user);
+
+
+        if($user_lesson->watched == 0){
+
+            $user_lesson->update([
+                'watched' => 1 ,
+            ]);
+
+        }
+    }
+
+
 }

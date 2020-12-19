@@ -13,7 +13,7 @@
 
 
 
-                    <a href="{{ route('home' , ['lang'=> app()->getLocale() , 'country'=> '1']) }}" class="sidebar-brand ">
+                    <a href="{{ route('home' , ['lang'=> app()->getLocale() , 'country'=> $scountry->id]) }}" class="sidebar-brand ">
                         <!-- <img class="sidebar-brand-icon" src="assets/images/illustration/student/128/white.svg" alt="Luma"> -->
 
                         <span class="avatar avatar-xl sidebar-brand-icon h-auto">
@@ -31,7 +31,7 @@
                                 <span class="sidebar-menu-text">{{__('Home')}}</span>
                             </a>
                         </li>
-                        <li class="sidebar-menu-item active open">
+                        <li class="sidebar-menu-item active">
                             <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#language_menu">
                                 <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">language</span>
                                 {{__('Select Language')}}
@@ -40,15 +40,15 @@
                             <ul class="sidebar-submenu collapse sm-indent" id="language_menu">
 
                                 <li class="sidebar-menu-item {{ app()->getLocale() == 'en' ? 'active' : ''}}" >
-                                    <a class="sidebar-menu-button dropdown-item" href="{{route('home' , ['lang'=>'en' , 'country'=>'1']) }}"><span class="sidebar-menu-text">{{ __('English') }}</span></a>
+                                    <a class="sidebar-menu-button dropdown-item" href="{{route('home' , ['lang'=>'en' , 'country'=>$scountry->id]) }}"><span class="sidebar-menu-text">{{ __('English') }}</span></a>
                                 </li>
 
                                 <li class="sidebar-menu-item {{ app()->getLocale() == 'ar' ? 'active' : ''}}" >
-                                    <a class="sidebar-menu-button dropdown-item" href="{{route('home' , ['lang'=>'ar' , 'country'=>'1']) }}"><span class="sidebar-menu-text">{{ __('Arabic') }}</span></a>
+                                    <a class="sidebar-menu-button dropdown-item" href="{{route('home' , ['lang'=>'ar' , 'country'=>$scountry->id]) }}"><span class="sidebar-menu-text">{{ __('Arabic') }}</span></a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="sidebar-menu-item active open mt-1">
+                        <li class="sidebar-menu-item active mt-1">
                             <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#country_menu">
                                 <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">flag</span>
                                 {{__('Select Country')}}
@@ -64,7 +64,7 @@
                             </ul>
                         </li>
 
-                        <li class="sidebar-menu-item mt-1">
+                        <li class="sidebar-menu-item active mt-1">
                             <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#enterprise_menu">
                                 <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">style</span>
                                 {{__('Educational tracks')}}
@@ -85,6 +85,14 @@
                                 <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">store_mall_directory
                                 </span>
                                 <span class="sidebar-menu-text">{{ __('Library') }}</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-menu-item active">
+                            <a class="sidebar-menu-button" href="{{route('teachers' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}">
+                                <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school
+                                </span>
+                                <span class="sidebar-menu-text">{{ __('Teachers') }}</span>
                             </a>
                         </li>
                     </ul>

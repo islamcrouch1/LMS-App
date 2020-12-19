@@ -34,6 +34,14 @@
                 <input type="text" name="search" autofocus placeholder="Search.." class="form-control" value="{{request()->search}}">
                 </div>
               </div>
+              <div class="col-md-2">
+                <select class="form-control"  name="country_id" style="display:inline-block">
+                  <option selected disabled>All Countries</option>
+                  @foreach ($countries as $country)
+                  <option value="{{$country->id}}" {{ request()->country_id == $country->id ? 'selected' : ''}}>{{$country->name_en}}</option>
+                  @endforeach
+                </select>
+              </div>
               <div class="col-md-4">
                 <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>Search</button>
                 @if (auth()->user()->hasPermission('posts-create'))
@@ -82,6 +90,9 @@
                         English Name
                       </th>
                       <th>
+                        Country
+                      </th>
+                      <th>
                         Created At
                     </th>
                     <th>
@@ -101,7 +112,7 @@
               <tbody>
                   <tr>
 
-                      @foreach ($posts as $post)
+                      @foreach ($posts->reverse() as $post)
                     <td>
                         {{ $post->id }}
                     </td>
@@ -120,6 +131,11 @@
                           {{ $post->name_en }}
                       </small>
                   </td>
+                  <td>
+                    <small>
+                        {{ $post->country->name_ar }}
+                    </small>
+                </td>
                     <td>
                         <small>
                             {{ $post->created_at }}

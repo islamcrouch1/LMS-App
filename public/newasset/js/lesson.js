@@ -22,6 +22,14 @@ $(document).ready(function(){
         formData.append('lesson' , lesson );
 
 
+        console.log(url);
+
+        console.log(lessonName);
+
+
+
+
+
         $.ajax({
             url: url,
             data: formData,
@@ -43,7 +51,7 @@ $(document).ready(function(){
                             $('#video_progress').html(lessonWhileProcessing.percent + '%');
 
                             if (lessonWhileProcessing.percent == 100) {
-                            
+
                                 clearInterval(interval);
                                 $('#lesson-status').html('Done Processing');
                                 $('#video_progress').parent().css('display', 'none');
@@ -54,7 +62,9 @@ $(document).ready(function(){
 
                 }, 3000)
 
-            },
+            },error: function (jqXHR, status, err) {
+                alert(status);
+              },
             xhr: function () {
                 var xhr = new window.XMLHttpRequest();
                 xhr.upload.addEventListener("progress", function (evt) {
@@ -67,7 +77,7 @@ $(document).ready(function(){
             },
         });//end of ajax call
 
-       
+
 
 
     });

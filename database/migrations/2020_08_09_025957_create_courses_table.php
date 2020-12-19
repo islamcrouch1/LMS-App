@@ -20,7 +20,12 @@ class CreateCoursesTable extends Migration
             $table->text('description_en');
             $table->text('description_ar');
             $table->integer('ed_class_id');
+            $table->integer('country_id');
+            $table->integer('course_price');
+            $table->integer('homework_price');
+            $table->integer('teacher_commission');
             $table->string('image');
+            $table->integer('status')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

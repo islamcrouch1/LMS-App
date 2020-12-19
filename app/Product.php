@@ -15,10 +15,16 @@ class Product extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-        'name_en', 'name_ar', 'image', 'description_ar' , 'description_en' , 'type' , 'purchase_price' , 'sale_price' , 'category_id' , 'stock' , 'down_link' ,
+        'name_en', 'name_ar', 'image', 'description_ar' , 'description_en' , 'type' , 'purchase_price' , 'sale_price' , 'category_id' , 'stock' , 'down_link' , 'country_id',
     ];
 
     protected $appends = ['profit_percent'];
+
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
 
 
     public function category()
@@ -43,7 +49,9 @@ class Product extends Model
     {
         return $query->when($search , function($q) use($search) {
             return $q->where('name_ar' , 'like' , "%$search%")
-            ->orWhere('name_en' , 'like' , "%$search%");
+            ->orWhere('name_en' , 'like' , "%$search%")
+            ->orWhere('description_ar' , 'like' , "%$search%")
+            ->orWhere('description_en' , 'like' , "%$search%");
         });
     }
 
@@ -63,6 +71,13 @@ class Product extends Model
         });
     }
 
+
+    public function scopeWhenCountry($query , $country_id)
+    {
+        return $query->when($country_id , function($q) use($country_id) {
+            return $q->where('country_id' , 'like' , "%$country_id%");
+        });
+    }
 
 
 }

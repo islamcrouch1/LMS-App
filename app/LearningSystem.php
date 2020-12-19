@@ -16,7 +16,7 @@ class LearningSystem extends Model
 
 
     protected $fillable = [
-        'name_en', 'name_ar', 'description_en','description_ar','image','country',
+        'name_en', 'name_ar', 'description_en','description_ar','image', 'country_id',
     ];
 
 
@@ -29,9 +29,9 @@ class LearningSystem extends Model
         });
     }
 
-    public function countries()
+    public function country()
     {
-        return $this->belongsToMany(Country::class);
+        return $this->belongsTo(Country::class);
     }
 
     public function stages()

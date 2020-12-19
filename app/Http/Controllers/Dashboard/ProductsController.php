@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Product;
 use App\Category;
+use App\Country;
 
 use Illuminate\Http\Request;
 
@@ -30,11 +31,13 @@ class ProductsController extends Controller
     public function index()
     {
         $categories = Category::all();
+        $countries = Country::all();
         $products = Product::whenSearch(request()->search)
         ->whenCategory(request()->category_id)
+        ->whenCountry(request()->country_id)
         ->paginate(5);
 
-        return view('dashboard.products.index')->with('products' , $products)->with('categories' , $categories);
+        return view('dashboard.products.index')->with('products' , $products)->with('categories' , $categories)->with('countries' , $countries);
     }
 
     /**
@@ -45,8 +48,8 @@ class ProductsController extends Controller
     public function create()
     {
         $categories = Category::all();
-
-        return view('dashboard.products.create')->with('categories' , $categories);
+        $countries = Country::all();
+        return view('dashboard.products.create')->with('categories' , $categories)->with('countries' , $countries);
     }
 
     /**
@@ -81,6 +84,8 @@ class ProductsController extends Controller
             'stock' => "required|string",
             'type' => "required|string",
             'category_id' => "required",
+            'country' => "required",
+
 
             ]);
 
@@ -114,20 +119,14 @@ class ProductsController extends Controller
                 'down_link' => $fileName,
                 'category_id' => $request['category_id'],
                 'type' => $request['type'],
+                'country_id' => $request['country'],
+
 
             ]);
 
 
             session()->flash('success' , 'Product created successfully');
-
-
-            $categories = Category::all();
-
-            $products = Product::whenSearch(request()->search)
-            ->whenCategory(request()->category_id)
-            ->paginate(5);
-
-            return view('dashboard.products.index')->with('products' , $products)->with('categories' , $categories);
+            return redirect()->route('products.index' , app()->getLocale());
     }
 
     /**
@@ -150,9 +149,9 @@ class ProductsController extends Controller
     public function edit($lang , $Product)
     {
         $categories = Category::all();
-
+        $countries = Country::all();
         $Product = Product::find($Product);
-        return view('dashboard.products.edit ')->with('Product', $Product)->with('categories' , $categories);
+        return view('dashboard.products.edit ')->with('Product', $Product)->with('categories' , $categories)->with('countries' , $countries);
     }
 
     /**
@@ -190,6 +189,8 @@ class ProductsController extends Controller
             'stock' => "required|string",
             'type' => "required|string",
             'category_id' => "required",
+            'country' => "required",
+
 
             ]);
 
@@ -266,6 +267,8 @@ class ProductsController extends Controller
                 'down_link' => $fileName,
                 'category_id' => $request['category_id'],
                 'type' => $request['type'],
+                'country_id' => $request['country'],
+
 
             ]);
 
@@ -276,14 +279,7 @@ class ProductsController extends Controller
 
 
             session()->flash('success' , 'Product updated successfully');
-            $categories = Category::all();
-
-
-            $products = Product::whenSearch(request()->search)
-            ->whenCategory(request()->category_id)
-            ->paginate(5);
-
-            return view('dashboard.products.index')->with('products' , $products)->with('categories' , $categories);
+            return redirect()->route('products.index' , app()->getLocale());
 
 
     }
@@ -309,20 +305,25 @@ class ProductsController extends Controller
 
 
                 session()->flash('success' , 'Product Deleted successfully');
-                $categories = Category::all();
 
+                $countries = Country::all();
                 $products = Product::onlyTrashed()
+                ->whenSearch(request()->search)
                 ->whenCategory(request()->category_id)
+                ->whenCountry(request()->country_id)
                 ->paginate(5);
-                return view('dashboard.products.index' , ['products' => $products])->with('categories' , $categories);
+                return view('dashboard.products.index')->with('products' , $products)->with('categories' , $categories)->with('countries' , $countries);
+
             }else{
-                session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-                $categories = Category::all();
 
+                session()->flash('success' , 'Sorry.. you do not have permission to make this action');
+                $countries = Country::all();
                 $products = Product::onlyTrashed()
+                ->whenSearch(request()->search)
                 ->whenCategory(request()->category_id)
+                ->whenCountry(request()->country_id)
                 ->paginate(5);
-                return view('dashboard.products.index' , ['products' => $products])->with('categories' , $categories);
+                return view('dashboard.products.index')->with('products' , $products)->with('categories' , $categories)->with('countries' , $countries);
             }
 
 
@@ -333,22 +334,13 @@ class ProductsController extends Controller
                 $Product->delete();
 
                 session()->flash('success' , 'Product trashed successfully');
-                $categories = Category::all();
+                return redirect()->route('products.index' , app()->getLocale());
 
-                $products = Product::whenSearch(request()->search)
-                ->whenCategory(request()->category_id)
-                ->paginate(5);
-
-                return view('dashboard.products.index')->with('products' , $products);
             }else{
+
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
+                return redirect()->route('products.index' , app()->getLocale());
 
-                $products = Product::whenSearch(request()->search)
-                ->whenCategory(request()->category_id)
-                ->paginate(5);
-                $categories = Category::all();
-
-                return view('dashboard.products.index')->with('products' , $products)->with('categories' , $categories);
             }
 
         }
@@ -360,11 +352,13 @@ class ProductsController extends Controller
     public function trashed()
     {
         $categories = Category::all();
-
+        $countries = Country::all();
         $products = Product::onlyTrashed()
+        ->whenSearch(request()->search)
         ->whenCategory(request()->category_id)
+        ->whenCountry(request()->country_id)
         ->paginate(5);
-        return view('dashboard.products.index' , ['products' => $products])->with('categories' , $categories);
+        return view('dashboard.products.index')->with('products' , $products)->with('categories' , $categories)->with('countries' , $countries);
 
     }
 
@@ -375,11 +369,7 @@ class ProductsController extends Controller
         $Product = Product::withTrashed()->where('id' , $Product)->first()->restore();
 
         session()->flash('success' , 'Product restored successfully');
+        return redirect()->route('products.index' , app()->getLocale());
 
-        $products = Product::whenSearch(request()->search)
-        ->whenCategory(request()->category_id)
-        ->paginate(5);
-
-        return view('dashboard.products.index')->with('products' , $products)->with('categories' , $categories);
     }
 }

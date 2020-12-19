@@ -11,6 +11,17 @@ use Illuminate\Support\Facades\Validator;
 use App\Country;
 use Nexmo;
 use App\Cart;
+use App\Link;
+use App\Teacher;
+use App\BankInformation;
+
+
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Storage;
+
+use Intervention\Image\ImageManagerStatic as Image;
+
 
 class RegisterController extends Controller
 {
@@ -34,7 +45,7 @@ class RegisterController extends Controller
      */
     // protected $redirectTo = RouteServiceProvider::HOME;
 
-    protected $redirectTo = '/nexmo';
+    // protected $redirectTo = '/nexmo';
 
     /**
      * Create a new controller instance.
@@ -46,10 +57,12 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    public function showRegistrationForm()
+    public function showRegistrationForm($lang ,Request $request)
 {
+    $links = Link::all();
+    $scountry = Country::findOrFail($request->country);
     $countries = Country::all();
-    return view("auth.register", compact("countries"));
+    return view("auth.register", compact('countries' , 'scountry' , 'links'));
 }
 
     /**
@@ -60,16 +73,24 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'country' => ['required'],
-            'phone' => ['required','string', 'unique:users'],
-            'gender' => ['required'],
-            'profile' => ['required','image'],
-            'type' => ['required','string']
-        ]);
+
+
+
+
+            return Validator::make($data, [
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+                'country' => ['required'],
+                'phone' => ['required','string', 'unique:users'],
+                'gender' => ['required'],
+                'profile' => ['image'],
+                'type' => ['required','string'],
+                'parent_phone' => ['string'],
+            ]);
+
+
+
     }
 
     /**
@@ -82,12 +103,51 @@ class RegisterController extends Controller
     {
 
 
-        $verification = Nexmo::verify()->start([
-            'number' => $data['phone'],
-            'brand' => 'Phone Verification',
-        ]);
+        // $verification = Nexmo::verify()->start([
+        //     'number' => $data['phone'],
+        //     'brand' => 'Phone Verification',
+        // ]);
 
-        session(['nexmo_request_id' => $verification->getRequestId()]);
+        // session(['nexmo_request_id' => $verification->getRequestId()]);
+
+
+
+
+
+            if(!array_key_exists('profile', $data)){
+                if($data['gender'] == 'male'){
+                    $data['profile'] = 'avatarmale.png' ;
+                }else{
+                    $data['profile'] = 'avatarfemale.png' ;
+                }
+            }else{
+
+
+                Image::make($data['profile'])->resize(300, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                })->save(public_path('storage/images/users/' . $data['profile']->hashName()) , 60);
+            }
+
+
+
+            if($data['profile'] == 'avatarmale.png' || $data['profile'] == 'avatarfemale.png'){
+                $image = $data['profile'];
+            }else{
+                $image = $data['profile']->hashName();
+            }
+
+
+            // if(!array_key_exists('parent_phone', $data)){
+
+            //         $data['parent_phone'] = '#' ;
+
+            // }
+
+
+            $data['phone'] = str_replace(' ', '', $data['phone']);
+
+
+
 
             $user = User::create([
                 'name' => $data['name'],
@@ -96,24 +156,46 @@ class RegisterController extends Controller
                 'country_id' => $data['country'],
                 'phone' => $data['phone'],
                 'gender' => $data['gender'],
-                'profile' => $data['profile']->store('images', 'public'),
-                'type' => $data['type']
-            ]);
+                'profile' => $image,
+                'type' => $data['type'],
+                'parent_phone' => $data['parent_phone'],
+                ]);
+
+
+
 
             $user->attachRole('user');
-            return $user;
 
             Cart::create([
                 'user_id' => $user->id,
             ]);
 
+            if($user->type == 'teacher'){
+                Teacher::create([
+                    'user_id' => $user->id,
+                ]);
 
+                BankInformation::create([
+                    'user_id' => $user->id,
+                ]);
+            }
+
+
+
+            return $user;
 
 
 
     }
 
-    public function redirectTo(){
-         return route('nexmo' , ['lang'=> app()->getLocale() , 'country'=> '1']);
+    // public function redirectTo(){
+    //      return route('nexmo' , ['lang'=> app()->getLocale() , 'country'=> '1']);
+    // }
+
+    protected function registered(Request $request, User $user)
+    {
+        $user->callToVerify();
+        return redirect($this->redirectPath($request , $user));
     }
+
 }

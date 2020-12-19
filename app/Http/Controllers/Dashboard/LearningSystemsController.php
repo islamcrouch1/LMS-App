@@ -28,12 +28,23 @@ class LearningSystemsController extends Controller
     }
 
 
-    public function index()
+    public function index($lang ,Request $request)
     {
-        $learning_systems = LearningSystem::whenSearch(request()->search)
+
+        $country = Country::findOrFail($request->country);
+
+        $learning_systems = LearningSystem::where('country_id' , $request->country)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems);
+        return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('country' , $country);
+    }
+
+
+    public function countries()
+    {
+        $countries = Country::all();
+
+        return view('dashboard.learning_systems.show_all')->with('countries' , $countries);
     }
 
     /**
@@ -41,10 +52,10 @@ class LearningSystemsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($lang ,Request $request)
     {
-        $countries = Country::all();
-        return view('dashboard.learning_systems.create')->with('countries' , $countries);
+        $country = Country::findOrFail($request->country);
+        return view('dashboard.learning_systems.create')->with('country' , $country);
     }
 
     /**
@@ -57,15 +68,15 @@ class LearningSystemsController extends Controller
     {
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:learning_systems",
-            'name_en' => "required|string|max:255|unique:learning_systems",
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
             'description_ar' => "string",
             'description_en' => "string",
-            'country' => "required|array|min:1",
             'image' => "required|image",
-
+            'country' => "string",
 
             ]);
+
 
 
             $learning_system = LearningSystem::create([
@@ -73,21 +84,23 @@ class LearningSystemsController extends Controller
                 'name_en' => $request['name_en'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_en'],
+                'country_id' => $request['country'],
                 'image' => $request['image']->store('images/learningSystems', 'public')
             ]);
 
 
-            $learning_system->countries()->attach($request['country']);
-       
-            
+
+
             session()->flash('success' , 'Learning System created successfully');
 
-            
-            $countries = Country::all();
-            $learning_systems = LearningSystem::whenSearch(request()->search)
+
+            $learning_systems = LearningSystem::where('country_id' , $request->country)->whenSearch(request()->search)
             ->paginate(5);
-    
-            return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('countries' , $countries);
+
+            $country = Country::findOrFail($request->country);
+
+
+            return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('country' , $country);
     }
 
     /**
@@ -107,11 +120,12 @@ class LearningSystemsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($lang , $learning_system)
+    public function edit($lang , $learning_system ,Request $request)
     {
-        $countries = Country::all();
         $learning_system = LearningSystem::find($learning_system);
-        return view('dashboard.learning_systems.edit ')->with('learning_system', $learning_system)->with('countries' , $countries);
+        $country = Country::findOrFail($request->country);
+
+        return view('dashboard.learning_systems.edit ')->with('learning_system', $learning_system)->with('country' , $country);
     }
 
     /**
@@ -126,18 +140,17 @@ class LearningSystemsController extends Controller
 
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:learning_systems,name_ar," .$learning_system->id,
-            'name_en' => "required|string|max:255|unique:learning_systems,name_en," .$learning_system->id,
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
             'description_ar' => "string",
             'description_en' => "string",
-            'country' => "required|array|min:1",
             'image' => "image",
 
 
             ]);
 
             if($request->hasFile('image')){
-                
+
                 \Storage::disk('public')->delete($learning_system->image);
                 $learning_system->update([
                     'image' => $request['image']->store('images/learningSystems', 'public'),
@@ -153,17 +166,17 @@ class LearningSystemsController extends Controller
             ]);
 
 
-            $learning_system->countries()->sync($request['country']);
 
 
-
-            
             session()->flash('success' , 'Learning System updated successfully');
 
-            $learning_systems = LearningSystem::whenSearch(request()->search)
+            $learning_systems = LearningSystem::where('country_id' , $request->country)->whenSearch(request()->search)
             ->paginate(5);
-    
-            return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems);
+
+            $country = Country::findOrFail($request->country);
+
+
+            return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('country' , $country);
 
 
     }
@@ -174,9 +187,9 @@ class LearningSystemsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($lang , $learning_system)
+    public function destroy($lang , $learning_system ,Request $request)
     {
-        
+
         $learning_system = LearningSystem::withTrashed()->where('id' , $learning_system)->first();
 
         if($learning_system->trashed()){
@@ -185,14 +198,20 @@ class LearningSystemsController extends Controller
                 $learning_system->forceDelete();
 
                 session()->flash('success' , 'Learning System Deleted successfully');
-    
-                $learning_systems = LearningSystem::onlyTrashed()->paginate(5);
-                return view('dashboard.learning_systems.index' , ['learning_systems' => $learning_systems]);
+
+                $country = Country::findOrFail($request->country);
+
+
+                $learning_systems = LearningSystem::where('country_id' , $request->country)->onlyTrashed()->paginate(5);
+                return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('country' , $country);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-    
-                $learning_systems = LearningSystem::onlyTrashed()->paginate(5);
-                return view('dashboard.learning_systems.index' , ['learning_systems' => $learning_systems]);
+
+                $country = Country::findOrFail($request->country);
+
+
+                $learning_systems = LearningSystem::where('country_id' , $request->country)->onlyTrashed()->paginate(5);
+                return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('country' , $country);
             }
 
 
@@ -203,44 +222,55 @@ class LearningSystemsController extends Controller
                 $learning_system->delete();
 
                 session()->flash('success' , 'Learning System trashed successfully');
-        
-                $learning_systems = LearningSystem::whenSearch(request()->search)
+
+                $country = Country::findOrFail($request->country);
+
+
+                $learning_systems = LearningSystem::where('country_id' , $request->country)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems);
+
+                return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('country' , $country);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-        
-                $learning_systems = LearningSystem::whenSearch(request()->search)
+
+                $country = Country::findOrFail($request->country);
+
+
+                $learning_systems = LearningSystem::where('country_id' , $request->country)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems);
+
+                return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('country' , $country);
             }
- 
+
         }
 
 
     }
 
 
-    public function trashed()
+    public function trashed(Request $request)
     {
-       
-        $learning_systems = LearningSystem::onlyTrashed()->paginate(5);
-        return view('dashboard.learning_systems.index' , ['learning_systems' => $learning_systems]);
-        
+        $country = Country::findOrFail($request->country);
+
+
+        $learning_systems = LearningSystem::where('country_id' ,$request->country )->onlyTrashed()->paginate(5);
+        return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('country' , $country);
+
     }
 
-    public function restore( $lang , $learning_system)
+    public function restore( $lang , $learning_system , Request $request)
     {
 
         $learning_system = LearningSystem::withTrashed()->where('id' , $learning_system)->first()->restore();
 
         session()->flash('success' , 'Learning System restored successfully');
-    
-        $learning_systems = LearningSystem::whenSearch(request()->search)
+
+        $country = Country::findOrFail($request->country);
+
+
+        $learning_systems = LearningSystem::where('country_id' , $request->country)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems);
+        return view('dashboard.learning_systems.index')->with('learning_systems' , $learning_systems)->with('country' , $country);
     }
 }

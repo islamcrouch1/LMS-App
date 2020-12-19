@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\EdClass;
 use App\Stage;
 
+use App\Country;
+
+
 class EdClassesController extends Controller
 {
     public function __construct()
@@ -23,12 +26,18 @@ class EdClassesController extends Controller
     }
 
 
-    public function index()
+    public function index($lang ,Request $request)
     {
-        $ed_classes = EdClass::whenSearch(request()->search)
+        $ed_classes = EdClass::where('stage_id' , $request->stage)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes);
+        $country = Country::findOrFail($request->country);
+
+        $stage = Stage::findOrFail($request->stage);
+
+
+
+        return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('country' , $country)->with('stage' , $stage);
     }
 
     /**
@@ -36,10 +45,15 @@ class EdClassesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($lang ,Request $request)
     {
-        $stages = Stage::all();
-        return view('dashboard.ed_classes.create')->with('stages' , $stages);
+
+
+        $country = Country::findOrFail($request->country);
+
+        $stage = Stage::findOrFail($request->stage);
+
+        return view('dashboard.ed_classes.create')->with('stage' , $stage)->with('country' , $country);
     }
 
     /**
@@ -52,9 +66,8 @@ class EdClassesController extends Controller
     {
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:ed_classes",
-            'name_en' => "required|string|max:255|unique:ed_classes",
-            'stage_id' => "required",
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
 
 
             ]);
@@ -63,18 +76,25 @@ class EdClassesController extends Controller
             $ed_class = EdClass::create([
                 'name_ar' => $request['name_ar'],
                 'name_en' => $request['name_en'],
-                'stage_id' => $request['stage_id'],
+                'stage_id' => $request['stage'],
+                'country_id' => $request['country'],
+
             ]);
-       
-            
+
+
             session()->flash('success' , 'Ed_class created successfully');
 
-            
-            $stages = Stage::all();
-            $ed_classes = EdClass::whenSearch(request()->search)
+
+            $ed_classes = EdClass::where('stage_id' , $request->stage)->whenSearch(request()->search)
             ->paginate(5);
-    
-            return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('stages' , $stages);
+
+            $country = Country::findOrFail($request->country);
+
+            $stage = Stage::findOrFail($request->stage);
+
+
+
+            return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('country' , $country)->with('stage' , $stage);
     }
 
     /**
@@ -94,11 +114,13 @@ class EdClassesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($lang , $ed_class)
+    public function edit($lang , $ed_class ,Request $request)
     {
-        $stages = Stage::all();
         $ed_class = EdClass::find($ed_class);
-        return view('dashboard.ed_classes.edit ')->with('ed_class', $ed_class)->with('stages' , $stages);
+        $country = Country::findOrFail($request->country);
+
+        $stage = Stage::findOrFail($request->stage);
+        return view('dashboard.ed_classes.edit ')->with('ed_class', $ed_class)->with('stage' , $stage)->with('country' , $country);
     }
 
     /**
@@ -108,14 +130,13 @@ class EdClassesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($lang ,Request $request, Ed_class $ed_class)
+    public function update($lang ,Request $request, EdClass $ed_class)
     {
 
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:ed_classes,name_ar," .$ed_class->id,
-            'name_en' => "required|string|max:255|unique:ed_classes,name_en," .$ed_class->id,
-            'stage_id' => "required",
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
 
 
 
@@ -126,7 +147,6 @@ class EdClassesController extends Controller
             $ed_class->update([
                 'name_ar' => $request['name_ar'],
                 'name_en' => $request['name_en'],
-                'stage_id' => $request['stage_id'],
 
             ]);
 
@@ -135,13 +155,19 @@ class EdClassesController extends Controller
 
 
 
-            
+
             session()->flash('success' , 'Ed_class updated successfully');
 
-            $ed_classes = EdClass::whenSearch(request()->search)
+            $ed_classes = EdClass::where('stage_id' , $request->stage)->whenSearch(request()->search)
             ->paginate(5);
-    
-            return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes);
+
+            $country = Country::findOrFail($request->country);
+
+            $stage = Stage::findOrFail($request->stage);
+
+
+
+            return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('country' , $country)->with('stage' , $stage);
 
 
     }
@@ -152,9 +178,9 @@ class EdClassesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($lang , $ed_class)
+    public function destroy($lang , $ed_class , Request $request)
     {
-        
+
         $ed_class = EdClass::withTrashed()->where('id' , $ed_class)->first();
 
         if($ed_class->trashed()){
@@ -163,14 +189,24 @@ class EdClassesController extends Controller
                 $ed_class->forceDelete();
 
                 session()->flash('success' , 'Ed_class Deleted successfully');
-    
-                $ed_classes = EdClass::onlyTrashed()->paginate(5);
-                return view('dashboard.ed_classes.index' , ['ed_classes' => $ed_classes]);
+
+                $ed_classes = EdClass::where('stage_id' , $request->stage)->onlyTrashed()->paginate(5);
+
+                $country = Country::findOrFail($request->country);
+
+                $stage = Stage::findOrFail($request->stage);
+
+                return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('country' , $country)->with('stage' , $stage);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-    
-                $ed_classes = EdClass::onlyTrashed()->paginate(5);
-                return view('dashboard.ed_classes.index' , ['ed_classes' => $ed_classes]);
+
+                $ed_classes = EdClass::where('stage_id' , $request->stage)->onlyTrashed()->paginate(5);
+
+                $country = Country::findOrFail($request->country);
+
+                $stage = Stage::findOrFail($request->stage);
+
+                return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('country' , $country)->with('stage' , $stage);
             }
 
 
@@ -181,44 +217,67 @@ class EdClassesController extends Controller
                 $ed_class->delete();
 
                 session()->flash('success' , 'Ed_class trashed successfully');
-        
-                $ed_classes = EdClass::whenSearch(request()->search)
+
+                $ed_classes = EdClass::where('stage_id' , $request->stage)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes);
+
+                $country = Country::findOrFail($request->country);
+
+                $stage = Stage::findOrFail($request->stage);
+
+
+
+                return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('country' , $country)->with('stage' , $stage);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-        
-                $ed_classes = EdClass::whenSearch(request()->search)
+
+                $ed_classes = EdClass::where('stage_id' , $request->stage)->whenSearch(request()->search)
                 ->paginate(5);
-        
-                return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes);
+
+                $country = Country::findOrFail($request->country);
+
+                $stage = Stage::findOrFail($request->stage);
+
+
+
+                return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('country' , $country)->with('stage' , $stage);
             }
- 
+
         }
 
 
     }
 
 
-    public function trashed()
+    public function trashed( Request $request)
     {
-       
-        $ed_classes = EdClass::onlyTrashed()->paginate(5);
-        return view('dashboard.ed_classes.index' , ['ed_classes' => $ed_classes]);
-        
+
+            $ed_classes = EdClass::where('stage_id' , $request->stage)->onlyTrashed()->paginate(5);
+
+            $country = Country::findOrFail($request->country);
+
+            $stage = Stage::findOrFail($request->stage);
+
+            return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('country' , $country)->with('stage' , $stage);
+
     }
 
-    public function restore( $lang , $ed_class)
+    public function restore( $lang , $ed_class , Request $request)
     {
 
         $ed_class = EdClass::withTrashed()->where('id' , $ed_class)->first()->restore();
 
         session()->flash('success' , 'Ed_class restored successfully');
-    
-        $ed_classes = EdClass::whenSearch(request()->search)
+
+        $ed_classes = EdClass::where('stage_id' , $request->stage)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes);
+        $country = Country::findOrFail($request->country);
+
+        $stage = Stage::findOrFail($request->stage);
+
+
+
+        return view('dashboard.ed_classes.index')->with('ed_classes' , $ed_classes)->with('country' , $country)->with('stage' , $stage);
     }
 }

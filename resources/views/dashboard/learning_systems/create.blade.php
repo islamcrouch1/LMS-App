@@ -7,7 +7,7 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1>Learning Systems</h1>
+              <h1>Learning Systems {{ app()->getLocale() == 'ar' ? $country->name_ar : $country->name_en}}</h1>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
@@ -28,7 +28,7 @@
                 <div class="card-header">{{ __('Add Learning Systems') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{url(app()->getLocale() . '/dashboard/learning_systems' )}}" enctype="multipart/form-data">
+                    <form method="POST" action="{{route('learning_systems.store', ['lang'=> app()->getLocale() , 'country'=>$country->id]  )}}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="form-group row">
@@ -85,25 +85,6 @@
                             </div>
                         </div>
 
-
-
-                        <div class="form-group row">
-                            <label for="country" class="col-md-2 col-form-label">{{ __('Country select') }}</label>
-                            <div class="col-md-10">
-                                <select class="select4 form-control @error('country') is-invalid @enderror" id="country" name="country[]" value="{{ old('country') }}" required multiple autocomplete="country">
-                                @foreach ($countries as $country)
-                                <option value="{{ $country->id }}" >{{ $country->name_en }}</option>
-                                @endforeach
-                                </select>
-                                @error('country')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                            </div>
-                        </div>
-
-
                         <div class="form-group row">
                             <label for="image" class="col-md-2 col-form-label">{{ __('image') }}</label>
 
@@ -118,7 +99,7 @@
                             </div>
                         </div>
 
-                        
+
 
 
                         <div class="form-group row mb-0">

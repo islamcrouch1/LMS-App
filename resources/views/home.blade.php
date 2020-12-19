@@ -28,15 +28,24 @@
                         <div class="posts-card-popular__content" style="z-index: 1000000001 !important">
                             <div class="posts-card-popular__title card-body">
                                 <a class="card-title post-products"
-                                href=""
+                                href="{{route('news.show' , ['lang' => app()->getLocale() , 'country' => $scountry->id , 'post'=>$post->id])}}"
                                 >{{ app()->getLocale() == 'ar' ? $post->name_ar : $post->name_en}}</a>
                             </div>
                         </div>
                     </div>
 
 
+
+
                 </div>
             @endforeach
+
+
+            @if (App\Post::all()->count() > 3)
+            <div class="col-md-6 col-lg-4 card-group-row__col">
+                <a class="btn btn-primary" href="{{route('news' , ['lang' => app()->getLocale() , 'country' => $scountry->id])}}">{{__('See All News')}}</a>
+            </div>
+            @endif
 
         </div>
 
@@ -170,9 +179,11 @@
         @foreach ($scountry->learning_systems as $learning_system)
         <a href="{{route('learning_systems' , ['lang'=>app()->getLocale() , 'learning_system'=>$learning_system->id , 'country'=>$scountry->id])}}" class="btn btn-lg btn-white btn--raised mb-16pt">{{ app()->getLocale() == 'ar' ? $learning_system->name_ar : $learning_system->name_en}}</a>
         @endforeach
-    <a href="{{route('library' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}" class="btn btn-lg btn-white btn--raised mb-16pt">{{ __('Library') }}</a>
+        <a href="{{route('teachers' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}" class="btn btn-lg btn-white btn--raised mb-16pt">{{ __('Teachers') }}</a>
 
-        <p class="mb-0"><a href="" class="text-white text-shadow"><strong>{{__('Are you a teacher?')}}</strong></a></p>
+        <a href="{{route('library' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}" class="btn btn-lg btn-white btn--raised mb-16pt">{{ __('Library') }}</a>
+
+        <p class="mb-0"><a href="{{ route('register' , ['lang'=>app()->getLocale() , 'country'=>$scountry->id ]) }}" class="text-white text-shadow"><strong>{{__('Are you a teacher?')}}</strong></a></p>
 
     </div>
 

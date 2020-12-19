@@ -7,6 +7,7 @@ $(document).ready(function () {
         var name = $(this).data('name');
         var id = $(this).data('id');
         var price = $(this).data('price').toFixed(2);
+        var currency = $(this).data('currency');
 
         $(this).removeClass('btn-success').addClass('btn-default disabled');
 
@@ -14,7 +15,7 @@ $(document).ready(function () {
             `<tr>
                 <td>${name}</td>
                 <td><input type="number" name="products[${id}][quantity]" data-price="${price}" class="form-control input-sm product-quantity" min="1" value="1"></td>
-                <td class="product-price">${price}</td>
+                <td class="product-price">${price + ' ' + currency}</td>
                 <td><button class="btn btn-danger btn-sm remove-product-btn" data-id="${id}"><span class="fa fa-trash"></span></button></td>
             </tr>`;
 

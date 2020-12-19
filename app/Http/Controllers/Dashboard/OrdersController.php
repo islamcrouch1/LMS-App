@@ -8,9 +8,12 @@ use App\User;
 use App\Category;
 use App\Product;
 
+use App\Notification;
+
+use App\Events\NewNotification;
+
 use Illuminate\Http\Request;
-
-
+use Illuminate\Support\Facades\Auth;
 
 class OrdersController extends Controller
 {
@@ -30,7 +33,9 @@ class OrdersController extends Controller
     public function index()
     {
         $orders = Order::whenSearch(request()->search)
-        ->latest()
+        ->whenCountry(request()->country_id)
+        ->whenStatus(request()->status)
+        ->whenPaymentStatus(request()->payment_status)
         ->paginate(5);
 
         return view('dashboard.orders.index')->with('orders' , $orders);
@@ -47,7 +52,7 @@ class OrdersController extends Controller
         $user = User::find($request->user);
 
 
-        $categories = Category::with('products')->get();
+        $categories = Category::where('country_id' , $user->country->id)->with('products')->get();
 
         $orders = $user->orders()->with('products')->paginate(5);
 
@@ -77,23 +82,10 @@ class OrdersController extends Controller
 
         $this->attach_order($request, $user);
 
-
-
-
             session()->flash('success' , 'order created successfully');
 
+            return redirect()->route('all_orders.index' , app()->getLocale());
 
-
-            $orders = Order::whenSearch(request()->search)
-            ->whereHas('user', function ($q) use ($request) {
-
-                return $q->where('name', 'like', '%' . $request->search . '%');
-
-            })
-            ->latest()
-            ->paginate(5);
-
-            return view('dashboard.all_orders.index')->with('orders' , $orders);
     }
 
     /**
@@ -157,16 +149,8 @@ class OrdersController extends Controller
 
 
 
-            $orders = Order::whenSearch(request()->search)
-            ->whereHas('user', function ($q) use ($request) {
+            return redirect()->route('all_orders.index' , app()->getLocale());
 
-                return $q->where('name', 'like', '%' . $request->search . '%');
-
-            })
-            ->latest()
-            ->paginate(5);
-
-            return view('dashboard.all_orders.index')->with('orders' , $orders);
 
 
     }
@@ -177,10 +161,17 @@ class OrdersController extends Controller
 
     private function attach_order($request, $user)
     {
+
+        $orderid = time().rand(999,9999) ;
+
         $order = $user->orders()->create([
             'total_price' => 0 ,
             'address_id' => $request->address_id ,
             'status' => $request->status,
+            'orderid' => $orderid ,
+            'payment_status' => 'done',
+            'country_id'=>$user->country->id,
+            'user_name'=>$user->name,
         ]);
 
         $order->products()->attach($request->products);
@@ -217,4 +208,107 @@ class OrdersController extends Controller
         $order->forceDelete();
 
     }//end of detach order
+
+
+    public function updateStatus($lang ,Request $request, Order $order)
+    {
+
+
+
+        $request->validate([
+
+            'status' => "required|string|max:255",
+
+            ]);
+
+
+
+
+            $order->update([
+                'status' => $request->status,
+            ]);
+
+
+            switch($order->status){
+                case('recieved'):
+
+                        $status_ar = 'في انتظار المراجعة من الإدارة';
+                        $status_en = 'Awaiting review from management';
+
+                break;
+                case('processing'):
+                        $status_ar = 'طلبك قيد المراجعة';
+                        $status_en = 'Your order is under review';
+
+                break;
+                case('shipped'):
+                        $status_ar = 'تم شحن طلبك بنجاح';
+                        $status_en = 'Your order has been shipped';
+
+                break;
+                case('completed'):
+                    $status_ar = 'لقد قمت باستلام طلبك بنجاح';
+                    $status_en = 'You have successfully received your request';
+
+                break;
+
+            }
+
+
+
+
+
+            $title_ar = 'اشعار من الإدارة';
+            $body_ar = 'لقد تم تغيير حالة طلبك من المكتبة الى ' . $status_ar ;
+            $title_en = 'Notification From Admin';
+            $body_en  = 'The status of your library order has changed to ' . $status_en;
+
+
+        $notification = Notification::create([
+            'user_id' => $order->user->id,
+            'user_name'  => Auth::user()->name,
+            'user_image' => asset('storage/images/users/' . Auth::user()->profile),
+            'title_ar' => $title_ar,
+            'body_ar' => $body_ar ,
+            'title_en' => $title_en,
+            'body_en' => $body_en ,
+            'date' => $order->updated_at,
+            'url' =>  route('my-orders' , ['lang'=>app()->getLocale() , 'user'=>$order->user->id ,  'country'=>$order->user->country->id]),
+        ]);
+
+
+
+        $data =[
+            'notification_id' => $notification->id,
+            'user_id' => $order->user->id,
+            'user_name'  => Auth::user()->name,
+            'user_image' => asset('storage/images/users/' . Auth::user()->profile),
+            'title_ar' => $title_ar,
+            'body_ar' => $body_ar ,
+            'title_en' => $title_en,
+            'body_en' => $body_en ,
+            'date' => $order->updated_at->format('Y-m-d H:i:s'),
+            'status'=> $notification->status,
+            'url' =>  route('my-orders' , ['lang'=>app()->getLocale() , 'user'=>$order->user->id ,  'country'=>$order->user->country->id]),
+            'change_status' => route('notification-change', ['lang'=>app()->getLocale() , 'user'=>$order->user->id  , 'country'=>$order->user->country->id , 'notification'=>$notification->id]),
+
+       ];
+
+
+       event(new NewNotification($data));
+
+            if(app()->getLocale() == 'ar'){
+                session()->flash('success' , 'تم تحديث حالة الطلب بنجاح');
+
+            }else{
+                session()->flash('success' , 'request updated successfully');
+
+            }
+
+
+            return redirect()->route('all_orders.index' , app()->getLocale());
+
+    }
+
+
 }

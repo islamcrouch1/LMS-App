@@ -7,6 +7,9 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
+use App\Country;
+
+
 class LoginController extends Controller
 {
     /*
@@ -32,13 +35,20 @@ class LoginController extends Controller
     // protected $redirectTo = RouteServiceProvider::HOME;
 
     protected function authenticated(Request $request, $user){
+
+
+        $scountry = Country::findOrFail($request->country);
+
         if($user->HasRole('user')){
-            return redirect(route('home' , ['lang'=> app()->getLocale() , 'country'=> '1']));
+            return redirect(route('profile' , ['lang'=> app()->getLocale(), 'user'=>$user->id , 'country'=> $scountry]));
         }
         if($user->HasRole(['superadministrator' , 'administrator'])){
             return redirect(route('dashboard', app()->getLocale()));
         }
     }
+
+
+
     /**
      * Create a new controller instance.
      *
@@ -54,8 +64,13 @@ class LoginController extends Controller
     // }
 
     public function logout(Request $request)
-{
-    $this->performLogout($request);
-    return redirect(route('home' , ['lang'=> app()->getLocale() , 'country'=> '1']));
-}
+    {
+        $this->performLogout($request);
+        return redirect(route('home' , ['lang'=> app()->getLocale() , 'country'=> '1']));
+    }
+
+    public function username()
+    {
+        return 'phone';
+    }
 }

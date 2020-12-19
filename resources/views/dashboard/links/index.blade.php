@@ -104,7 +104,7 @@
               <tbody>
                   <tr>
 
-                      @foreach ($links as $link)
+                      @foreach ($links->reverse() as $link)
                     <td>
                         {{ $link->id }}
                     </td>

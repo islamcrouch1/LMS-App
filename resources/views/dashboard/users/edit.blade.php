@@ -51,7 +51,7 @@
 
                                 <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref"  type="type" class="form-control @error('type') is-invalid @enderror" name="type"  required>
                                     @php
-                                        $types = ['student','teatcher','employee']
+                                        $types = ['student','teacher','employee']
                                     @endphp
                                     @foreach ($types as $type)
                                     <option value="{{ $type }}"  {{ ($user->type == $type) ? 'selected' : ''}}>{{ $type }}</option>
@@ -106,6 +106,20 @@
                                 <input id="phone" type="txt" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ $user->phone }}" required autocomplete="email">
 
                                 @error('phone')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row parent-phone-div">
+                            <label for="parent_phone" class="col-md-2 col-form-label text-md-right">{{ __('Parent Phone') }}</label>
+
+                            <div class="col-md-10">
+                                <input id="parent_phone" type="tel" class="form-control @error('parent_phone') is-invalid @enderror" name="parent_phone" value="{{ $user->parent_phone }}" autocomplete="parent_phone">
+
+                                @error('parent_phone')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

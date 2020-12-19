@@ -37,6 +37,9 @@
                     <b>Gender</b> <a class="float-right">{{$user->gender}}</a>
                 </li>
                 <li class="list-group-item">
+                    <b>Verification Code</b> <a class="float-right">{{$user->verification_code}}</a>
+                </li>
+                <li class="list-group-item">
                     <b>Created At</b> <a class="float-right">{{$user->created_at}}</a>
                   </li>
               </ul>

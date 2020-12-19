@@ -11,9 +11,36 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 use App\Country;
 use App\Order;
-use App\post;
+use App\Exam;
+
+use App\Question;
 
 use App\Address;
+
+use App\Teacher;
+
+use Twilio\Rest\Client;
+
+use App\HomeWorkOrder;
+
+use App\HomeWork;
+
+use App\BankInformation;
+
+use App\Withdraw;
+
+use App\HomeWorkComment;
+use App\Report;
+use App\Notification;
+
+use App\CourseOrder;
+
+use App\UserLesson;
+
+use App\ExamUser;
+use App\Monitor;
+
+
 
 
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
@@ -22,14 +49,21 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     use Notifiable;
     use SoftDeletes;
 
+
+
+
+
+
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','country_id','phone','gender','profile','type','role',
+        'name', 'email', 'password','country_id','phone','gender','profile','type','role', 'parent_phone',
     ];
+
 
     /**
      * The attributes that should be hidden for arrays.
@@ -50,9 +84,48 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'phone_verified_at' => 'datetime',
     ];
 
+    protected $withCount = ['teachers'] ;
+
+
+
 
     public function getNameAttribute($value){
         return ucfirst($value);
+    }
+
+    public function course_orders()
+    {
+        return $this->hasMany(CourseOrder::class);
+    }
+    public function user_lessons()
+    {
+        return $this->hasMany(UserLesson::class);
+    }
+
+        public function home_work_orders()
+    {
+        return $this->hasMany(HomeWorkOrder::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function home_works()
+    {
+        return $this->hasMany(HomeWork::class);
+    }
+
+    public function home_work_comments()
+    {
+        return $this->hasMany(HomeWorkComment::class);
+    }
+
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
     }
 
 
@@ -66,6 +139,15 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         });
     }
 
+
+    public function scopeWhenCountry($query , $country_id)
+    {
+        return $query->when($country_id , function($q) use($country_id) {
+            return $q->where('country_id' , 'like' , "%$country_id%");
+        });
+    }
+
+
     public function scopeWhenRole($query , $role_id)
     {
         return $query->when($role_id , function($q) use($role_id) {
@@ -73,10 +155,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         });
     }
 
-    public function scopeWhenCountry($query , $country_id)
+
+    public function scopeWhenType($query , $type)
     {
-        return $query->when($country_id , function($q) use($country_id) {
-            return $q->where('country_id' , 'like' , "%$country_id%");
+        return $query->when($type , function($q) use($type) {
+            return $q->where('type' , 'like' , "%$type%");
         });
     }
 
@@ -96,6 +179,35 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         });
     }
 
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class);
+    }
+
+    public function monitors()
+    {
+        return $this->belongsToMany(Monitor::class);
+    }
+
+    public function monitor()
+    {
+        return $this->hasOne(Monitor::class);
+    }
+
+    public function bank_information()
+    {
+        return $this->hasOne(BankInformation::class);
+    }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class);
+    }
+
+    public function exam_user()
+    {
+        return $this->belongsTo(ExamUser::class);
+    }
 
     public function country()
     {
@@ -108,6 +220,27 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $this->hasMany(Order::class);
     }
 
+    public function teachers()
+    {
+        return $this->belongsToMany(Teacher::class);
+    }
+
+    public function questions()
+    {
+        return $this->belongsToMany(Question::class);
+    }
+
+    public function exams()
+    {
+        return $this->belongsToMany(Exam::class);
+    }
+
+
+    public function withdraws()
+    {
+        return $this->hasMany(Withdraw::class);
+    }
+
     public function addresses()
     {
         return $this->hasMany(Address::class);
@@ -118,12 +251,58 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $this->hasOne(Cart::class);
     }
 
+    public function hasVerifiedPhone()
+    {
+        return ! is_null($this->phone_verified_at);
+    }
+
+    public function markPhoneAsVerified()
+    {
+        return $this->forceFill([
+            'phone_verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
 
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
+
+
+
+            public function callToVerify()
+            {
+                $code = random_int(100000, 999999);
+
+                $this->forceFill([
+                    'verification_code' => $code
+                ])->save();
+
+                $client = new Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
+
+                $client->messages->create(
+                    $this->phone, // to
+                ["body" => "Your Verification Code Is : {$code}", "from" => "LMS"]
+                 );
+            }
+
+
+            public function callToVerifyAdmin()
+            {
+                $code = random_int(100000, 999999);
+
+                $this->forceFill([
+                    'verification_code' => $code
+                ])->save();
+
+            }
+
+            // create(
+            //     $this->phone,
+            //     "+15306658566", // REPLACE WITH YOUR TWILIO NUMBER
+            //     ["url" => "http://your-ngrok-url>/build-twiml/{$code}"]
+            // );
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *

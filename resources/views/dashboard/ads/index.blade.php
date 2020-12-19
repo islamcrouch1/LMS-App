@@ -104,7 +104,7 @@
               <tbody>
                   <tr>
 
-                      @foreach ($ads as $ad)
+                      @foreach ($ads->reverse() as $ad)
                     <td>
                         {{ $ad->id }}
                     </td>

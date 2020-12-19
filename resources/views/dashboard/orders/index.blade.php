@@ -107,7 +107,7 @@
               <tbody>
                   <tr>
 
-                      @foreach ($categories as $Category)
+                      @foreach ($categories->reverse() as $Category)
                     <td>
                         {{ $Category->id }}
                     </td>

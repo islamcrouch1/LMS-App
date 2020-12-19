@@ -26,30 +26,40 @@
       <!-- Default box -->
 
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
           <form action="">
             <div class="row">
-              <div class="col-md-8">
+              <div class="col-md-3">
                 <div class="form-group">
-                <input type="text" name="search" autofocus placeholder="Search by user.." class="form-control" value="{{request()->search}}">
+                <input type="text" name="search" autofocus placeholder="Search by Name .." class="form-control" value="{{request()->search}}">
                 </div>
               </div>
-              <div class="col-md-4">
-                <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>Search by user</button>
+              <div class="col-md-2">
+                <select class="form-control"  name="country_id" style="display:inline-block">
+                  <option value="" selected>{{__('All Countries')}}</option>
+                  @foreach ($countries as $country)
+                  <option value="{{$country->id}}" {{ request()->country_id == $country->id ? 'selected' : ''}}>{{app()->getLocale() == 'ar' ?  $country->name_ar : $country->name_en}}</option>
+                  @endforeach
+                </select>
               </div>
-            </div>
-          </form>
-        </div>
-        <div class="col-md-6">
-          <form action="">
-            <div class="row">
-              <div class="col-md-8">
-                <div class="form-group">
-                <input type="text" name="search_order" autofocus placeholder="Search by order.." class="form-control" value="{{request()->search_order}}">
-                </div>
+              <div class="col-md-2">
+                <select class="form-control"  name="status" style="display:inline-block">
+                  <option value="" selected>{{__('All Status')}}</option>
+                    <option value="recieved" {{request()->status == 'recieved' ? 'selected' : ''}}>{{__('Awaiting review from management')}}</option>
+                    <option value="processing" {{request()->status == 'processing' ? 'selected' : ''}}>{{__('Your order is under review')}}</option>
+                    <option value="shipped" {{request()->status == 'shipped' ? 'selected' : ''}}>{{__('Your order has been shipped')}}</option>
+                    <option value="completed" {{request()->status == 'completed' ? 'selected' : ''}}>{{__('You have successfully received your request')}}</option>
+                </select>
               </div>
-              <div class="col-md-4">
-              <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>Search by order</button>
+              <div class="col-md-2">
+                <select class="form-control"  name="payment_status" style="display:inline-block">
+                  <option value="" selected>{{__('Payment Status')}}</option>
+                    <option value="waiting" {{request()->payment_status == 'waiting' ? 'selected' : ''}}>{{__('Waiting for payment')}}</option>
+                    <option value="done" {{request()->payment_status == 'done' ? 'selected' : ''}}>{{__('Payment Done')}}</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>{{__('Search')}}</button>
               </div>
             </div>
           </form>
@@ -92,6 +102,10 @@
                             </th>
 
                             <th>
+                                Payment Status
+                                </th>
+
+                            <th>
                                 Created At
                             </th>
                             <th>
@@ -111,7 +125,7 @@
                       <tbody>
                           <tr>
 
-                              @foreach ($orders as $order)
+                              @foreach ($orders->reverse() as $order)
                             <td>
                                 {{ $order->id }}
                             </td>
@@ -123,8 +137,19 @@
                             </td>
                       <td>
                         <small>
-                            {{ $order->total_price }}
+                            {{ $order->total_price . ' ' . $order->user->country->currency }}
                         </small>
+                    </td>
+                    <td class="project-state">
+                        @switch($order->payment_status)
+                        @case('waiting')
+                        <span class="badge badge-danger badge-lg">{{__('Waiting for payment')}}</span>
+                            @break
+                        @case('done')
+                        <span class="badge badge-success badge-lg">{{__('Payment Done')}}</span>
+                            @break
+                        @default
+                        @endswitch
                     </td>
 
                         <td>
@@ -152,6 +177,10 @@
                                 >
                                     <i class="fa fa-list"></i>
                                     show products
+                                </button>
+
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-primary-{{$order->id}}">
+                                    {{__('Change Request Status')}}
                                 </button>
 
                                 @if (!$order->trashed())
@@ -284,6 +313,80 @@
 
     </section>
     <!-- /.content -->
+
+    @foreach ($orders->reverse() as $order)
+
+
+
+
+
+    <div class="modal fade" id="modal-primary-{{$order->id}}">
+        <div class="modal-dialog">
+          <div class="modal-content bg-primary">
+            <div class="modal-header">
+              <h4 style="direction: rtl;" class="modal-title">{{__('Change Request Status for - ') . $order->user->name}}</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+            </div>
+            <form method="POST" action="{{route('orders.update.order', ['lang'=> app()->getLocale() , 'order'=>$order->id ])}}" enctype="multipart/form-data">
+                @csrf
+
+                <div class="modal-body">
+
+                    <div class="form-group row">
+                        <label for="status" class="col-md-4 col-form-label">{{ __('Select Status') }}</label>
+                        <div class="col-md-8">
+
+                            @php
+                            $order_status = ['recieved' , 'processing' , 'shipped' , 'completed']
+                            @endphp
+
+                            <select style="height: 50px;" class=" form-control @error('status') is-invalid @enderror" name="status" value="{{ old('status') }}" required autocomplete="status">
+                                @foreach ($order_status as $order_status)
+
+                                @switch($order_status)
+                                    @case('recieved')
+                                    <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('Awaiting review from management')}}</option>
+                                        @break
+                                    @case("processing")
+                                    <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('Your order is under review')}}</option>
+                                    @break
+                                    @case("shipped")
+                                    <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('Your order has been shipped')}}</option>
+                                    @break
+                                    @case("completed")
+                                    <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('You have successfully received your request')}}</option>
+                                    @break
+                                    @default
+                                @endswitch
+
+                                @endforeach
+                            </select>
+                            @error('status')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{{__('Close')}}</button>
+                <button type="submit" class="btn btn-outline-light">{{__('Save changes')}}</button>
+                </div>
+
+            </form>
+
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+      @endforeach
+
 
 
   @endsection

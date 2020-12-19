@@ -20,7 +20,7 @@
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <ul class="nav nav-pills nav-sidebar flex-column pb-5" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item has-treeview menu-open">
@@ -62,8 +62,6 @@
           </li>
           @endif
 
-
-
           @if (auth()->user()->hasPermission('roles-read'))
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
@@ -90,11 +88,6 @@
           </li>
           @endif
 
-
-
-
-
-
           @if (auth()->user()->hasPermission('settings-read'))
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
@@ -107,15 +100,14 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{{route('settings.social_links' , app()->getLocale())}}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>{{__('Social Links')}}</p>
-                  </a>
-                </li>
+                    <a href="{{route('settings.social_links' , app()->getLocale())}}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>{{__('Social Links')}}</p>
+                    </a>
+              </li>
             </ul>
           </li>
           @endif
-
 
           @if (auth()->user()->hasPermission('countries-read'))
           <li class="nav-item has-treeview">
@@ -146,6 +138,31 @@
 
           @if (auth()->user()->hasPermission('learning_systems-read'))
           <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-graduation-cap"></i>
+              <p>
+                {{__('Learning Systems')}}
+                <i class="fas fa-angle-left right"></i>
+
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{route('learning-systems.countries' , app()->getLocale())}}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>{{__('Learning Systems')}}</p>
+                  </a>
+                </li>
+            </ul>
+          </li>
+          @endif
+
+
+
+
+
+        {{-- @if (auth()->user()->hasPermission('learning_systems-read'))
+        <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-graduation-cap"></i>
               <p>
@@ -239,7 +256,10 @@
                             </a>
                           </li>
                           @endif
-            </ul>
+                        </ul>
+        </li>
+        @endif --}}
+
 
 
 
@@ -328,7 +348,7 @@
 
 
 
-            @if (auth()->user()->hasPermission('categories-read'))
+            @if (auth()->user()->hasPermission('home_page-read'))
             <li class="nav-item has-treeview">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-graduation-cap"></i>
@@ -402,12 +422,172 @@
             @endif
 
 
-          </li>
-          @endif
 
 
-        </ul>
-      </nav>
+
+
+            @if (auth()->user()->hasPermission('withdrawals-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p>
+                  {{__('Withdrawals')}}
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{route('withdrawals.index' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>{{__('Withdrawals')}}</p>
+                    </a>
+                  </li>
+              </ul>
+            </li>
+            @endif
+
+
+
+
+
+            @if (auth()->user()->hasPermission('courses_orders-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p>
+                  {{__('Courses Orders')}}
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{route('courses_orders.index' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>{{__('Courses Orders')}}</p>
+                    </a>
+                  </li>
+              </ul>
+            </li>
+            @endif
+
+
+            @if (auth()->user()->hasPermission('homeworks_orders-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p style="font-size:13px">
+                  {{__('Homeworks Orders')}}
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{route('homeworks_orders.index' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p  style="font-size:13px">{{__('Homeworks Orders')}}</p>
+                    </a>
+                  </li>
+              </ul>
+            </li>
+            @endif
+
+
+            @if (auth()->user()->hasPermission('reports-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p>
+                  {{__('Reports')}}
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{route('reports.index' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>{{__('Reports')}}</p>
+                    </a>
+                  </li>
+              </ul>
+            </li>
+            @endif
+
+
+
+            @if (auth()->user()->hasPermission('homeworks_monitor-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p style="font-size:13px">
+                  {{__('Monitoring homework')}}
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{route('homeworks_monitor.index' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p style="font-size:13px">{{__('Monitoring homework')}}</p>
+                    </a>
+                  </li>
+              </ul>
+            </li>
+            @endif
+
+
+
+            @if (auth()->user()->hasPermission('finances-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p>
+                  {{__('Finances')}}
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{route('finances.index' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>{{__('Finances')}}</p>
+                    </a>
+                  </li>
+              </ul>
+            </li>
+            @endif
+
+
+            @if (auth()->user()->hasPermission('teachers-read'))
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+                <p>
+                  {{__('Teachers')}}
+                  <i class="fas fa-angle-left right"></i>
+
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{route('teachers.index' , app()->getLocale())}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>{{__('Teachers')}}</p>
+                    </a>
+                  </li>
+              </ul>
+            </li>
+            @endif
+
+
+
+     </ul>
+    </nav>
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->

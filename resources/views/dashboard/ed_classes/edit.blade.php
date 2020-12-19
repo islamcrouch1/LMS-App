@@ -28,7 +28,7 @@
                 <div class="card-header">{{ __('Add Classes') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{route('ed_classes.update' , ['lang'=>app()->getLocale() , 'stage'=>$stage->id])}}" enctype="multipart/form-data">
+                    <form method="POST" action="{{route('ed_classes.update' , ['lang'=> app()->getLocale() , 'country'=>$country->id , 'stage' => $stage->id , 'ed_class'=>$ed_class->id])}}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -59,28 +59,11 @@
                             </div>
                         </div>
 
-                        
-
-
-                        <div class="form-group row">
-                            <label for="stage" class="col-md-2 col-form-label">{{ __('Learning System select') }}</label>
-                            <div class="col-md-10">
-                                <select class="form-control @error('stage') is-invalid @enderror" id="stage" name="stage_id" value="{{ old('stage') }}" required autocomplete="stage">
-                                @foreach ($stages as $stage)
-                                <option value="{{ $stage->id }}" {{$stage->stage->id == $stage->id ? 'selected' : ''}}>{{ $stage->name_en }}</option>
-                                @endforeach
-                                </select>
-                                @error('stage')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                            </div>
-                        </div>
 
 
 
-                        
+
+
 
 
                         <div class="form-group row mb-0">

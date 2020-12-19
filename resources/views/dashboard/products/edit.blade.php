@@ -60,10 +60,10 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="description_ar" class="col-md-2 col-form-label">{{ __('Arabic Description') }}</label>
+                            <label for="description_ar" class="col-md-2 col-form-label">{{ __('An introductory profile in Arabic') }}</label>
 
                             <div class="col-md-10">
-                                <input id="description_ar" type="text" class="form-control @error('description_ar') is-invalid @enderror" name="description_ar" value="{{ $Product->description_ar }}"  autocomplete="description">
+                                <textarea id="description_ar" type="text" class="form-control ckeditor @error('description_ar') is-invalid @enderror" name="description_ar"  autocomplete="description">{{ $Product->description_ar }}</textarea>
 
                                 @error('description_ar')
                                     <span class="invalid-feedback" role="alert">
@@ -73,10 +73,10 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="description_en" class="col-md-2 col-form-label">{{ __('English Description') }}</label>
+                            <label for="description_en" class="col-md-2 col-form-label">{{ __('An introductory profile in English') }}</label>
 
                             <div class="col-md-10">
-                                <input id="description_en" type="text" class="form-control @error('description_en') is-invalid @enderror" name="description_en" value="{{ $Product->description_ar }}"  autocomplete="description">
+                                <textarea id="description_en" type="text" class="form-control ckeditor @error('description_en') is-invalid @enderror" name="description_en"  autocomplete="description">{{ $Product->description_en }}</textarea>
 
                                 @error('description_en')
                                     <span class="invalid-feedback" role="alert">
@@ -131,6 +131,23 @@
                         </div>
 
 
+                        <div class="form-group row">
+                            <label for="country" class="col-md-2 col-form-label">{{ __('Country select') }}</label>
+                            <div class="col-md-10">
+                                <select class=" form-control @error('country') is-invalid @enderror" id="country" name="country" value="{{ old('country') }}" required autocomplete="country">
+                                @foreach ($countries as $country)
+                                <option value="{{ $country->id }}" {{$Product->country->id == $country->id ? 'selected' : ''}} >{{ $country->name_en }}</option>
+                                @endforeach
+                                </select>
+                                @error('country')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                            </div>
+                        </div>
+
+
 
 
                         <div class="form-group row">
@@ -156,13 +173,13 @@
 
 
                         <div class="form-group row">
-                            <label for="ed_class" class="col-md-2 col-form-label">{{ __('Category select') }}</label>
+                            <label for="category_id" class="col-md-2 col-form-label">{{ __('Category select') }}</label>
                             <div class="col-md-10">
                                 <select class="form-control @error('category_id') is-invalid @enderror" id="category_id" name="category_id" value="{{ old('category_id') }}" required autocomplete="category_id">                                @foreach ($categories as $category)
-                                <option value="{{ $category->id }}" {{$Product->category->id == $category->id ? 'selected' : ''}}>{{ $category->name_en }}</option>
+                                <option value="{{ $category->id }}" {{$Product->category->id == $category->id ? 'selected' : ''}}>{{$category->name_en . ' - ' . $category->country->name_ar}}</option>
                                 @endforeach
                                 </select>
-                                @error('ed_class')
+                                @error('category_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

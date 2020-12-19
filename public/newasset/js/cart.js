@@ -12,12 +12,21 @@ $(document).ready(function(){
     });//end of disabled
 
 
+
     $('.add-cart').on('click' , function(e){
       e.preventDefault();
 
       var url = $(this).data('url');
 
       var check = $(this).data('check');
+
+      var product_country = $(this).data('product_country');
+      var user_country = $(this).data('user_country');
+
+
+      console.log(product_country);
+      console.log(user_country);
+
 
       var method = $(this).data('method');
 
@@ -42,20 +51,33 @@ $(document).ready(function(){
 
         }else{
 
-            $(loader).css('display', 'flex');
 
-            $.ajax({
-                url: url,
-                method: method,
-                success: function(data) {
+            if (product_country != user_country) {
 
-                    $(loader).css('display', 'none');
-                    $(productid).empty();
-                    $(productid).append(data);
-                    $("#lblCartCount").text(parseInt($("#lblCartCount").text()) + 1);
+                $('#exampleModalCenter1').modal({
+                    keyboard: false
+                  })
+
+                }else{
+
+
+                    $(loader).css('display', 'flex');
+
+                    $.ajax({
+                        url: url,
+                        method: method,
+                        success: function(data) {
+
+                            $(loader).css('display', 'none');
+                            $(productid).empty();
+                            $(productid).append(data);
+                            $("#lblCartCount").text(parseInt($("#lblCartCount").text()) + 1);
+
+                        }
+                    })
 
                 }
-            })
+
         }
 
 
@@ -135,6 +157,24 @@ $('.order-products').on('click', function(e) {
     })
 
 });//end of order products click
+
+
+$(".img").change(function() {
+
+    if (this.files && this.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+    $('.img-prev').attr('src', e.target.result);
+    }
+
+    reader.readAsDataURL(this.files[0]); // convert to base64 string
+    }
+
+    });
+
+
+
 
 });
 

@@ -61,7 +61,7 @@
                             <label for="description_ar" class="col-md-2 col-form-label">{{ __('Arabic Description') }}</label>
 
                             <div class="col-md-10">
-                                <input id="description_ar" type="text" class="form-control @error('description_ar') is-invalid @enderror" name="description_ar" value="{{ old('description_ar') }}"  autocomplete="description">
+                                <textarea id="description_ar" type="text" class="form-control ckeditor @error('description_ar') is-invalid @enderror" name="description_ar" value="{{ old('description_ar') }}"  autocomplete="description"></textarea>
 
                                 @error('description_ar')
                                     <span class="invalid-feedback" role="alert">
@@ -74,13 +74,30 @@
                             <label for="description_en" class="col-md-2 col-form-label">{{ __('English Description') }}</label>
 
                             <div class="col-md-10">
-                                <input id="description_en" type="text" class="form-control @error('description_en') is-invalid @enderror" name="description_en" value="{{ old('description_en') }}"  autocomplete="description">
+                                <textarea id="description_en" type="text" class="form-control ckeditor @error('description_en') is-invalid @enderror" name="description_en" value="{{ old('description_en') }}"  autocomplete="description"></textarea>
 
                                 @error('description_en')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label for="country" class="col-md-2 col-form-label">{{ __('Country select') }}</label>
+                            <div class="col-md-10">
+                                <select class=" form-control @error('country') is-invalid @enderror" id="country" name="country" value="{{ old('country') }}" required autocomplete="country">
+                                @foreach ($countries as $country)
+                                <option value="{{ $country->id }}" >{{ $country->name_en }}</option>
+                                @endforeach
+                                </select>
+                                @error('country')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                             </div>
                         </div>
 

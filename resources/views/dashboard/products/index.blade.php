@@ -36,10 +36,17 @@
               </div>
               <div class="col-md-2">
                 <select class="form-control"  name="category_id" style="display:inline-block">
-                  <option selected disabled>Filter By Category</option>
-                  <option></option>
+                  <option value="" selected>All Categories</option>
                   @foreach ($categories as $category)
-                  <option value="{{$category->id}}" {{ request()->category_id == $category->id ? 'selected' : ''}}>{{$category->name_en}}</option>
+                  <option value="{{$category->id}}" {{ request()->category_id == $category->id ? 'selected' : ''}}>{{$category->name_en . ' - ' . $category->country->name_ar}}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="col-md-2">
+                <select class="form-control"  name="country_id" style="display:inline-block">
+                  <option value="" selected>All Countries</option>
+                  @foreach ($countries as $country)
+                  <option value="{{$country->id}}" {{ request()->country_id == $country->id ? 'selected' : ''}}>{{$country->name_en}}</option>
                   @endforeach
                 </select>
               </div>
@@ -128,7 +135,7 @@
               <tbody>
                   <tr>
 
-                      @foreach ($products as $product)
+                      @foreach ($products->reverse() as $product)
                     <td>
                         {{ $product->id }}
                     </td>
@@ -149,12 +156,12 @@
                   </td>
               <td>
                 <small>
-                    {{ $product->purchase_price }}
+                    {{ $product->purchase_price . ' ' . $product->country->currency }}
                 </small>
             </td>
             <td>
               <small>
-                  {{ $product->sale_price }}
+                  {{ $product->sale_price . ' ' . $product->country->currency }}
               </small>
           </td>
           <td>

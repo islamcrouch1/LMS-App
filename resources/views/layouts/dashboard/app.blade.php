@@ -22,6 +22,9 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
 
+  <link type="text/css" href="{{ asset('newasset/css/intlTelInput.css') }}" rel="stylesheet">
+
+
 
 
 
@@ -37,6 +40,48 @@
 
   <link rel="stylesheet" href="{{ asset('newasset/noty/noty.css') }}">
   <script src="{{ asset('newasset/noty/noty.min.js') }}"></script>
+
+
+  <script>
+          $(document).ready(function(){
+
+
+                    $('.delete').on('click' , function(e){
+                            e.preventDefault();
+                            var that = $(this);
+                            var n = new Noty({
+                                type: 'alert alert-warning p-3',
+                                layout: 'topRight',
+                                theme: 'bootstrap-v4',
+                                text : "Confirm Deleting Record",
+                                killer : true,
+                                buttons : [Noty.button('yes' , 'btn btn-success mr-3' , function(){
+                                    that.closest('form').submit();
+                                }), Noty.button('No' , 'btn btn-danger' , function(){
+                                    n.close();
+                                })]
+                            });
+
+                            n.show();
+                        });
+
+                        $(".img").change(function() {
+
+                            if (this.files && this.files[0]) {
+                            var reader = new FileReader();
+
+                            reader.onload = function(e) {
+                            $('.img-prev').attr('src', e.target.result);
+                            }
+
+                            reader.readAsDataURL(this.files[0]); // convert to base64 string
+                            }
+
+                            });
+         });
+
+
+  </script>
 
   {{-- @if (app()->getLocale() == 'ar')
 
@@ -81,19 +126,45 @@
         }
     }
 
+
+    .iti__flag {background-image: url("/newasset/images/flags.png");}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .iti__flag {background-image: url("/newasset/images/flags@2x.png");}
+}
+
+.iti__selected-flag{
+    direction: ltr;
+}
+
+.iti__country {
+    padding: 5px 10px;
+    outline: none;
+    direction: ltr;
+}
+
+
+#phone{
+    direction: ltr !important;
+}
+
+#parent_phone{
+    direction: ltr !important;
+}
+
+.iti {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.btn{
+    margin:2px;
+}
+
 </style>
 
 
-
-  {{-- <?php $locale = App::getLocale(); ?>
-
-  <?php if (App::isLocale('en')) {  ?>
-      <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-  <?php  }else{ ?>
-      <link href="{{ asset('css/apprtl.css') }}" rel="stylesheet">
-  <?php  } ?>
-
-   --}}
 
    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 
@@ -182,6 +253,13 @@
 
 <script src="{{ asset('newasset/js/playerjs.js') }}"></script>
 
+<script src="{{ asset('newasset/js/intlTelInput.js') }}"></script>
+
+
+<script src="{{ asset('newasset/js/select2.js') }}"></script>
+
+
+
 
 
 
@@ -200,42 +278,39 @@
 
 <script>
 
-      $.ajaxSetup({
-        headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-      });
-
-      $(document).ready(function(){
+                $.ajaxSetup({
+                    headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
 
 
 
-        $('.delete').on('click' , function(e){
-          e.preventDefault();
-          var that = $(this);
-          var n = new Noty({
-              type: 'alert alert-warning p-3',
-              layout: 'topRight',
-              theme: 'bootstrap-v4',
-              text : "Confirm Deleting Record",
-              killer : true,
-              buttons : [Noty.button('yes' , 'btn btn-success mr-3' , function(){
-                  that.closest('form').submit();
-              }), Noty.button('No' , 'btn btn-danger' , function(){
-                  n.close();
-              })]
-          });
+            $('.select4').select2({
+                 width: '100%'
+             });
 
-          n.show();
-      });
+                var input = document.querySelector("#phone");
+                window.intlTelInput(input, {
+                    separateDialCode: true,
+                    preferredCountries:["kw"],
+                    utilsScript: "/newasset/js/utils.js?<%= time %>"
+                });
 
 
+                var input = document.querySelector("#parent_phone");
+                window.intlTelInput(input, {
+                    separateDialCode: true,
+                    preferredCountries:["kw"],
+                    utilsScript: "/newasset/js/utils.js?<%= time %>"
+
+                });
+
+
+    $(document).ready(function(){
 
 
 
-  $('.select4').select2({
-        width: '100%'
-      });
 
 
 
@@ -253,7 +328,7 @@
             reader.readAsDataURL(this.files[0]); // convert to base64 string
             }
 
-        });
+            });
 
 
 
@@ -268,6 +343,32 @@
                     $('.down_link').css('display' , 'none');
 
                     $('input[name=down_link]').val('#');
+
+                    });
+
+                    $('.type-select').on('change', function() {
+
+                    if(this.value == "teacher" || this.value == "employee"){
+                        $('.parent-phone-div').css('display', 'none');
+                        $('#parent_phone').val("#");
+
+                    }else{
+                        $('.parent-phone-div').css('display', 'flex');
+                        $('#parent_phone').val("");
+                    }
+
+                    });
+
+
+                    $('.btn').on('click' , function(){
+
+                    $("#phone").val($(".iti__selected-dial-code").html() + $("#phone").val());
+
+                    $("#parent_phone").val($(".iti__selected-dial-code").html() + $("#parent_phone").val());
+
+                    $(this).closest('form').submit();
+
+                    $(".btn").attr("disabled", true);
 
                     });
 

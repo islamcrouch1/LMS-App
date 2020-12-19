@@ -28,7 +28,7 @@
                 <div class="card-header">{{ __('Add Classes') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{url(app()->getLocale() . '/dashboard/ed_classes' )}}" enctype="multipart/form-data">
+                    <form method="POST" action="{{route('ed_classes.store', ['lang'=> app()->getLocale() , 'country'=>$country->id , 'stage'=>$stage->id]  )}}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="form-group row">
@@ -58,28 +58,11 @@
                             </div>
                         </div>
 
-                        
-
-
-                        <div class="form-group row">
-                            <label for="stage" class="col-md-2 col-form-label">{{ __('Stage select') }}</label>
-                            <div class="col-md-10">
-                                <select class="form-control @error('stage') is-invalid @enderror" id="stage" name="stage_id" value="{{ old('stage') }}" required autocomplete="stage">
-                                @foreach ($stages as $stage)
-                                <option value="{{ $stage->id }}" >{{ $stage->name_en }}</option>
-                                @endforeach
-                                </select>
-                                @error('stage')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                            </div>
-                        </div>
 
 
 
-                        
+
+
 
 
                         <div class="form-group row mb-0">

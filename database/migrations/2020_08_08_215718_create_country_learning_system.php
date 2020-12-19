@@ -13,12 +13,7 @@ class CreateCountryLearningSystem extends Migration
      */
     public function up()
     {
-        Schema::create('country_learning_system', function (Blueprint $table) {
-            $table->id();
-            $table->integer('country_id');
-            $table->integer('learning_system_id');
-            $table->timestamps();
-        });
+
     }
 
     /**

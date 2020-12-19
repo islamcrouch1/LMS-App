@@ -18,6 +18,20 @@ Route::group(['prefix'=> '{lang}' , 'middleware' => ['role:superadministrator|ad
     Route::resource('/dashboard/users' , 'AdminUsersController');
     Route::get('/trashed-users' , 'AdminUsersController@trashed' )->name('users.trashed');
     Route::get('/trashed-users/{user}' , 'AdminUsersController@restore' )->name('users.restore');
+    Route::get('/activate-users/{user}' , 'AdminUsersController@activate' )->name('users.activate');
+    Route::get('/deactivate-users/{user}' , 'AdminUsersController@deactivate' )->name('users.deactivate');
+    Route::post('/monitors-users/{user}' , 'AdminUsersController@monitor' )->name('users.monitor');
+
+
+    Route::resource('/dashboard/teachers' , 'TeachersController');
+    Route::get('/trashed-teachers' , 'TeachersController@trashed' )->name('teachers.trashed');
+    Route::get('/trashed-teachers/{user}' , 'TeachersController@restore' )->name('teachers.restore');
+    Route::get('/activate-teachers/{user}' , 'TeachersController@activate' )->name('teachers.activate');
+    Route::get('/deactivate-teachers/{user}' , 'TeachersController@deactivate' )->name('teachers.deactivate');
+
+
+    Route::get('/activate-courses/{course}' , 'CoursesController@activate' )->name('courses.activate');
+    Route::get('/deactivate-courses/{course}' , 'CoursesController@deactivate' )->name('courses.deactivate');
 
 
     Route::get('/trashed-roles' , 'RoleController@trashed' )->name('roles.trashed');
@@ -27,6 +41,7 @@ Route::group(['prefix'=> '{lang}' , 'middleware' => ['role:superadministrator|ad
     Route::resource('/dashboard/learning_systems' , 'LearningSystemsController');
     Route::get('/trashed-learning_systems' , 'LearningSystemsController@trashed' )->name('learning_systems.trashed');
     Route::get('/trashed-learning_systems/{learning_system}' , 'LearningSystemsController@restore' )->name('learning_systems.restore');
+    Route::get('/learning-systems/countries' , 'LearningSystemsController@countries' )->name('learning-systems.countries');
 
 
 
@@ -83,6 +98,8 @@ Route::group(['prefix'=> '{lang}' , 'middleware' => ['role:superadministrator|ad
     Route::resource('/dashboard/orders' , 'OrdersController');
     Route::get('/trashed-orders' , 'OrdersController@trashed' )->name('orders.trashed');
     Route::get('/trashed-orders/{order}' , 'OrdersController@restore' )->name('orders.restore');
+    Route::post('/orders-change-status/{order}' , 'OrdersController@updateStatus' )->name('orders.update.order');
+
 
     Route::resource('/dashboard/all_orders' , 'AllOrdersController');
     Route::get('/dashboard/all_orders/{order}/products' , 'AllOrdersController@products' )->name('all_orders.products');
@@ -113,6 +130,31 @@ Route::group(['prefix'=> '{lang}' , 'middleware' => ['role:superadministrator|ad
     Route::resource('/dashboard/links' , 'LinksController');
     Route::get('/trashed-links' , 'LinksController@trashed' )->name('links.trashed');
     Route::get('/trashed-links/{link}' , 'LinksController@restore' )->name('links.restore');
+
+    Route::resource('/dashboard/questions' , 'QuestionsController');
+    Route::get('/trashed-questions' , 'QuestionsController@trashed' )->name('questions.trashed');
+    Route::get('/trashed-questions/{question}' , 'QuestionsController@restore' )->name('questions.restore');
+
+
+    Route::resource('/dashboard/withdrawals' , 'WithdrawalsController');
+
+    Route::resource('/dashboard/Withdrawals_monitor' , 'WithdrawalsController');
+
+
+    Route::resource('/dashboard/courses_orders' , 'CoursesOrdersController');
+
+    Route::resource('/dashboard/homeworks_orders' , 'HomeworksOrdersController');
+
+    Route::resource('/dashboard/reports' , 'ReportsController');
+
+
+    Route::resource('/dashboard/homeworks_monitor' , 'HomeworksMonitorController');
+
+    Route::resource('/dashboard/finances' , 'FinancesController');
+
+
+
+
 });
 
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Order;
 use App\User;
+use App\Country;
 
 
 
@@ -29,16 +30,18 @@ class AllOrdersController extends Controller
         public function index(Request $request)
         {
 
+
+            $countries = Country::all();
+
             $orders = Order::whenSearch(request()->search_order)
-            ->whereHas('user', function ($q) use ($request) {
-
-                return $q->where('name', 'like', '%' . $request->search . '%');
-
-            })
-            ->latest()
+            ->whenCountry(request()->country_id)
+            ->whenStatus(request()->status)
+            ->whenPaymentStatus(request()->payment_status)
             ->paginate(5);
 
-            return view('dashboard.all_orders.index')->with('orders' , $orders);
+
+
+            return view('dashboard.all_orders.index')->with('orders' , $orders)->with('countries' , $countries);
         }
 
 
@@ -65,6 +68,7 @@ class AllOrdersController extends Controller
         public function destroy($lang , $order , Request $request)
         {
 
+            $countries = Country::all();
             $order = Order::withTrashed()->where('id' , $order)->first();
 
             if($order->trashed()){
@@ -86,26 +90,21 @@ class AllOrdersController extends Controller
                     session()->flash('success' , 'order Deleted successfully');
 
                     $all_orders = order::onlyTrashed()->whenSearch(request()->search_order)
-                    ->whereHas('user', function ($q) use ($request) {
-
-                        return $q->where('name', 'like', '%' . $request->search . '%');
-
-                    })
+                    ->whenCountry(request()->country_id)
+                    ->whenStatus(request()->status)
+                    ->whenPaymentStatus(request()->payment_status)
                     ->latest()
                     ->paginate(5);
-                    return view('dashboard.all_orders.index' , ['orders' => $all_orders]);
+                    return view('dashboard.all_orders.index' , ['orders' => $all_orders])->with('countries' , $countries);
                 }else{
                     session()->flash('success' , 'Sorry.. you do not have permission to make this action');
 
                     $all_orders = Order::onlyTrashed()->whenSearch(request()->search_order)
-                    ->whereHas('user', function ($q) use ($request) {
-
-                        return $q->where('name', 'like', '%' . $request->search . '%');
-
-                    })
-                    ->latest()
+                    ->whenCountry(request()->country_id)
+                    ->whenStatus(request()->status)
+                    ->whenPaymentStatus(request()->payment_status)
                     ->paginate(5);
-                    return view('dashboard.all_orders.index' , ['orders' => $all_orders]);
+                    return view('dashboard.all_orders.index' , ['orders' => $all_orders])->with('countries' , $countries);
                 }
 
 
@@ -118,30 +117,13 @@ class AllOrdersController extends Controller
 
                     session()->flash('success' , 'order trashed successfully');
 
-                    $all_orders = Order::whenSearch(request()->search_order)
-                    ->whereHas('user', function ($q) use ($request) {
-
-                        return $q->where('name', 'like', '%' . $request->search . '%');
-
-                    })
-                    ->latest()
-                    ->paginate(5);
-
-                    return view('dashboard.all_orders.index')->with('orders' , $all_orders);
+                   return redirect()->route('all_orders.index' , app()->getLocale());
 
                 }else{
                     session()->flash('success' , 'Sorry.. you do not have permission to make this action');
 
-                    $all_orders = Order::whenSearch(request()->search_order)
-                    ->whereHas('user', function ($q) use ($request) {
+                    return redirect()->route('all_orders.index' , app()->getLocale());
 
-                        return $q->where('name', 'like', '%' . $request->search . '%');
-
-                    })
-                    ->latest()
-                    ->paginate(5);
-
-                    return view('dashboard.all_orders.index')->with('orders' , $all_orders);
                 }
 
             }
@@ -153,16 +135,15 @@ class AllOrdersController extends Controller
         public function trashed(Request $request)
         {
 
+            $countries = Country::all();
+
             $all_orders = Order::onlyTrashed()
             ->whenSearch(request()->search_order)
-            ->whereHas('user', function ($q) use ($request) {
-
-                return $q->where('name', 'like', '%' . $request->search . '%');
-
-            })
-            ->latest()
+            ->whenCountry(request()->country_id)
+            ->whenPaymentStatus(request()->payment_status)
+            ->whenStatus(request()->status)
             ->paginate(5);;
-            return view('dashboard.all_orders.index' , ['orders' => $all_orders]);
+            return view('dashboard.all_orders.index' , ['orders' => $all_orders])->with('countries' , $countries);
 
         }
 
@@ -172,18 +153,19 @@ class AllOrdersController extends Controller
             $order = Order::withTrashed()->where('id' , $order)->first()->restore();
 
             session()->flash('success' , 'order restored successfully');
+            return redirect()->route('all_orders.index' , app()->getLocale());
 
-            $all_orders = Order::whenSearch(request()->search_order)
-            ->whereHas('user', function ($q) use ($request) {
-
-                return $q->where('name', 'like', '%' . $request->search . '%');
-
-            })
-            ->latest()
-            ->paginate(5);
-
-            return view('dashboard.all_orders.index')->with('orders' , $all_orders);
         }
 
 
 }
+
+
+
+            // ->whereHas('user', function ($q) use ($request) {
+
+            //     return $q->where('name', 'like', '%' . $request->search . '%');
+
+            // })
+            // ->latest()
+            // ->paginate(5);

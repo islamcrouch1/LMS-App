@@ -18,6 +18,7 @@ class CreateChaptersTable extends Migration
             $table->string('name_en');
             $table->string('name_ar');
             $table->integer('course_id');
+            $table->integer('country_id');
             $table->rememberToken();
             $table->timestamps();
         });

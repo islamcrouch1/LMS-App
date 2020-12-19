@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "41d9935d288cc482de9aa0a26eb95874",
+    "content-hash": "e231d9cec0937bc7da5fc1c5fd3df47d",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -127,6 +127,69 @@
             ],
             "description": "Persistent settings in Laravel.",
             "time": "2020-08-06T21:02:39+00:00"
+        },
+        {
+            "name": "ashallendesign/laravel-exchange-rates",
+            "version": "v3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ash-jc-allen/laravel-exchange-rates.git",
+                "reference": "6e10d71937a658d2e7a7babd8afeb5640969478b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ash-jc-allen/laravel-exchange-rates/zipball/6e10d71937a658d2e7a7babd8afeb5640969478b",
+                "reference": "6e10d71937a658d2e7a7babd8afeb5640969478b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^6.3|^7.0",
+                "illuminate/cache": "^6.0|^7.0|^8.0",
+                "illuminate/container": "^6.0|^7.0|^8.0",
+                "nesbot/carbon": "~2.0",
+                "php": "^7.2|^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "orchestra/testbench": "^3.8|^4.0|^5.0|^6.0",
+                "phpunit/phpunit": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AshAllenDesign\\LaravelExchangeRates\\Providers\\ExchangeRatesProvider"
+                    ],
+                    "aliases": {
+                        "ExchangeRate": "AshAllenDesign\\LaravelExchangeRates\\Facades\\ExchangeRate"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AshAllenDesign\\LaravelExchangeRates\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ash Allen",
+                    "email": "mail@ashallendesign.co.uk"
+                }
+            ],
+            "description": "A wrapper package for interacting with the exchangeratesapi.io API.",
+            "homepage": "https://github.com/ash-jc-allen/laravel-exchange-rates",
+            "keywords": [
+                "ashallendesign",
+                "exchange-rate",
+                "exchangeratesapi.io",
+                "laravel-exchange-rates"
+            ],
+            "time": "2020-12-06T00:40:40+00:00"
         },
         {
             "name": "asm89/stack-cors",
@@ -305,6 +368,62 @@
                 }
             ],
             "time": "2020-04-15T15:59:35+00:00"
+        },
+        {
+            "name": "codebyray/laravel-review-rateable",
+            "version": "v1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codebyray/laravel-review-rateable.git",
+                "reference": "bc939e7faac59d17e5c1e237e64a957a92dcfd97"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codebyray/laravel-review-rateable/zipball/bc939e7faac59d17e5c1e237e64a957a92dcfd97",
+                "reference": "bc939e7faac59d17e5c1e237e64a957a92dcfd97",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "~5.5.0|~5.6.0|~5.7.0|~5.8.0|^6.0|^7.0",
+                "illuminate/support": "~5.5.0|~5.6.0|~5.7.0|~5.8.0|^6.0|^7.0",
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~3.5.0|~3.6.0|^4.0",
+                "phpunit/phpunit": "^6.3|^7.0|^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Codebyray\\ReviewRateable\\ReviewRateableServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codebyray\\ReviewRateable\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CodebyRay",
+                    "email": "dev@codebyray.com"
+                }
+            ],
+            "description": "Review & Rating system for Laravel 5",
+            "keywords": [
+                "Ratable",
+                "Rating",
+                "Review-Rateable",
+                "laravel",
+                "reviewable"
+            ],
+            "time": "2020-08-24T07:26:39+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -2610,6 +2729,88 @@
             "time": "2018-07-02T15:55:56+00:00"
         },
         {
+            "name": "paragonie/sodium_compat",
+            "version": "v1.14.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paragonie/sodium_compat.git",
+                "reference": "a1cfe0b21faf9c0b61ac0c6188c4af7fd6fd0db3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/a1cfe0b21faf9c0b61ac0c6188c4af7fd6fd0db3",
+                "reference": "a1cfe0b21faf9c0b61ac0c6188c4af7fd6fd0db3",
+                "shasum": ""
+            },
+            "require": {
+                "paragonie/random_compat": ">=1",
+                "php": "^5.2.4|^5.3|^5.4|^5.5|^5.6|^7|^8"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^3|^4|^5|^6|^7|^8|^9"
+            },
+            "suggest": {
+                "ext-libsodium": "PHP < 7.0: Better performance, password hashing (Argon2i), secure memory management (memzero), and better security.",
+                "ext-sodium": "PHP >= 7.0: Better performance, password hashing (Argon2i), secure memory management (memzero), and better security."
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "autoload.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "ISC"
+            ],
+            "authors": [
+                {
+                    "name": "Paragon Initiative Enterprises",
+                    "email": "security@paragonie.com"
+                },
+                {
+                    "name": "Frank Denis",
+                    "email": "jedisct1@pureftpd.org"
+                }
+            ],
+            "description": "Pure PHP implementation of libsodium; uses the PHP extension if it exists",
+            "keywords": [
+                "Authentication",
+                "BLAKE2b",
+                "ChaCha20",
+                "ChaCha20-Poly1305",
+                "Chapoly",
+                "Curve25519",
+                "Ed25519",
+                "EdDSA",
+                "Edwards-curve Digital Signature Algorithm",
+                "Elliptic Curve Diffie-Hellman",
+                "Poly1305",
+                "Pure-PHP cryptography",
+                "RFC 7748",
+                "RFC 8032",
+                "Salpoly",
+                "Salsa20",
+                "X25519",
+                "XChaCha20-Poly1305",
+                "XSalsa20-Poly1305",
+                "Xchacha20",
+                "Xsalsa20",
+                "aead",
+                "cryptography",
+                "ecdh",
+                "elliptic curve",
+                "elliptic curve cryptography",
+                "encryption",
+                "libsodium",
+                "php",
+                "public-key cryptography",
+                "secret-key cryptography",
+                "side-channel resistant"
+            ],
+            "time": "2020-12-03T16:26:19+00:00"
+        },
+        {
             "name": "pbmedia/laravel-ffmpeg",
             "version": "7.0.5",
             "source": {
@@ -3244,6 +3445,60 @@
                 "shell"
             ],
             "time": "2020-05-03T19:32:03+00:00"
+        },
+        {
+            "name": "pusher/pusher-php-server",
+            "version": "v4.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pusher/pusher-http-php.git",
+                "reference": "251f22602320c1b1aff84798fe74f3f7ee0504a9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/251f22602320c1b1aff84798fe74f3f7ee0504a9",
+                "reference": "251f22602320c1b1aff84798fe74f3f7ee0504a9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "paragonie/sodium_compat": "^1.6",
+                "php": "^7.1|^8.0",
+                "psr/log": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.2|^8.5|^9.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pusher\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Library for interacting with the Pusher REST API",
+            "keywords": [
+                "events",
+                "messaging",
+                "php-pusher-server",
+                "publish",
+                "push",
+                "pusher",
+                "real time",
+                "real-time",
+                "realtime",
+                "rest",
+                "trigger"
+            ],
+            "time": "2020-12-09T09:38:19+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -6080,6 +6335,56 @@
             "time": "2020-07-13T06:12:54+00:00"
         },
         {
+            "name": "twilio/sdk",
+            "version": "6.13.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twilio/twilio-php.git",
+                "reference": "df14c92ae0c6604ffe88c9880ad78851c42f7b21"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/df14c92ae0c6604ffe88c9880ad78851c42f7b21",
+                "reference": "df14c92ae0c6604ffe88c9880ad78851c42f7b21",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^6.3 || ^7.0",
+                "phpunit/phpunit": ">=4.5",
+                "theseer/phpdox": "^0.12.0"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "An HTTP client to execute the API requests"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Twilio\\": "src/Twilio/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Twilio API Team",
+                    "email": "api@twilio.com"
+                }
+            ],
+            "description": "A PHP wrapper for Twilio's API",
+            "homepage": "http://github.com/twilio/twilio-php",
+            "keywords": [
+                "api",
+                "sms",
+                "twilio"
+            ],
+            "time": "2020-11-19T00:40:06+00:00"
+        },
+        {
             "name": "tymon/jwt-auth",
             "version": "1.0.0",
             "source": {
@@ -6707,6 +7012,7 @@
                 "faker",
                 "fixtures"
             ],
+            "abandoned": true,
             "time": "2019-12-12T13:22:17+00:00"
         },
         {

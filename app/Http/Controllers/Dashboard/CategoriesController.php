@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+use App\Country;
+
 use Intervention\Image\ImageManagerStatic as Image;
 
 class CategoriesController extends Controller
@@ -27,9 +29,13 @@ class CategoriesController extends Controller
     public function index()
     {
         $categories = Category::whenSearch(request()->search)
+        ->whenCountry(request()->country_id)
         ->paginate(5);
 
-        return view('dashboard.categories.index')->with('categories' , $categories);
+        $countries = Country::all();
+
+
+        return view('dashboard.categories.index')->with('categories' , $categories)->with('countries' , $countries);
     }
 
     /**
@@ -39,8 +45,8 @@ class CategoriesController extends Controller
      */
     public function create()
     {
-
-        return view('dashboard.categories.create');
+        $countries = Country::all();
+        return view('dashboard.categories.create')->with('countries' , $countries);
     }
 
     /**
@@ -60,6 +66,8 @@ class CategoriesController extends Controller
             'image' => "required|image",
             'description_ar' => "required|string",
             'description_en' => "required|string",
+            'country' => "required",
+
 
             ]);
 
@@ -73,7 +81,9 @@ class CategoriesController extends Controller
                 'name_en' => $request['name_en'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_en'],
-                'image' => $request['image']->hashName()
+                'image' => $request['image']->hashName(),
+                'country_id' => $request['country'],
+
 
             ]);
 
@@ -81,11 +91,9 @@ class CategoriesController extends Controller
             session()->flash('success' , 'Category created successfully');
 
 
+            return redirect()->route('categories.index' , app()->getLocale());
 
-            $categories = Category::whenSearch(request()->search)
-            ->paginate(5);
 
-            return view('dashboard.categories.index')->with('categories' , $categories);
     }
 
     /**
@@ -108,8 +116,9 @@ class CategoriesController extends Controller
     public function edit($lang , $Category)
     {
 
+        $countries = Country::all();
         $Category = Category::find($Category);
-        return view('dashboard.categories.edit ')->with('category', $Category);
+        return view('dashboard.categories.edit ')->with('category', $Category)->with('countries' , $countries);
     }
 
     /**
@@ -129,6 +138,8 @@ class CategoriesController extends Controller
             'image' => "image",
             'description_ar' => "required|string",
             'description_en' => "required|string",
+            'country' => "required",
+
 
 
             ]);
@@ -154,6 +165,7 @@ class CategoriesController extends Controller
                 'name_en' => $request['name_en'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_en'],
+                'country_id' => $request['country'],
 
             ]);
 
@@ -165,10 +177,7 @@ class CategoriesController extends Controller
 
             session()->flash('success' , 'Category updated successfully');
 
-            $categories = Category::whenSearch(request()->search)
-            ->paginate(5);
-
-            return view('dashboard.categories.index')->with('categories' , $categories);
+            return redirect()->route('categories.index' , app()->getLocale());
 
 
     }
@@ -194,14 +203,16 @@ class CategoriesController extends Controller
 
 
                 session()->flash('success' , 'Category Deleted successfully');
-
+                $countries = Country::all();
                 $categories = Category::onlyTrashed()->paginate(5);
-                return view('dashboard.categories.index' , ['categories' => $categories]);
+                return view('dashboard.categories.index' , ['categories' => $categories])->with('countries' , $countries);
+
             }else{
-                session()->flash('success' , 'Sorry.. you do not have permission to make this action');
 
+                session()->flash('success' , 'Sorry.. you do not have permission to make this action');
+                $countries = Country::all();
                 $categories = Category::onlyTrashed()->paginate(5);
-                return view('dashboard.categories.index' , ['categories' => $categories]);
+                return view('dashboard.categories.index' , ['categories' => $categories])->with('countries' , $countries);
             }
 
 
@@ -209,21 +220,15 @@ class CategoriesController extends Controller
         }else{
 
             if(auth()->user()->hasPermission('categories-trash')){
+
                 $Category->delete();
-
                 session()->flash('success' , 'Category trashed successfully');
+                return redirect()->route('categories.index' , app()->getLocale());
 
-                $categories = Category::whenSearch(request()->search)
-                ->paginate(5);
-
-                return view('dashboard.categories.index')->with('categories' , $categories);
             }else{
+
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-
-                $categories = Category::whenSearch(request()->search)
-                ->paginate(5);
-
-                return view('dashboard.categories.index')->with('categories' , $categories);
+                return redirect()->route('categories.index' , app()->getLocale());
             }
 
         }
@@ -235,8 +240,9 @@ class CategoriesController extends Controller
     public function trashed()
     {
 
+        $countries = Country::all();
         $categories = Category::onlyTrashed()->paginate(5);
-        return view('dashboard.categories.index' , ['categories' => $categories]);
+        return view('dashboard.categories.index' , ['categories' => $categories])->with('countries' , $countries);
 
     }
 
@@ -244,13 +250,8 @@ class CategoriesController extends Controller
     {
 
         $Category = Category::withTrashed()->where('id' , $Category)->first()->restore();
-
         session()->flash('success' , 'Category restored successfully');
-
-        $categories = Category::whenSearch(request()->search)
-        ->paginate(5);
-
-        return view('dashboard.categories.index')->with('categories' , $categories);
+        return redirect()->route('categories.index' , app()->getLocale());
     }
 
 }

@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 use App\Course;
 use App\EdClass;
+use App\Country;
+use App\Exam;
+
 
 class CoursesController extends Controller
 {
@@ -23,12 +26,20 @@ class CoursesController extends Controller
     }
 
 
-    public function index()
+    public function index($lang ,Request $request)
     {
-        $courses = Course::whenSearch(request()->search)
+
+
+        $courses = Course::where('ed_class_id' , $request->ed_class)->whenSearch(request()->search)
         ->paginate(5);
 
-        return view('dashboard.courses.index')->with('courses' , $courses);
+        $country = Country::findOrFail($request->country);
+
+        $ed_class = EdClass::findOrFail($request->ed_class);
+
+
+
+        return view('dashboard.courses.index')->with('courses' , $courses)->with('country' , $country)->with('ed_class' , $ed_class);
     }
 
     /**
@@ -36,10 +47,13 @@ class CoursesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($lang ,Request $request)
     {
-        $ed_classes = EdClass::all();
-        return view('dashboard.courses.create')->with('ed_classes' , $ed_classes);
+        $country = Country::findOrFail($request->country);
+
+        $ed_class = EdClass::findOrFail($request->ed_class);
+
+        return view('dashboard.courses.create')->with('ed_class' , $ed_class)->with('country' , $country);
     }
 
     /**
@@ -52,16 +66,22 @@ class CoursesController extends Controller
     {
 
 
+
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:courses",
-            'name_en' => "required|string|max:255|unique:courses",
-            'ed_class_id' => "required",
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
             'image' => "required|image",
             'description_ar' => "required|string",
             'description_en' => "required|string",
+            'homework_price' => "required|string",
+            'teacher_commission' => "required|string",
+            'course_price' => "required|string",
+
 
             ]);
+
+
 
 
             $course = Course::create([
@@ -69,20 +89,28 @@ class CoursesController extends Controller
                 'name_en' => $request['name_en'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_en'],
-                'ed_class_id' => $request['ed_class_id'],
+                'ed_class_id' => $request['ed_class'],
+                'country_id' => $request['country'],
+                'homework_price' => $request['homework_price'],
+                'course_price' => $request['course_price'],
+                'teacher_commission' => $request['teacher_commission'],
                 'image' => $request['image']->store('images/courses', 'public')
 
             ]);
-       
-            
+
+
+            $exam = Exam::create([
+
+                'course_id' => $course->id,
+
+            ]);
+
+
             session()->flash('success' , 'Course created successfully');
 
-            
-            $ed_classes = EdClass::all();
-            $courses = Course::whenSearch(request()->search)
-            ->paginate(5);
-    
-            return view('dashboard.courses.index')->with('courses' , $courses)->with('ed_classes' , $ed_classes);
+
+            return redirect()->route('courses.index' , ['lang'=>app()->getLocale() , 'ed_class'=>$request->ed_class , 'country'=>$request->country]);
+
     }
 
     /**
@@ -102,11 +130,12 @@ class CoursesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($lang , $course)
+    public function edit($lang , $course ,Request $request)
     {
-        $ed_classes = EdClass::all();
         $course = Course::find($course);
-        return view('dashboard.courses.edit ')->with('course', $course)->with('ed_classes' , $ed_classes);
+        $country = Country::findOrFail($request->country);
+        $ed_class = EdClass::findOrFail($request->ed_class);
+        return view('dashboard.courses.edit ')->with('course', $course)->with('ed_class' , $ed_class)->with('country' , $country);
     }
 
     /**
@@ -121,18 +150,21 @@ class CoursesController extends Controller
 
         $request->validate([
 
-            'name_ar' => "required|string|max:255|unique:courses,name_ar," .$course->id,
-            'name_en' => "required|string|max:255|unique:courses,name_en," .$course->id,
-            'ed_class_id' => "required",
+            'name_ar' => "required|string|max:255",
+            'name_en' => "required|string|max:255",
             'image' => "image",
             'description_ar' => "required|string",
             'description_en' => "required|string",
+            'homework_price' => "required|string",
+            'teacher_commission' => "required|string",
+            'course_price' => "required|string",
+
 
 
             ]);
 
             if($request->hasFile('image')){
-                
+
                 \Storage::disk('public')->delete($course->image);
                 $course->update([
                     'image' => $request['image']->store('images/courses', 'public'),
@@ -144,9 +176,11 @@ class CoursesController extends Controller
             $course->update([
                 'name_ar' => $request['name_ar'],
                 'name_en' => $request['name_en'],
-                'ed_class_id' => $request['ed_class_id'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_en'],
+                'homework_price' => $request['homework_price'],
+                'teacher_commission' => $request['teacher_commission'],
+                'course_price' => $request['course_price'],
 
             ]);
 
@@ -155,13 +189,11 @@ class CoursesController extends Controller
 
 
 
-            
+
             session()->flash('success' , 'Course updated successfully');
 
-            $courses = Course::whenSearch(request()->search)
-            ->paginate(5);
-    
-            return view('dashboard.courses.index')->with('courses' , $courses);
+            return redirect()->route('courses.index' , ['lang'=>app()->getLocale() , 'ed_class'=>$request->ed_class , 'country'=>$request->country]);
+
 
 
     }
@@ -172,25 +204,34 @@ class CoursesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($lang , $course)
+    public function destroy($lang , $course ,Request $request)
     {
-        
+
         $course = Course::withTrashed()->where('id' , $course)->first();
 
         if($course->trashed()){
 
             if(auth()->user()->hasPermission('courses-delete')){
+
+                $course->exam->delete();
+
                 $course->forceDelete();
 
                 session()->flash('success' , 'Course Deleted successfully');
-    
-                $courses = Course::onlyTrashed()->paginate(5);
-                return view('dashboard.courses.index' , ['courses' => $courses]);
+
+                $courses = Course::where('ed_class_id' , $request->ed_class)->onlyTrashed()->paginate(5);
+                $country = Country::findOrFail($request->country);
+                $ed_class = EdClass::findOrFail($request->ed_class);
+
+                return view('dashboard.courses.index')->with('courses' , $courses)->with('country' , $country)->with('ed_class' , $ed_class);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-    
-                $courses = Course::onlyTrashed()->paginate(5);
-                return view('dashboard.courses.index' , ['courses' => $courses]);
+
+                $courses = Course::where('ed_class_id' , $request->ed_class)->onlyTrashed()->paginate(5);
+                $country = Country::findOrFail($request->country);
+                $ed_class = EdClass::findOrFail($request->ed_class);
+
+                return view('dashboard.courses.index')->with('courses' , $courses)->with('country' , $country)->with('ed_class' , $ed_class);
             }
 
 
@@ -201,44 +242,74 @@ class CoursesController extends Controller
                 $course->delete();
 
                 session()->flash('success' , 'Course trashed successfully');
-        
-                $courses = Course::whenSearch(request()->search)
-                ->paginate(5);
-        
-                return view('dashboard.courses.index')->with('courses' , $courses);
+
+                return redirect()->route('courses.index' , ['lang'=>app()->getLocale() , 'ed_class'=>$request->ed_class , 'country'=>$request->country]);
+
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-        
-                $courses = Course::whenSearch(request()->search)
-                ->paginate(5);
-        
-                return view('dashboard.courses.index')->with('courses' , $courses);
+
+                return redirect()->route('courses.index' , ['lang'=>app()->getLocale() , 'ed_class'=>$request->ed_class , 'country'=>$request->country]);
+
             }
- 
+
         }
 
 
     }
 
 
-    public function trashed()
+    public function trashed(Request $request)
     {
-       
-        $courses = Course::onlyTrashed()->paginate(5);
-        return view('dashboard.courses.index' , ['courses' => $courses]);
-        
+
+        $courses = Course::where('ed_class_id' , $request->ed_class)->onlyTrashed()->paginate(5);
+        $country = Country::findOrFail($request->country);
+        $ed_class = EdClass::findOrFail($request->ed_class);
+
+        return view('dashboard.courses.index')->with('courses' , $courses)->with('country' , $country)->with('ed_class' , $ed_class);
+
     }
 
-    public function restore( $lang , $course)
+    public function restore( $lang , $course ,Request $request)
     {
 
         $course = Course::withTrashed()->where('id' , $course)->first()->restore();
 
         session()->flash('success' , 'Course restored successfully');
-    
-        $courses = Course::whenSearch(request()->search)
-        ->paginate(5);
 
-        return view('dashboard.courses.index')->with('courses' , $courses);
+        return redirect()->route('courses.index' , ['lang'=>app()->getLocale() , 'ed_class'=>$request->ed_class , 'country'=>$request->country]);
+
     }
+
+
+    public function activate( $lang , Course $course , Request $request)
+    {
+
+
+        $course->update([
+
+            'status' => 1,
+
+        ]);
+
+
+        return redirect()->route('courses.index' , ['lang'=>app()->getLocale() , 'ed_class'=>$request->ed_class , 'country'=>$request->country]);
+
+
+    }
+
+
+    public function deactivate($lang , Course $course , Request $request)
+    {
+
+        $course->update([
+
+            'status' => 1,
+
+        ]);
+
+
+       return redirect()->route('courses.index' , ['lang'=>app()->getLocale() , 'ed_class'=>$request->ed_class , 'country'=>$request->country]);
+
+    }
+
 }

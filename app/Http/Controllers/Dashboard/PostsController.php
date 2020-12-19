@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Post;
+use App\Country;
 
 class PostsController extends Controller
 {
@@ -24,10 +25,14 @@ class PostsController extends Controller
 
     public function index()
     {
+
+        $countries = Country::all();
+
         $posts = Post::whenSearch(request()->search)
+        ->whenCountry(request()->country_id)
         ->paginate(5);
 
-        return view('dashboard.posts.index')->with('posts' , $posts);
+        return view('dashboard.posts.index')->with('posts' , $posts)->with('countries' , $countries);
     }
 
     /**
@@ -37,7 +42,8 @@ class PostsController extends Controller
      */
     public function create()
     {
-        return view('dashboard.posts.create');
+        $countries = Country::all();
+        return view('dashboard.posts.create')->with('countries' , $countries);
     }
 
     /**
@@ -57,6 +63,8 @@ class PostsController extends Controller
             'image' => "required|image",
             'description_ar' => "required|string",
             'description_en' => "required|string",
+            'country' => "required",
+
 
             ]);
 
@@ -66,18 +74,17 @@ class PostsController extends Controller
                 'name_en' => $request['name_en'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_en'],
-                'image' => $request['image']->store('images/posts', 'public')
+                'image' => $request['image']->store('images/posts', 'public'),
+                'country_id' => $request['country'],
+
 
             ]);
 
 
             session()->flash('success' , 'post created successfully');
 
+            return redirect()->route('posts.index' , app()->getLocale());
 
-            $posts = post::whenSearch(request()->search)
-            ->paginate(5);
-
-            return view('dashboard.posts.index')->with('posts' , $posts);
     }
 
     /**
@@ -99,8 +106,9 @@ class PostsController extends Controller
      */
     public function edit($lang , $post)
     {
+        $countries = Country::all();
         $post = post::find($post);
-        return view('dashboard.posts.edit ')->with('post', $post);
+        return view('dashboard.posts.edit ')->with('post', $post)->with('countries' , $countries);
     }
 
     /**
@@ -120,6 +128,8 @@ class PostsController extends Controller
             'image' => "image",
             'description_ar' => "required|string",
             'description_en' => "required|string",
+            'country' => "required",
+
 
 
             ]);
@@ -139,6 +149,8 @@ class PostsController extends Controller
                 'name_en' => $request['name_en'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_en'],
+                'country_id' => $request['country'],
+
 
             ]);
 
@@ -150,10 +162,8 @@ class PostsController extends Controller
 
             session()->flash('success' , 'post updated successfully');
 
-            $posts = post::whenSearch(request()->search)
-            ->paginate(5);
+            return redirect()->route('posts.index' , app()->getLocale());
 
-            return view('dashboard.posts.index')->with('posts' , $posts);
 
 
     }
@@ -176,12 +186,20 @@ class PostsController extends Controller
 
                 session()->flash('success' , 'post Deleted successfully');
 
-                $posts = post::onlyTrashed()->paginate(5);
+                $posts = post::onlyTrashed()
+                ->whenSearch(request()->search)
+                ->whenCountry(request()->country_id)
+                ->paginate(5);
+
                 return view('dashboard.posts.index' , ['posts' => $posts]);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
 
-                $posts = post::onlyTrashed()->paginate(5);
+                $posts = post::onlyTrashed()
+                ->whenSearch(request()->search)
+                ->whenCountry(request()->country_id)
+                ->paginate(5);
+
                 return view('dashboard.posts.index' , ['posts' => $posts]);
             }
 
@@ -194,17 +212,13 @@ class PostsController extends Controller
 
                 session()->flash('success' , 'post trashed successfully');
 
-                $posts = post::whenSearch(request()->search)
-                ->paginate(5);
+                return redirect()->route('posts.index' , app()->getLocale());
 
-                return view('dashboard.posts.index')->with('posts' , $posts);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
 
-                $posts = post::whenSearch(request()->search)
-                ->paginate(5);
+                return redirect()->route('posts.index' , app()->getLocale());
 
-                return view('dashboard.posts.index')->with('posts' , $posts);
             }
 
         }
@@ -216,7 +230,10 @@ class PostsController extends Controller
     public function trashed()
     {
 
-        $posts = post::onlyTrashed()->paginate(5);
+        $posts = post::onlyTrashed()
+        ->whenSearch(request()->search)
+        ->whenCountry(request()->country_id)
+        ->paginate(5);
         return view('dashboard.posts.index' , ['posts' => $posts]);
 
     }
@@ -228,9 +245,7 @@ class PostsController extends Controller
 
         session()->flash('success' , 'post restored successfully');
 
-        $posts = post::whenSearch(request()->search)
-        ->paginate(5);
+        return redirect()->route('posts.index' , app()->getLocale());
 
-        return view('dashboard.posts.index')->with('posts' , $posts);
     }
 }

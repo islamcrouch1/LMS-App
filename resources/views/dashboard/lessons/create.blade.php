@@ -6,8 +6,8 @@
 <style>
 
     #video_input_wrapper{
-        height:25vh; 
-        border:1px solid black; 
+        height:25vh;
+        border:1px solid black;
         cursor:pointer;
         display:flex;
         justify-content:center;
@@ -16,7 +16,7 @@
     }
 
 </style>
-    
+
 @endpush
 
 @section('adminContent')
@@ -53,19 +53,20 @@
                 onclick="document.getElementById('video_input_file').click()"
                 style="display:{{ $errors->any() ? 'none' : 'flex'}};"
                 >
+
                     <i class="fa fa-camera fa-2x"></i>
                     <p>Click To Uploud Video</p>
                 </div>
-            <input type="file" data-local="{{app()->getLocale()}}" data-url="{{url(app()->getLocale() . '/dashboard/lessons' )}}" data-lesson-id="{{$lesson->id}}" id="video_input_file" name="" style="display:none;">
+                <input type="file" data-local="{{app()->getLocale()}}" data-url="{{route('lessons.store', ['lang'=> app()->getLocale() , 'country'=>$country->id , 'chapter'=>$chapter->id]  )}}" data-lesson-id="{{$lesson->id}}" id="video_input_file" name="" style="display:none;">
 
 
                 <div class="card-body">
-                    <form id="lesson_form" method="POST" action="{{route('lessons.store' , ['lang'=>app()->getLocale()])}}" enctype="multipart/form-data" style="display:{{ $errors->any() ? 'block' : 'none'}};">
+                    <form id="lesson_form" method="POST" action="{{route('lessons.store', ['lang'=> app()->getLocale() , 'country'=>$country->id , 'chapter'=>$chapter->id]  )}}" enctype="multipart/form-data" style="display:{{ $errors->any() ? 'block' : 'none'}};">
                         @csrf
 
 
 
-                        
+
                         <div class="form-group row" style="display:{{ $errors->any() ? 'none' : ''}};">
                             <label id="lesson-status" class="col-md-2 col-form-label">{{ __('Uplouding....') }}</label>
 
@@ -113,7 +114,7 @@
                             <label for="description_ar" class="col-md-2 col-form-label">{{ __('Arabic Description') }}</label>
 
                             <div class="col-md-10">
-                                <input id="description_ar" type="text" class="form-control @error('description_ar') is-invalid @enderror" name="description_ar" value="{{ old('description_ar') }}"  autocomplete="description">
+                                <textarea id="description_ar" type="text" class="form-control ckeditor @error('description_ar') is-invalid @enderror" name="description_ar" value="{{ old('description_ar') }}"  autocomplete="description"></textarea>
 
                                 @error('description_ar')
                                     <span class="invalid-feedback" role="alert">
@@ -126,7 +127,7 @@
                             <label for="description_en" class="col-md-2 col-form-label">{{ __('English Description') }}</label>
 
                             <div class="col-md-10">
-                                <input id="description_en" type="text" class="form-control @error('description_en') is-invalid @enderror" name="description_en" value="{{ old('description_en') }}"  autocomplete="description">
+                                <textarea id="description_en" type="text" class="form-control ckeditor @error('description_en') is-invalid @enderror" name="description_en" value="{{ old('description_en') }}"  autocomplete="description"></textarea>
 
                                 @error('description_en')
                                     <span class="invalid-feedback" role="alert">
@@ -136,24 +137,38 @@
                             </div>
                         </div>
 
-                        
-
 
                         <div class="form-group row">
-                            <label for="chapter" class="col-md-2 col-form-label">{{ __('chapter select') }}</label>
+                            <label for="type" class="col-md-2 col-form-label">{{ __('Lesson Type') }}</label>
+
                             <div class="col-md-10">
-                                <select class="form-control @error('chapter') is-invalid @enderror" id="chapter_id" name="chapter_id" value="{{ old('chapter_id') }}" required autocomplete="chapter">
-                                @foreach ($chapters as $chapter)
-                                <option value="{{ $chapter->id }}" >{{ $chapter->name_en }}</option>
-                                @endforeach
+
+                                <select class="custom-select my-1 mr-sm-2 @error('type') is-invalid @enderror" id="inlineFormCustomSelectPref" id="type" name="type" value="{{ old('type') }}" required>
+                                    <option value="1" {{ old('type') == 1 ? 'selected' : ''}}>{{__('Paid')}}</option>
+                                    <option value="0" {{ old('type') == 0 ? 'selected' : ''}}>{{__('Free')}}</option>
                                 </select>
-                                @error('chapter')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                                @error('type')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                         </div>
+
+                        <div class="form-group row down_link" >
+                            <label for="lesson_file" class="col-md-2 col-form-label">{{ __('Upload Homework file') }}</label>
+
+                            <div class="col-md-10">
+                                <input id="lesson_file" type="file" class="form-control-file @error('lesson_file') is-invalid @enderror" name="lesson_file" value="{{ old('lesson_file') }}">
+
+                                @error('lesson_file')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
 
 
                         <div class="form-group row">
@@ -172,7 +187,7 @@
 
 
 
-                        
+
 
 
                         <div class="form-group row mb-0">

@@ -35,7 +35,7 @@
 
         <div class="card mb-lg-32pt">
 
-            <form action="{{ route('order.adding',  ['lang'=>app()->getLocale() , 'user'=>$user->id ,'country'=>$scountry->id]) }}" method="post">
+            <form action="{{ route('order.adding',  ['lang'=>app()->getLocale() , 'user'=>$user->id ,'country'=>$scountry->id]) }}" method="post" id="cartform">
                 @csrf
 
             <div class="table-responsive">
@@ -67,7 +67,7 @@
                         <tr>
                             <td style="width:20%; text-align:center;"><img style="width:30%" alt="Avatar" class="table-avatar" src="{{ asset('storage/images/products/' . $product->image) }}"></td>
                             <td>{{ app()->getLocale() == 'ar' ? $product->name_ar : $product->name_en}}</td>
-                            <td class="product-price">{{$product->sale_price}}</td>
+                            <td class="product-price">{{$product->sale_price  . ' ' . $product->country->currency}}</td>
                             <td><input style="width:50%" type="number" name="products[{{$product->id}}][quantity]" data-stock="{{$product->stock}}" data-price="{{$product->sale_price}}" class="form-control input-sm product-quantity" min="1" value="1"></td>
                             <td><a href="{{ route('cart.remove',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'product'=>$product->id , 'country'=>$scountry->id ] ) }}" class="btn btn-danger btn-sm remove-product-btn"><span class="fa fa-trash"></span></a></td>
 
@@ -88,7 +88,7 @@
                        $productsPrice = $productsPrice  + floatval($product->sale_price);
                     @endphp
                     @endforeach
-                    {{$productsPrice}}
+                    {{$productsPrice  . ' ' . $user->country->currency}}
                 </span></h4>
             </div>
 
@@ -112,7 +112,7 @@
                     @endforeach
                 </select>
                 <span style="padding:5px">{{__('OR')}}</span>
-                <a href="#" type="button" class="btn btn-outline-info btn-sm">{{__('Add New Address ')}}</a>
+                <a href="{{route('addresses' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id])}}" type="button" class="btn btn-outline-info btn-sm">{{__('Add New Address ')}}</a>
             </div>
         </div>
 
@@ -120,13 +120,30 @@
         <div style="padding:20px" class="row">
             <div class="col-md-12 pt-3">
                 <h6>{{__('No Addresse to select')}}</h6>
-                <a href="#" type="button" class="btn btn-outline-info">{{__('Add New Address')}}</a>
+                <a href="{{route('addresses' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id])}}" type="button" class="btn btn-outline-info">{{__('Add New Address')}}</a>
             </div>
 
         </div>
         @endif
 
-        <button class="btn btn-primary btn-block" id="add-order-form-btn"><i style="padding:7px" class="fa fa-plus"></i> {{__('Add order')}}</button>
+        <button
+        style="
+        display: inline-block;
+        font-weight: 400;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: .25rem;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;"
+         class=" btn-primary btn-block" id="add-order-form-btn" {{$user->addresses->count() == 0  ? 'disabled' : '' }} ><i style="padding:7px" class="fa fa-plus"></i> {{__('Add order')}}</button>
 
     </form>
     @endif
@@ -157,3 +174,23 @@
 
 
 @endsection
+
+
+
+@push('scripts-front')
+
+<script>
+
+$('#add-order-form-btn').on('click' , function(){
+
+
+$("#cartform").submit();
+
+$("#add-order-form-btn").attr("disabled", true);
+
+});
+
+
+</script>
+
+@endpush

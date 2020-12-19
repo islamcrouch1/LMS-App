@@ -11,7 +11,7 @@ class EdClass extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-        'name_en', 'name_ar', 'stage_id',
+        'name_en', 'name_ar', 'stage_id', 'country_id',
     ];
     public function stage()
     {
@@ -21,6 +21,11 @@ class EdClass extends Model
     public function courses()
     {
         return $this->hasMany(Course::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
     }
 
     public function scopeWhenSearch($query , $search)

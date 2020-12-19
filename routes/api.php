@@ -31,5 +31,5 @@ Route::group(["prefix" => "v1" , "namespace" => "API"] , function($router){
         Route::get("user" , "AuthController@user");
     });
 
-    Route::apiResource('learning_systems', 'LearningSystemController');
+    // Route::apiResource('learning_systems', 'LearningSystemController');
 });

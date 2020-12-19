@@ -8,7 +8,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Classes</h1>
+            <h1>Classes - {{ app()->getLocale() == 'ar' ? $country->name_ar : $country->name_en}} - {{ app()->getLocale() == 'ar' ? $stage->name_ar : $stage->name_en}}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -22,7 +22,7 @@
 
     <!-- Main content -->
     <section class="content">
-        
+
       <!-- Default box -->
 
       <div class="row">
@@ -37,11 +37,19 @@
               <div class="col-md-4">
                 <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>Search</button>
                 @if (auth()->user()->hasPermission('ed_classes-create'))
-                <a href="{{route('ed_classes.create', app()->getLocale()  )}}"> <button type="button" class="btn btn-primary">Create Class</button></a>
-
+                <a href="{{route('ed_classes.create', ['lang'=> app()->getLocale() , 'country'=>$country->id , 'stage' => $stage->id] )}}"> <button type="button" class="btn btn-primary">Create Class</button></a>
                 @else
                 <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Create Class</button></a>
-
+                @endif
+                @if (auth()->user()->hasPermission('ed_classes-read'))
+                <a href="{{route('ed_classes.index' , ['lang'=>app()->getLocale() , 'stage'=>$stage->id , 'country'=>$country->id])}}"> <button type="button" class="btn btn-primary">Classes</button></a>
+                @else
+                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Classes</button></a>
+                @endif
+                @if (auth()->user()->hasPermission('ed_classes-read'))
+                <a href="{{route('ed_classes.trashed', ['lang'=> app()->getLocale() , 'country'=>$country->id , 'stage' => $stage->id]  )}}"> <button type="button" class="btn btn-primary">Trash</button></a>
+                @else
+                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Trash</button></a>
                 @endif
               </div>
             </div>
@@ -54,7 +62,7 @@
       <div class="card">
         <div class="card-header">
 
-           
+
         <h3 class="card-title">Classes</h3>
 
           <div class="card-tools">
@@ -100,8 +108,8 @@
               </thead>
               <tbody>
                   <tr>
-                      
-                      @foreach ($ed_classes as $ed_class)
+
+                      @foreach ($ed_classes->reverse() as $ed_class)
                     <td>
                         {{ $ed_class->id }}
                     </td>
@@ -116,12 +124,12 @@
                       </small>
                   </td>
                   <td>
-                        
-                    
+
+
                     <h5 style="display: inline-block"><span class="badge badge-info">{{$ed_class->stage->name_en}}</span></h5>
-                        
-                    
-                    
+
+
+
                   </td>
                     <td>
                         <small>
@@ -143,8 +151,14 @@
                     <td class="project-actions">
 
                         @if (!$ed_class->trashed())
+                            @if (auth()->user()->hasPermission('courses-read'))
+                                <a href="{{route('courses.index' , ['lang'=>app()->getLocale() , 'ed_class'=>$ed_class->id , 'country'=>$country->id])}}" class="btn btn-danger btn-sm">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    {{__('Courses')}}
+                                </a>
+                            @endif
                         @if (auth()->user()->hasPermission('ed_classes-update'))
-                        <a class="btn btn-info btn-sm" href="{{route('ed_classes.edit' , ['lang'=>app()->getLocale() , 'ed_class'=>$ed_class->id])}}">
+                        <a class="btn btn-info btn-sm" href="{{route('ed_classes.edit' , ['lang'=> app()->getLocale() , 'country'=>$country->id , 'stage' => $stage->id , 'ed_class'=>$ed_class->id])}}">
                             <i class="fas fa-pencil-alt">
                             </i>
                             Edit
@@ -159,7 +173,7 @@
                         @else
                         @if (auth()->user()->hasPermission('ed_classes-restore'))
 
-                        <a class="btn btn-info btn-sm" href="{{route('ed_classes.restore' , ['lang'=>app()->getLocale() , 'ed_class'=>$ed_class->id])}}">
+                        <a class="btn btn-info btn-sm" href="{{route('ed_classes.restore' , ['lang'=> app()->getLocale() , 'country'=>$country->id , 'stage' => $stage->id , 'ed_class'=>$ed_class->id])}}">
                           <i class="fas fa-pencil-alt">
                           </i>
                           Restore
@@ -172,12 +186,12 @@
                     </a>
                     @endif
                                 @endif
-                         
+
                                 @if ((auth()->user()->hasPermission('ed_classes-delete'))| (auth()->user()->hasPermission('ed_classes-trash')))
 
-                                    <form method="POST" action="{{route('ed_classes.destroy' , ['lang'=>app()->getLocale() , 'ed_class'=>$ed_class->id])}}" enctype="multipart/form-data" style="display:inline-block">
+                                    <form method="POST" action="{{route('ed_classes.destroy' , ['lang'=> app()->getLocale() , 'country'=>$country->id , 'stage' => $stage->id , 'ed_class'=>$ed_class->id])}}" enctype="multipart/form-data" style="display:inline-block">
                                         @csrf
-                                        @method('DELETE')  
+                                        @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm delete">
                                                     <i class="fas fa-trash">
                                                     </i>
@@ -186,7 +200,7 @@
                                                     @else
                                                     {{ __('Trash') }}
                                                     @endif
-                                                </button>    
+                                                </button>
                                     </form>
                                     @else
                                     <button  class="btn btn-danger btn-sm">
@@ -197,21 +211,21 @@
                                       @else
                                       {{ __('Trash') }}
                                       @endif
-                                  </button> 
+                                  </button>
                                   @endif
-                                
-                        
+
+
                     </td>
                 </tr>
-                      @endforeach   
-                      
-                      
+                      @endforeach
+
+
               </tbody>
           </table>
 
           <div class="row mt-3"> {{ $ed_classes->appends(request()->query())->links() }}</div>
-         
-          @else <h3 class="pl-2">No Classes To Show</h3> 
+
+          @else <h3 class="pl-2">No Classes To Show</h3>
           @endif
         </div>
         <!-- /.card-body -->
