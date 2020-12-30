@@ -20,7 +20,8 @@ class CreateHomeWorkOrdersTable extends Migration
             $table->integer('teacher_id')->nullable();
             $table->integer('course_id')->nullable();
             $table->integer('quantity')->nullable();
-            $table->integer('total_price');
+            $table->double('total_price' , 8 , 2);
+            $table->double('wallet_balance' , 8 , 2);
             $table->string('orderid');
             $table->string('user_name');
             $table->string('teacher_name');

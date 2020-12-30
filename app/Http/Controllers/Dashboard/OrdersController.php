@@ -11,7 +11,8 @@ use App\Product;
 use App\Notification;
 
 use App\Events\NewNotification;
-
+use App\Wallet;
+use App\WalletRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -80,6 +81,34 @@ class OrdersController extends Controller
             'status' => 'required|string',
         ]);
 
+        $count = 0 ;
+
+        foreach($request->products as $key => $product){
+            $product = Product::find($key);
+            if($product->stock <= '0'){
+                $count = $count + 1 ;
+            }
+        }
+
+        if($count > 0){
+
+            if(app()->getLocale() == 'ar'){
+
+                session()->flash('success' , 'هناك منتجات ليس بها مخزون كافي لعمل الطلب يرجى مراجعة الكميات المتاحه في المخزون');
+
+            }else{
+
+                session()->flash('success' , 'There are products that do not have enough stock to make the order, please check the available quantities in stock');
+            }
+
+            $categories = Category::where('country_id' , $user->country->id)->with('products')->get();
+
+            $orders = $user->orders()->with('products')->paginate(5);
+
+            return view('dashboard.orders.create' , compact('user' , 'categories' , 'orders'));
+
+        }
+
         $this->attach_order($request, $user);
 
             session()->flash('success' , 'order created successfully');
@@ -140,6 +169,38 @@ class OrdersController extends Controller
             'status' => 'required|string',
         ]);
 
+
+        $count = 0 ;
+
+        foreach($request->products as $key => $product){
+            $product = Product::find($key);
+            if($product->stock <= '0'){
+                $count = $count + 1 ;
+            }
+        }
+
+        if($count > 0){
+
+            if(app()->getLocale() == 'ar'){
+
+                session()->flash('success' , 'هناك منتجات ليس بها مخزون كافي لعمل الطلب يرجى مراجعة الكميات المتاحه في المخزون');
+
+            }else{
+
+                session()->flash('success' , 'There are products that do not have enough stock to make the order, please check the available quantities in stock');
+            }
+
+            $categories = Category::with('products')->get();
+
+            $orders = $user->orders()->with('products')->paginate(5);
+
+            return view('dashboard.orders.edit' , compact('user' , 'categories' , 'order' , 'orders'));
+
+        }
+
+
+
+
         $this->detach_order($order);
 
         $this->attach_order($request, $user);
@@ -162,6 +223,19 @@ class OrdersController extends Controller
     private function attach_order($request, $user)
     {
 
+        $shipping = 0;
+
+        foreach ($request->products as $id => $quantity) {
+
+            $product = Product::FindOrFail($id);
+
+            if($product->type == 'physical_product'){
+                $shipping = $product->country->shipping;
+            }
+
+
+        }//end of foreach
+
         $orderid = time().rand(999,9999) ;
 
         $order = $user->orders()->create([
@@ -172,6 +246,8 @@ class OrdersController extends Controller
             'payment_status' => 'done',
             'country_id'=>$user->country->id,
             'user_name'=>$user->name,
+            'wallet_balance'=>'0',
+            'shipping'=> $shipping,
         ]);
 
         $order->products()->attach($request->products);
@@ -188,6 +264,9 @@ class OrdersController extends Controller
             ]);
 
         }//end of foreach
+
+        $total_price = $total_price + $shipping;
+
 
         $order->update([
             'total_price' => $total_price
@@ -229,6 +308,32 @@ class OrdersController extends Controller
             ]);
 
 
+            if($request->status == 'canceled'){
+
+                $order->user->wallet->update([
+                    'balance' => $order->user->wallet->balance + $order->total_price + $order->wallet_balance ,
+                ]);
+
+
+
+                $request_ar = 'تم إلغاء طلبك من السوق رقم : ' .  $order->id;
+                $request_en = 'Your order has been canceled from Market No : ' . $order->id ;
+
+                $wallet = Wallet::find($order->user->id);
+
+                $wallet_request = WalletRequest::create([
+                    'user_id' => $order->user->id,
+                    'wallet_id' => $wallet->id,
+                    'status'=>'done',
+                    'request_ar' => $request_ar,
+                    'request_en' => $request_en,
+                    'balance' => $order->total_price + $order->wallet_balance,
+                    'orderid' => $order->orderid ,
+                ]);
+
+            }
+
+
             switch($order->status){
                 case('recieved'):
 
@@ -249,6 +354,12 @@ class OrdersController extends Controller
                 case('completed'):
                     $status_ar = 'لقد قمت باستلام طلبك بنجاح';
                     $status_en = 'You have successfully received your request';
+
+                break;
+
+                case('canceled'):
+                    $status_ar = 'لقد تم إلغاء الطلب';
+                    $status_en = 'The order has been canceled';
 
                 break;
 

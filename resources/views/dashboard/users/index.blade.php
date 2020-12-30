@@ -67,6 +67,13 @@
                 <a href="#" disabled> <button type="button" class="btn btn-primary">{{__('Create user')}}</button></a>
                 @endif
               </div>
+              <div class="col-md-3">
+                    @if (auth()->user()->hasPermission('wallet-read'))
+                        <button type="button" class="btn btn-primary btn-sm m-2" data-toggle="modal" data-target="#modal-danger">
+                            {{__('Add Wallet Balance To All Users')}}
+                        </button>
+                    @endif
+              </div>
             </div>
           </form>
         </div>
@@ -136,7 +143,7 @@
               <tbody>
                   <tr>
 
-                      @foreach ($users->reverse() as $user)
+                      @foreach ($users as $user)
                     <td>
                         {{ $user->id }}
                     </td>
@@ -231,13 +238,21 @@
                         @if ($user->hasRole('administrator'))
 
                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-primary-{{$user->id}}">
-                            {{__('Teachers Monitor')}}
+                            {{__('Permissions')}}
                         </button>
 
                         @endif
 
                         @endif
 
+
+                        @if (auth()->user()->hasPermission('wallet-read'))
+                            @if (!$user->hasRole('administrator'))
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-info-{{$user->id}}">
+                                    {{__('Add Wallet Balance')}}
+                                </button>
+                            @endif
+                        @endif
 
 
 
@@ -359,7 +374,7 @@
     </section>
     <!-- /.content -->
 
-    @foreach ($users->reverse() as $user)
+    @foreach ($users as $user)
 
     @if (auth()->user()->hasPermission('homeworks_monitor-read'))
 
@@ -404,7 +419,7 @@
                             <select style="height: 50px;" class=" select4 form-control @error('status') is-invalid @enderror" name="courses[]"  multiple="multiple">
                                 @foreach ($courses as $course)
 
-                                <option value="{{$course->id}}" {{ $user->monitor->courses()->where('course_id', $course->id)->first() != null ? 'selected' : ''}}>{{app()->getLocale() == 'ar' ?  $course->name_ar . ' - ' . $course->ed_class->name_ar : $course->name_en . ' - ' . $course->ed_class->name_en}}</option>
+                                <option value="{{$course->id}}" {{ $user->monitor->courses()->where('course_id', $course->id)->first() != null ? 'selected' : ''}}>{{app()->getLocale() == 'ar' ?  $course->name_ar . ' - ' . $course->ed_class->name_ar . ' - ' . $course->country->name_ar : $course->name_en . ' - ' . $course->ed_class->name_en . ' - ' . $course->country->name_ar}}</option>
                                 @endforeach
                             </select>
                             @error('status')
@@ -453,6 +468,155 @@
     @endif
 
     @endforeach
+
+
+
+    @foreach ($users as $user)
+
+    @if (auth()->user()->hasPermission('wallet-read'))
+
+    @if ($user->hasRole('user'))
+
+
+
+    <div class="modal fade" id="modal-info-{{$user->id}}">
+        <div class="modal-dialog">
+          <div class="modal-content bg-primary">
+            <div class="modal-header">
+              <h4 style="direction: rtl;" class="modal-title">{{__('Add Wallet Balance To - ') . $user->name}}</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+            </div>
+            <form method="POST" action="{{route('users.wallet', ['lang'=> app()->getLocale() , 'user'=>$user->id ])}}" enctype="multipart/form-data">
+                @csrf
+
+                <div class="modal-body">
+
+                    <h4 style="{{app()->getLocale() == 'ar' ? 'direction:rtl;' : ''}}">{{__('User Wallet Balance : ') . $user->wallet->balance . ' ' . $user->country->currency}}</h4>
+
+                    <div class="form-group row">
+                        <label for="balance" class="col-md-4 col-form-label">{{ __('Add TO Wallet Balance') . ' ' . $user->country->currency }}</label>
+
+                        <div class="col-md-8">
+                            <input id="balance" type="number" class="form-control @error('balance') is-invalid @enderror" name="balance" autocomplete="balance" min="0" value="0" onkeydown="return false">
+
+                            @error('balance')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{{__('Close')}}</button>
+                <button type="submit" class="btn btn-outline-light">{{__('Save changes')}}</button>
+                </div>
+
+            </form>
+
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    @endif
+
+    @endif
+
+    @endforeach
+
+
+
+
+    @if (auth()->user()->hasPermission('wallet-read'))
+
+    <div class="modal fade" id="modal-danger">
+        <div class="modal-dialog">
+          <div class="modal-content bg-primary">
+            <div class="modal-header">
+              <h4 style="direction: rtl;" class="modal-title">{{__('Add Wallet Balance To All Users')}}</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+            </div>
+            <form method="POST" action="{{route('users.wallet_all', ['lang'=> app()->getLocale()])}}" enctype="multipart/form-data">
+                @csrf
+
+                <div class="modal-body">
+
+
+
+
+
+                      <div class="form-group row">
+                        <label for="country_id" class="col-md-4 col-form-label">{{ __('Select Country') }}</label>
+
+                        <div class="col-md-8">
+
+                            <select class="form-control"  name="country_id" style="display:inline-block">
+                                @foreach ($countries as $country)
+                                <option value="{{$country->id}}">{{app()->getLocale() == 'ar' ?  $country->name_ar : $country->name_en}}</option>
+                                @endforeach
+                              </select>
+
+                            @error('country_id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                        <label for="balance_students" class="col-md-4 col-form-label">{{ __('Add balance to students') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="balance_students" type="number" class="form-control @error('balance_students') is-invalid @enderror" name="balance_students" autocomplete="balance_students" min="0" value="0" onkeydown="return false">
+
+                            @error('balance_students')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                        <label for="balance_teachers" class="col-md-4 col-form-label">{{ __('Add balance to teachers') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="balance_teachers" type="number" class="form-control @error('balance_teachers') is-invalid @enderror" name="balance_teachers" autocomplete="balance_teachers" min="0" value="0" onkeydown="return false">
+
+                            @error('balance_teachers')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{{__('Close')}}</button>
+                <button type="submit" class="btn btn-outline-light">{{__('Save changes')}}</button>
+                </div>
+
+            </form>
+
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    @endif
+
 
 
   @endsection

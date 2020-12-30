@@ -16,6 +16,10 @@ use App\BankInformation;
 use Carbon\Traits\Timestamp;
 use Illuminate\Support\Facades\Hash;
 
+
+use App\Wallet;
+
+
 use Illuminate\Support\Facades\Storage;
 
 use Intervention\Image\ImageManagerStatic as Image;
@@ -46,6 +50,7 @@ class TeachersController extends Controller
         ->whenCountry(request()->country_id)
         ->whenType(request()->type)
         ->with('roles')
+        ->latest()
         ->paginate(5);
         return view('dashboard.teachers.index' , compact('users' , 'roles' , 'countries','courses'));
     }
@@ -113,7 +118,12 @@ class TeachersController extends Controller
 
 
             $request->phone = str_replace(' ', '', $request->phone);
+            $request->phone = $request->phone_hide . $request->phone;
+            $request->merge(['phone' => $request->phone]);
 
+            $request->parent_phone = str_replace(' ', '', $request->parent_phone);
+            $request->parent_phone = $request->parent_phone_hide . $request->parent_phone;
+            $request->merge(['parent_phone' => $request->parent_phone]);
 
             $user = User::create([
                 'name' => $request['name'],
@@ -152,6 +162,10 @@ class TeachersController extends Controller
 
 
                 Cart::create([
+                    'user_id' => $user->id,
+                ]);
+
+                Wallet::create([
                     'user_id' => $user->id,
                 ]);
 
@@ -284,7 +298,12 @@ class TeachersController extends Controller
             }
 
             $request->phone = str_replace(' ', '', $request->phone);
+            $request->phone = $request->phone_hide . $request->phone;
+            $request->merge(['phone' => $request->phone]);
 
+            $request->parent_phone = str_replace(' ', '', $request->parent_phone);
+            $request->parent_phone = $request->parent_phone_hide . $request->parent_phone;
+            $request->merge(['parent_phone' => $request->parent_phone]);
 
             if($request->password == NULL){
 
@@ -365,6 +384,7 @@ class TeachersController extends Controller
                 ->whenCountry(request()->country_id)
                 ->whenType(request()->type)
                 ->with('roles')
+                ->latest()
                 ->paginate(5);
 
 
@@ -381,6 +401,7 @@ class TeachersController extends Controller
                 ->whenCountry(request()->country_id)
                 ->whenType(request()->type)
                 ->with('roles')
+                ->latest()
                 ->paginate(5);
 
 
@@ -420,6 +441,7 @@ class TeachersController extends Controller
             ->whenCountry(request()->country_id)
             ->whenType(request()->type)
             ->with('roles')
+            ->latest()
             ->paginate(5);
 
 

@@ -87,16 +87,12 @@ class AddressesController extends Controller
             ]);
 
 
-
-
-            $links = Link::all();
-            $countries = Country::all();
             $scountry = Country::findOrFail($country);
 
 
 
+            return redirect()->route('addresses' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id]);
 
-            return view('addresses.index' , compact('countries' , 'scountry' , 'user'  , 'links' ));
 
 
 
@@ -157,14 +153,8 @@ class AddressesController extends Controller
 
 
 
-
-
-
-
-        $links = Link::all();
-        $countries = Country::all();
         $scountry = Country::findOrFail($country);
-        return view('addresses.index' , compact('countries' , 'scountry' , 'user'  , 'links'  ));
+        return redirect()->route('addresses' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id]);
 
 
     }
@@ -181,13 +171,9 @@ class AddressesController extends Controller
 
             $address->delete();
 
-
-            $links = Link::all();
-
-            $countries = Country::all();
             $scountry = Country::findOrFail($country);
 
-            return view('addresses.index' , compact('countries' , 'scountry' , 'user'  , 'links' ));
+            return redirect()->route('addresses' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id]);
 
 
     }

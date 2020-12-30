@@ -46,7 +46,7 @@ input#rate-5:checked ~ label{
     @endphp
 
     @foreach ($user->home_work_orders as $homeworkOrder)
-    @if ($homeworkOrder->status == 'done')
+    @if ($homeworkOrder->status == 'done' || $homeworkOrder->status == 'canceled')
         @php
             $homeWorkCount = $homeWorkCount + 1 ;
         @endphp
@@ -83,6 +83,9 @@ input#rate-5:checked ~ label{
                             {{__('Course')}}
                         </th>
                         <th>
+                            {{__('Homework Service Type')}}
+                        </th>
+                        <th>
                             {{__('Homework Numbers')}}
                         </th>
                         <th>
@@ -93,26 +96,51 @@ input#rate-5:checked ~ label{
                 <tbody class="list order-list">
 
                     @foreach ($user->home_work_orders->reverse() as $homeworkOrder)
-                    @if ($homeworkOrder->status == 'done')
+                    @if ($homeworkOrder->status == 'done'  || $homeworkOrder->status == 'canceled')
                     <tr>
                         @php
                                     $teacher = App\User::find($homeworkOrder->teacher_id);
                         @endphp
-                        <td style="width:20%; text-align:center;"><img style="width:30%" alt="Avatar" class="img-circle  table-avatar" src="{{ asset('storage/images/users/' . $teacher->profile) }}"></td>
-                        <td style="">{{$teacher->name}}</td>
+                        <td style="width:20%; text-align:center;">
+                            <a class="card-title" style="padding:6px;"
+                                       href="{{route('teachers.display' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id , 'user'=> $teacher->id])}}">
+                                <img style="width:30%" alt="Avatar" class="img-circle  table-avatar" src="{{ asset('storage/images/users/' . $teacher->profile) }}">
+                            </a>
+                        </td>
+                        <td style="">
+                            <a class="card-title" style="padding:6px;"
+                                       href="{{route('teachers.display' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id , 'user'=> $teacher->id])}}">
+                                {{$teacher->name}}
+                            </a>
+                        </td>
                         <td style="">{{ app()->getLocale() == 'ar' ? $homeworkOrder->course->name_ar : $homeworkOrder->course->name_en}} {{' - '}} {{ app()->getLocale() == 'ar' ? $homeworkOrder->course->ed_class->name_ar : $homeworkOrder->course->ed_class->name_en}}</td>
+                        <td>
+
+                            @if ($homeworkOrder->homework_services->count() == '0')
+                                <span class="badge badge-info badge-lg">{{__('Normal Homework')}}</span>
+                            @else
+                                @foreach ($homeworkOrder->homework_services as $homework_service)
+                                    <span class="badge badge-info badge-lg">{{app()->getLocale() == 'ar' ? $homework_service->name_ar : $homework_service->name_en}}</span>
+                                @endforeach
+                            @endif
+
+                        </td>
                         <td style="">{{$homeworkOrder->quantity}}</td>
 
 
 
 
                         <td>
+                            @if ($homeworkOrder->status == 'canceled')
+                            <span class="badge badge-danger badge-lg">{{__('the request has been canceled')}}</span>
+                            @else
 
                             <a href="{{route('homework-request' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'order' =>$homeworkOrder->id])}}" style="color:#fff; {{$homeworkOrder->quantity == 0 ? 'pointer-events: none; border: 1px solid #999999; background-color: #cccccc;' : ''}}" class="btn btn-primary btn-sm">
                                 <i class="fa fa-user-graduate"></i>
                                 {{__('Use')}}
 
                             </a>
+                            @endif
 
                         </td>
                     </tr>
@@ -180,10 +208,33 @@ input#rate-5:checked ~ label{
                         @php
                                     $teacher = App\User::find($homeworkRequest->teacher_id);
                         @endphp
-                        <td style="width:10%; text-align:center;"><img style="width:30%" alt="Avatar" class="img-circle  table-avatar" src="{{ asset('storage/images/users/' . $teacher->profile) }}"></td>
-                        <td style="">{{$teacher->name}}</td>
+                        <td style="width:10%; text-align:center;">
+                            <a class="card-title" style="padding:6px;"
+                                       href="{{route('teachers.display' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id , 'user'=> $teacher->id])}}">
+                                <img style="width:30%" alt="Avatar" class="img-circle  table-avatar" src="{{ asset('storage/images/users/' . $teacher->profile) }}">
+                            </a>
+                        </td>
+                        <td style="">
+                            <a class="card-title" style="padding:6px;"
+                                       href="{{route('teachers.display' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id , 'user'=> $teacher->id])}}">
+                                {{$teacher->name}}
+                            </a>
+                        </td>
                         <td style="">{{$homeworkRequest->homework_title}}</td>
-                        <td style="">{{ app()->getLocale() == 'ar' ? $homeworkRequest->course->name_ar : $homeworkRequest->course->name_en}} {{' - '}} {{ app()->getLocale() == 'ar' ? $homeworkRequest->course->ed_class->name_ar : $homeworkRequest->course->ed_class->name_en}}</td>
+                        <td style="">
+                            {{ app()->getLocale() == 'ar' ? $homeworkRequest->course->name_ar : $homeworkRequest->course->name_en}} {{' - '}} {{ app()->getLocale() == 'ar' ? $homeworkRequest->course->ed_class->name_ar : $homeworkRequest->course->ed_class->name_en}}
+
+                            <br>
+
+                            @if ($homeworkRequest->home_work_order->homework_services->count() == '0')
+                                <span class="badge badge-info badge-lg">{{__('Normal Homework')}}</span>
+                            @else
+                                @foreach ($homeworkRequest->home_work_order->homework_services as $homework_service)
+                                    <span class="badge badge-info badge-lg">{{app()->getLocale() == 'ar' ? $homework_service->name_ar : $homework_service->name_en}}</span>
+                                @endforeach
+                            @endif
+
+                        </td>
                         <td style="">
 
                             @switch($homeworkRequest->status)
@@ -199,6 +250,13 @@ input#rate-5:checked ~ label{
                             @case('solution')
                             <span class="badge badge-info badge-lg">{{__('The solution is ready')}}</span>
                                 @break
+                            @case('rejected')
+                            @if ($homeworkRequest->home_work_order->status == 'canceled')
+                            <span class="badge badge-danger badge-lg">{{__('the request has been canceled')}}</span>
+                            @else
+                            <span class="badge badge-danger badge-lg">{{__('reques has been rejected')}}</span>
+                            @endif
+                                @break
                             @default
                             @endswitch
 
@@ -209,39 +267,51 @@ input#rate-5:checked ~ label{
 
                         <td>
 
-                            @if ($homeworkRequest->status == 'done' && $homeworkRequest->countRating()[0] ==  '0')
+                            @if ($homeworkRequest->status != 'rejected')
 
-                            <a data-id="{{$homeworkRequest->id}}" href="" style="color:#fff;" class=" add_rating btn btn-primary btn-sm">
-                                <i class="fa fa-star"></i>
-                                {{__('Rate the teacher')}}
+                                @if ($homeworkRequest->status == 'done' && $homeworkRequest->countRating()[0] ==  '0')
 
-                            </a>
+                                <a data-id="{{$homeworkRequest->id}}" href="" style="color:#fff;" class=" add_rating btn btn-primary btn-sm">
+                                    <i class="fa fa-star"></i>
+                                    {{__('Rate the teacher')}}
 
-                            @elseif($homeworkRequest->status != 'done')
+                                </a>
+
+                                @elseif($homeworkRequest->status != 'done')
 
 
-                            @else
+                                @else
 
-                            <a href="#" style="color:#fff;" class="btn btn-primary btn-sm" disabled>
-                                <i class="fa fa-star"></i>
-                                {{__('Rating Done')}}
+                                <a href="#" style="color:#fff;" class="btn btn-primary btn-sm" disabled>
+                                    <i class="fa fa-star"></i>
+                                    {{__('Rating Done')}}
 
+                                </a>
+
+                                @endif
+
+                                <a href="{{route('homework-edit' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'homeworkRequest' =>$homeworkRequest->id])}}" style="color:#fff; {{$homeworkRequest->status != 'waiting' ? 'pointer-events: none; border: 1px solid #999999; background-color: #cccccc;' : ''}}" class="btn btn-primary btn-sm btnAction" >
+                                    <i class="fa fa-edit"></i>
+                                    {{__('Edit')}}
+
+                                </a>
+
+
+                                <a href="{{route('homework-show' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'homeworkRequest' =>$homeworkRequest->id])}}" style="color:#fff; {{($homeworkRequest->status == 'waiting' || $homeworkRequest->status == 'recieved') ? 'pointer-events: none; border: 1px solid #999999; background-color: #cccccc;' : ''}}" class="btn btn-primary btn-sm btnAction">
+                                    <i class="fa fa-eye"></i>
+                                    {{__('Show Solution')}}
+
+                                </a>
+
+
+                            @elseif ($homeworkRequest->status == 'rejected')
+
+                            <a href="#" style="color:#fff;" class="btn btn-primary btn-sm show_details" data-select="{{$homeworkRequest->id}}" >
+                                <i class="fa fa-eye"></i>
+                                {{__('Request Details')}}
                             </a>
 
                             @endif
-
-                            <a href="{{route('homework-edit' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'homeworkRequest' =>$homeworkRequest->id])}}" style="color:#fff; {{$homeworkRequest->status != 'waiting' ? 'pointer-events: none; border: 1px solid #999999; background-color: #cccccc;' : ''}}" class="btn btn-primary btn-sm btnAction" >
-                                <i class="fa fa-edit"></i>
-                                {{__('Edit')}}
-
-                            </a>
-
-
-                            <a href="{{route('homework-show' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'homeworkRequest' =>$homeworkRequest->id])}}" style="color:#fff; {{($homeworkRequest->status == 'waiting' || $homeworkRequest->status == 'recieved') ? 'pointer-events: none; border: 1px solid #999999; background-color: #cccccc;' : ''}}" class="btn btn-primary btn-sm btnAction">
-                                <i class="fa fa-eye"></i>
-                                {{__('Show Solution')}}
-
-                            </a>
 
 
 
@@ -285,16 +355,16 @@ input#rate-5:checked ~ label{
                 <div class="col-md-12">
 
                     <div class="star-widget">
-                        <input type="radio" value="5" name="rate_homework" id="rate-5" required>
-                        <label for="rate-5" class="fas fa-star"></label>
-                        <input type="radio" value="4" name="rate_homework" id="rate-4">
-                        <label for="rate-4" class="fas fa-star"></label>
-                        <input type="radio" value="3" name="rate_homework" id="rate-3">
-                        <label for="rate-3" class="fas fa-star"></label>
-                        <input type="radio" value="2" name="rate_homework" id="rate-2">
-                        <label for="rate-2" class="fas fa-star"></label>
-                        <input type="radio" value="1" name="rate_homework" id="rate-1">
-                        <label for="rate-1" class="fas fa-star"></label>
+                        <input type="radio" value="5" name="rate_homework" id="rate-5{{$homeworkRequest->id}}" required>
+                        <label for="rate-5{{$homeworkRequest->id}}" class="fas fa-star"></label>
+                        <input type="radio" value="4" name="rate_homework" id="rate-4{{$homeworkRequest->id}}" required>
+                        <label for="rate-4{{$homeworkRequest->id}}" class="fas fa-star"></label>
+                        <input type="radio" value="3" name="rate_homework" id="rate-3{{$homeworkRequest->id}}" required>
+                        <label for="rate-3{{$homeworkRequest->id}}" class="fas fa-star"></label>
+                        <input type="radio" value="2" name="rate_homework" id="rate-2{{$homeworkRequest->id}}" required>
+                        <label for="rate-2{{$homeworkRequest->id}}" class="fas fa-star"></label>
+                        <input type="radio" value="1" name="rate_homework" id="rate-1{{$homeworkRequest->id}}" required>
+                        <label for="rate-1{{$homeworkRequest->id}}" class="fas fa-star"></label>
 
                     </div>
 
@@ -347,6 +417,57 @@ input#rate-5:checked ~ label{
 @endsection
 
 
+@foreach ($user->home_works->reverse() as $homeworkRequest)
+
+@if ($homeworkRequest->status != 'rejected')
+
+
+
+
+@elseif ($homeworkRequest->status == 'rejected')
+
+<div style="z-index: 10000000000000000 !important" class="modal fade" id="exampleModalCenter2-{{$homeworkRequest->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">{{$homeworkRequest->homework_title}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="text-align:{{app()->getLocale() == 'ar' ? 'right' : 'left' }}">
+
+            <h5 class="card-title" style="text-align:{{app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ $homeworkRequest->homework_title}}</h5>
+            <p class="card-text" style="text-align:{{app()->getLocale() == 'ar' ? 'right' : 'left' }}">{!! $homeworkRequest->student_note !!}</p>
+            <div class="form-group row">
+                <div class="col-md-10">
+                    @if ($homeworkRequest->student_image != '#')
+                    <img src="{{ asset('storage/images/homework/' . $homeworkRequest->student_image) }}" style="width:350px"  class="img-thumbnail img-prev">
+                    @endif
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <a href="{{ $homeworkRequest->student_file == '#' ? '#' : asset('storage/homework/files/' . $homeworkRequest->student_file) }}" class="btn btn-primary">{{ $homeworkRequest->student_file == '#' ? __('No file attached') : __('Download File') }}</a>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+
+
+
+        </div>
+      </div>
+    </div>
+</div>
+
+
+@endif
+
+@endforeach
+
+
 
 @push('scripts-front')
 
@@ -380,10 +501,28 @@ $('.add_rating').on('click' , function(e){
 });
 
 
+$(".orderbtn").on('click', function() {
+   $("#title").valid();
+});
+
+
 $(".form").submit(function () {
         $(".orderbtn").attr("disabled", true);
 });
 
+
+$('.show_details').on('click' , function(e){
+
+var selectid = $(this).data('select');
+
+
+e.preventDefault();
+
+$('#exampleModalCenter2-' + selectid).modal({
+    keyboard: false
+    });
+
+});
 
 </script>
 

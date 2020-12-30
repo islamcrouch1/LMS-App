@@ -19,10 +19,8 @@ use App\HomeWorkComment;
 use App\Notification;
 
 use App\Events\NewNotification;
-
-
-
-
+use App\Wallet;
+use App\WalletRequest;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -571,6 +569,152 @@ class HomeWorkController extends Controller
 
 
         return view('_comment_homework' , compact('countries' , 'scountry' , 'user'  , 'links'  , 'homeworkRequest' , 'homeworkComment' ));
+
+
+    }
+
+
+
+
+    public function cancell($lang , $user , $country , Request $request)
+    {
+
+
+        $user = User::find($user);
+
+        $scountry = Country::findOrFail($user->country_id);
+
+
+        $homework_order = HomeWorkOrder::findOrFail($request->homework_order);
+
+
+        $teacher = User::find($homework_order->teacher_id);
+
+
+        $waiting_count = 0 ;
+        $rejected_count = 0 ;
+        $refund = 0 ;
+        $order_requests_count = 0 ;
+        $homework_services_price = 0;
+
+
+
+        foreach ($homework_order->homework_services as $homework_services) {
+
+            $homework_services_price += $homework_services->price;
+
+        }
+
+        foreach ($homework_order->home_works as $homework_request){
+
+            if ($homework_request->status == 'rejected'){
+
+                $rejected_count = $rejected_count + 1 ;
+            }
+
+
+            if ($homework_request->status == 'waiting'){
+
+                    $waiting_count = $waiting_count + 1 ;
+
+                    $homework_request->update([
+                        'status' => 'rejected' ,
+                    ]);
+
+            }
+
+
+        }
+
+
+        $order_requests_count = $homework_order->quantity + $homework_order->home_works->count() - $rejected_count;
+        $refund = (($homework_order->quantity + $waiting_count) * $homework_order->course->homework_price) + (($homework_order->quantity + $waiting_count) * $homework_services_price);
+
+
+        $homework_order->update([
+            'status' => 'canceled' ,
+            'quantity' => $homework_order->quantity + $waiting_count ,
+
+        ]);
+
+
+
+        $user->wallet->update([
+            'balance' => $user->wallet->balance + $refund ,
+        ]);
+
+
+
+        $request_ar = 'تم إلغاء طلب حل الواجب رقم : ' .  $homework_order->id;
+        $request_en = 'The request to solve the assignment number : ' . $homework_order->id  . ' has been canceled';
+
+        $wallet = Wallet::find($user->id);
+
+        $wallet_request = WalletRequest::create([
+            'user_id' => $user->id,
+            'wallet_id' => $wallet->id,
+            'status'=>'done',
+            'request_ar' => $request_ar,
+            'request_en' => $request_en,
+            'balance' => $refund,
+            'orderid' => '0' ,
+        ]);
+
+        $title_ar = 'تم إلغاء الطلب';
+        $body_ar = 'لقد قام ' . $user->name . ' بإلغاء طلب حل الواجب رقم : '  .  $homework_order->id;
+        $title_en = 'the request has been canceled';
+        $body_en  = 'student ' . $user->name . ' has canceled the request to solve the assignment number : ' . $homework_order->id;
+
+        $notification = Notification::create([
+            'user_id' => $teacher->id,
+            'user_name'  => $user->name,
+            'user_image' => asset('storage/images/users/' . $user->profile),
+            'title_ar' => $title_ar,
+            'body_ar' => $body_ar ,
+            'title_en' => $title_en,
+            'body_en' => $body_en ,
+            'date' => $wallet_request->created_at,
+            'url' =>  route('teacher.homework' , ['lang'=>app()->getLocale() , 'user'=>$teacher->id ,  'country'=>$scountry->id]),
+        ]);
+
+
+
+        $data =[
+            'notification_id' => $notification->id,
+            'user_id' => $teacher->id,
+            'user_name'  => $user->name,
+            'user_image' => asset('storage/images/users/' . $user->profile),
+            'title_ar' => $title_ar,
+            'body_ar' => $body_ar ,
+            'title_en' => $title_en,
+            'body_en' => $body_en ,
+            'date' => $wallet_request->created_at->format('Y-m-d H:i:s'),
+            'status'=> $notification->status,
+            'url' =>  route('teacher.homework' , ['lang'=>app()->getLocale() , 'user'=>$teacher->id ,  'country'=>$scountry->id]),
+            'change_status' =>  route('notification-change', ['lang'=>app()->getLocale() , 'user'=>$teacher->id , 'country'=>$scountry->id , 'notification'=>$notification->id]),
+
+        ];
+
+
+        event(new NewNotification($data));
+
+
+        if(app()->getLocale() == 'ar'){
+
+            session()->flash('success' , 'تم إلغاء الطلب بنجاح');
+
+        }else{
+
+            session()->flash('success' , 'The request has been canceled successfully');
+        }
+
+
+
+
+        return redirect()->route('wallet' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id]);
+
+
+
 
 
     }

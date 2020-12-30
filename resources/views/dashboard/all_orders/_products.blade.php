@@ -19,26 +19,39 @@
         @endforeach
         </tbody>
     </table>
-    <h3  style="padding:10px">total price <span>{{ number_format($order->total_price, 2) }}</span></h3>
+    <h3 style="padding:10px; padding-bottom:0px; {{app()->getLocale() == 'ar' ? 'direction:rtl' : ''}}">{{__('Wallet Balance : ')}}<span class="total-price">
+        {{ number_format($order->wallet_balance, 2)  . ' ' . $order->country->currency}}
+    </span></h3>
+    <h3 style="padding:10px; padding-bottom:0px; {{app()->getLocale() == 'ar' ? 'direction:rtl' : ''}}">{{__('Shipping Fee : ')}}<span class="total-price">
+        {{ number_format($order->shipping, 2)  . ' ' . $order->country->currency}}
+    </span></h3>
+    <h3 style="padding:10px; padding-bottom:0px; {{app()->getLocale() == 'ar' ? 'direction:rtl' : ''}}">{{__('Paid Amount : ')}}<span class="total-price">
+        {{ number_format($order->total_price, 2) . ' ' . $order->country->currency }}
+    </span></h3>
+
+
 
     <div class="card">
         <h5  style="padding:10px" class="card-title">Order status</h5>
         <div class="card-body">
             @switch($order->status)
             @case('recieved')
-            {{__('Awaiting review from management')}}
+            <span class="badge badge-success badge-lg">{{__('Awaiting review from management')}}</span>
                 @break
             @case("processing")
-            {{__('Your order is under review')}}
+            <span class="badge badge-warning badge-lg">{{__('Your order is under review')}}</span>
             @break
             @case("shipped")
-            {{__('Your order has been shipped')}}
+            <span class="badge badge-info badge-lg">{{__('Your order has been shipped')}}</span>
             @break
             @case("completed")
-            {{__('You have successfully received your request')}}
+            <span class="badge badge-primary badge-lg">{{__('You have successfully received your request')}}</span>
+            @break
+            @case("canceled")
+            <span class="badge badge-danger badge-lg">{{__('The order has been canceled')}}</span>
             @break
             @default
-        @endswitch
+            @endswitch
         </div>
     </div>
 

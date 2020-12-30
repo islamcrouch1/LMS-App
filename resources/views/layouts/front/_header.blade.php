@@ -63,7 +63,7 @@
                         @guest
 
                             <ul class="nav navbar-nav ml-auto mr-0">
-                                <li class="nav-item">
+                                {{-- <li class="nav-item">
                                     <a href="{{ route('cart' , ['lang'=>app()->getLocale() , 'user'=>"islam" , 'country'=>$scountry->id ] ) }}">
                                     <i class="fas fa-shopping-cart"></i>
                                     <span class='badge badge-warning' id='lblCartCount'>0</span>
@@ -74,7 +74,7 @@
                                     <i class="fas fa-heart "></i>
                                     <span class='badge badge-warning' id='lblCartCount'>0</span>
                                     </a>
-                                </li>
+                                </li> --}}
                                 <li class="nav-item">
                                     <a href="{{ route('login' , ['lang'=>app()->getLocale() , 'country'=>$scountry->id ]) }}" class="nav-link" data-toggle="tooltip" data-title="{{ __('Login') }}" data-placement="bottom" data-boundary="window"><i class="material-icons">lock_open</i></a>
                                 </li>
@@ -128,7 +128,7 @@
                                 data-id="{{Auth::id()}}"
                                 >
 
-                            @endauth
+                                @endauth
 
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <div data-perfect-scrollbar
@@ -207,6 +207,8 @@
                                         @endif
 
                                         <a class="dropdown-item" href="{{route('my-orders' , ['lang'=>app()->getLocale() , 'user'=>Auth::id() ,  'country'=>$scountry->id])}}">{{__('Orders and downloads')}}</a>
+
+                                        <a class="dropdown-item" href="{{route('wallet' , ['lang'=>app()->getLocale() , 'user'=>Auth::id() ,  'country'=>$scountry->id])}}">{{__('Wallet')}}</a>
 
 
                                         @if (Auth::user()->type == 'teacher')

@@ -67,8 +67,8 @@
                         <tr>
                             <td style="width:20%; text-align:center;"><img style="width:30%" alt="Avatar" class="table-avatar" src="{{ asset('storage/images/products/' . $product->image) }}"></td>
                             <td>{{ app()->getLocale() == 'ar' ? $product->name_ar : $product->name_en}}</td>
-                            <td class="product-price">{{$product->sale_price  . ' ' . $product->country->currency}}</td>
-                            <td><input style="width:50%" type="number" name="products[{{$product->id}}][quantity]" data-stock="{{$product->stock}}" data-price="{{$product->sale_price}}" class="form-control input-sm product-quantity" min="1" value="1"></td>
+                            <td><span class="product-price">{{number_format(floatval($product->sale_price) , 2) }}</span>{{' ' . $product->country->currency}}</td>
+                            <td><input style="width:50%" type="number" name="products[{{$product->id}}][quantity]" data-stock="{{$product->stock}}" data-price="{{$product->sale_price}}" class="form-control input-sm product-quantity" min="1" value="1" onkeydown="return false"></td>
                             <td><a href="{{ route('cart.remove',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'product'=>$product->id , 'country'=>$scountry->id ] ) }}" class="btn btn-danger btn-sm remove-product-btn"><span class="fa fa-trash"></span></a></td>
 
 
@@ -76,8 +76,35 @@
                         </tr>
                         @endforeach
 
+                        <tr>
+                            <td>
+                                {{ __('Use from your wallet balance') }}
+                            </td>
+                            <td>
+                                <input type="number" name="used_balance" class="form-control input-sm used_balance1" min="0" value="0" data-wallet_balance="{{$user->wallet->balance}}">
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>
+                                <i style="color:#007bff" class="fas fa-shipping-fast"></i>
+
+                                {{ __('Shipping Fee : ') }}
+
+                                @if ($user->cart->products->where('type' , 'physical_product')->count() > '0')
+                                    <span style="font-size: 15px" class="shipping_fee">{{$user->country->shipping}}</span> <span style="font-size: 15px"> {{' ' . $user->country->currency}}</span>
+                                    @else
+                                    <span style="font-size: 15px" class="shipping_fee">0</span> <span style="font-size: 15px"> {{' ' . $user->country->currency}}</span>
+                                @endif
+
+                            </td>
+
+                        </tr>
+
                     </tbody>
                 </table>
+
 
                 <h4 style="padding:10px">{{__('Total : ')}}<span class="total-price">
                     @php
@@ -88,8 +115,20 @@
                        $productsPrice = $productsPrice  + floatval($product->sale_price);
                     @endphp
                     @endforeach
-                    {{$productsPrice  . ' ' . $user->country->currency}}
-                </span></h4>
+                    @if ($user->cart->products->where('type' , 'physical_product')->count() > '0')
+                    @php
+                        $productsPrice = $productsPrice + floatval($user->country->shipping);
+                        $productsPrice = number_format(floatval($productsPrice) , 2);
+                    @endphp
+                    @else
+                    @php
+                        $productsPrice = number_format(floatval($productsPrice) , 2);
+                    @endphp
+                    @endif
+                    {{$productsPrice}}
+                </span>
+                <span>{{' ' . $user->country->currency}}</span>
+                </h4>
             </div>
 
         </div>
@@ -171,6 +210,22 @@
     </div>
   </div>
 
+
+  <div style="z-index: 10000000000000000 !important" class="modal fade" id="balance_alert" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">{{__('Alert')}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {{__("You have exceeded the maximum balance in your wallet, the available balance is now in the wallet: ")}} <span class="available-quantity"></span> {{$scountry->currency}}
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 @endsection

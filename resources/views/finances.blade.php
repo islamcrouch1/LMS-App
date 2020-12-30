@@ -17,6 +17,9 @@
         $balanceCount = 0;
         $balance = 0 ;
         $amount = 0;
+
+
+
         @endphp
 
         @foreach ($user->withdraws as $withdraw)
@@ -26,25 +29,65 @@
         @endforeach
 
         @foreach ($orders->reverse() as $homeworkOrder)
-        @if ($homeworkOrder->status == 'done')
+        @if ($homeworkOrder->status == 'done' || $homeworkOrder->status == 'canceled')
             @php
+
+                $waiting_count = 0 ;
+                $rejected_count = 0 ;
+                $done_count = 0 ;
+                $order_requests_count = 0 ;
+                $homework_services_price = 0;
 
                 $balanceCount = 0;
                 $countH = 0;
                 $commision = 0;
 
                 foreach ($homeworkOrder->home_works as $homeWorkRequset) {
-                    if($homeWorkRequset->status != 'done'){
-                        $countH = $countH + 1;
-                    }
-                    if($homeWorkRequset->status == 'done'){
-                        $balanceCount = $balanceCount + 1;
-                    }
-                }
-                $commision = ($homeworkOrder->quantity + $countH ) * $homeworkOrder->course->teacher_commission;
-                $OutstandingBalance = $OutstandingBalance + $commision ;
 
-                $balance = $balance + ($balanceCount * $homeworkOrder->course->teacher_commission) ;
+                    if ($homeWorkRequset->status == 'rejected'){
+
+                        $rejected_count = $rejected_count + 1 ;
+
+                    }
+
+
+                    if ($homeWorkRequset->status == 'waiting'){
+
+                        $waiting_count = $waiting_count + 1 ;
+
+                    }
+
+                    if ($homeWorkRequset->status == 'done'){
+
+                        $done_count = $done_count + 1 ;
+
+                    }
+
+                }
+
+                foreach ($homeworkOrder->homework_services as $homework_services) {
+
+                    $homework_services_price += $homework_services->teacher_commission;
+
+                }
+
+                $order_requests_count = $homeworkOrder->quantity + $homeworkOrder->home_works->count() - $rejected_count;
+
+
+                if($homeworkOrder->status == 'canceled'){
+
+                    $commision = (( $order_requests_count - $homeworkOrder->quantity - $done_count ) * $homeworkOrder->course->teacher_commission) + (( $order_requests_count - $homeworkOrder->quantity - $done_count ) * $homework_services_price);
+                    $OutstandingBalance = $OutstandingBalance + $commision ;
+
+                }else{
+
+                    $commision = (($order_requests_count - $done_count ) * $homeworkOrder->course->teacher_commission) + (($order_requests_count - $done_count ) * $homework_services_price );
+                    $OutstandingBalance = $OutstandingBalance + $commision ;
+
+                }
+
+
+                $balance = $balance + ($done_count * $homeworkOrder->course->teacher_commission) + ($done_count * $homework_services_price) ;
 
 
             @endphp
@@ -108,7 +151,7 @@
     @endphp
 
     @foreach ($orders->reverse() as $homeworkOrder)
-    @if ($homeworkOrder->status == 'done')
+    @if ($homeworkOrder->status == 'done'  || $homeworkOrder->status == 'canceled')
         @php
             $homeWorkCount = $homeWorkCount + 1 ;
         @endphp
@@ -158,18 +201,100 @@
                 <tbody class="list order-list">
 
                     @foreach ($orders->reverse() as $homeworkOrder)
-                    @if ($homeworkOrder->status == 'done')
+                    @if ($homeworkOrder->status == 'done' || $homeworkOrder->status == 'canceled')
                     @php
-                    $countc = 0 ;
-                    foreach ($homeworkOrder->home_works as $homeWorkRequset) {
-                            $countc = $countc + 1;
-                    }
+
+                        $waiting_count = 0 ;
+                        $rejected_count = 0 ;
+                        $homework_services_price = 0;
+                        foreach ($homeworkOrder->home_works as $homeWorkRequset) {
+
+                            if ($homeWorkRequset->status == 'rejected'){
+
+                            $rejected_count = $rejected_count + 1 ;
+                            }
+
+
+                            if ($homeWorkRequset->status == 'waiting'){
+
+                                $waiting_count = $waiting_count + 1 ;
+
+                            }
+
+                        }
+
+                        foreach ($homeworkOrder->homework_services as $homework_services) {
+
+                            $homework_services_price += $homework_services->teacher_commission;
+
+                        }
+
+
+                        $order_requests_count = $homeworkOrder->quantity + $homeworkOrder->home_works->count() - $rejected_count;
+
+
                     @endphp
                     <tr>
                         <td style="">{{$homeworkOrder->id}}</td>
                         <td style="">{{$homeworkOrder->total_price}} {{' ' . $user->country->currency}}</td>
-                        <td style="">{{$homeworkOrder->course->teacher_commission *  ($homeworkOrder->quantity + $countc )}} {{' ' . $user->country->currency}}</td>
-                        <td style="">{{ app()->getLocale() == 'ar' ? $homeworkOrder->course->name_ar : $homeworkOrder->course->name_en}}</td>
+                        <td style="">
+                            {{($homeworkOrder->course->teacher_commission * $order_requests_count ) + ($homework_services_price * $order_requests_count)  }} {{' ' . $user->country->currency}}
+                            @if ($homeworkOrder->status == 'canceled')
+
+
+                            @php
+                            $rejected_count = 0 ;
+                            $refund = 0 ;
+                            $order_requests_count = 0 ;
+                            $homework_services_teacher_commission = 0 ;
+                            @endphp
+
+                            @foreach ($homeworkOrder->home_works as $homework_request)
+
+
+
+
+                            @if ($homework_request->status == 'rejected')
+
+                            @php
+                                $rejected_count = $rejected_count + 1 ;
+                            @endphp
+
+                            @endif
+
+                            @endforeach
+
+                            @php
+
+                                foreach ($homeworkOrder->homework_services as $homework_services) {
+
+                                    $homework_services_teacher_commission += $homework_services->teacher_commission;
+
+                                }
+
+                            $order_requests_count = $homeworkOrder->quantity + $homeworkOrder->home_works->count() - $rejected_count;
+                            $refund = (($homeworkOrder->quantity) * $homeworkOrder->course->teacher_commission) +  (($homeworkOrder->quantity) * $homework_services_price);
+
+                            @endphp
+
+
+                                <br>
+                                {{__('Refund : ') . $refund }}{{' ' . $user->country->currency}}
+                            @endif
+                        </td>
+                        <td style="">
+                            {{ app()->getLocale() == 'ar' ? $homeworkOrder->course->name_ar . ' - ' . $homeworkOrder->course->ed_class->name_ar : $homeworkOrder->course->name_en . ' - ' . $homeworkOrder->course->ed_class->name_ar}}
+
+                            <br>
+                            @if ($homeworkOrder->homework_services->count() == '0')
+                                <span class="badge badge-info badge-lg">{{__('Normal Homework')}}</span>
+                            @else
+                                @foreach ($homeworkOrder->homework_services as $homework_service)
+                                    <span class="badge badge-info badge-lg">{{app()->getLocale() == 'ar' ? $homework_service->name_ar : $homework_service->name_en}}</span>
+                                @endforeach
+                            @endif
+
+                        </td>
                         <td style="">{{$homeworkOrder->user->name}}</td>
                         <td style="">{{$homeworkOrder->created_at}}</td>
 
@@ -178,11 +303,19 @@
 
                         <td>
 
+                            @if ($homeworkOrder->status == 'canceled')
+
+                            <span class="badge badge-danger badge-lg">{{__('the request has been canceled')}}</span>
+
+                            @else
+
                             <a href="{{route('teacher.homework' , ['lang'=>app()->getLocale() , 'user'=>Auth::id() ,  'country'=>$scountry->id])}}" style="color:#fff;" class="btn btn-primary btn-sm">
                                 <i class="fa fa-user-graduate"></i>
                                 {{__('Check Active Requests')}}
 
                             </a>
+
+                            @endif
 
                         </td>
                     </tr>

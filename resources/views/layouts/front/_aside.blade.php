@@ -95,6 +95,14 @@
                                 <span class="sidebar-menu-text">{{ __('Teachers') }}</span>
                             </a>
                         </li>
+
+                        <li class="sidebar-menu-item active">
+                            <a class="sidebar-menu-button" href="{{route('terms' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}">
+                                <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">assignment
+                                </span>
+                                <span class="sidebar-menu-text">{{ __('Terms and Conditions') }}</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

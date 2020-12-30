@@ -49,6 +49,7 @@
                     <option value="processing" {{request()->status == 'processing' ? 'selected' : ''}}>{{__('Your order is under review')}}</option>
                     <option value="shipped" {{request()->status == 'shipped' ? 'selected' : ''}}>{{__('Your order has been shipped')}}</option>
                     <option value="completed" {{request()->status == 'completed' ? 'selected' : ''}}>{{__('You have successfully received your request')}}</option>
+                    <option value="canceled" {{request()->status == 'canceled' ? 'selected' : ''}}>{{__('The order has been canceled')}}</option>
                 </select>
               </div>
               <div class="col-md-2">
@@ -69,7 +70,7 @@
 
       <div class="row">
 
-        <div class="col-md-8">
+        <div class="col-md-12">
 
             <div class="card">
 
@@ -97,9 +98,9 @@
                                    Client Name
                               </th>
 
-                           <th>
-                            Total price
-                            </th>
+                              <th class="text-center">{{__('Paid Amount')}}</th>
+                              <th class="text-center">{{__('Wallet Balance')}}</th>
+                              <th>{{__('Shipping fee')}}</th>
 
                             <th>
                                 Payment Status
@@ -125,7 +126,7 @@
                       <tbody>
                           <tr>
 
-                              @foreach ($orders->reverse() as $order)
+                              @foreach ($orders as $order)
                             <td>
                                 {{ $order->id }}
                             </td>
@@ -140,7 +141,11 @@
                             {{ $order->total_price . ' ' . $order->user->country->currency }}
                         </small>
                     </td>
+                    <td class="text-center">{{$order->wallet_balance}} {{' ' . $order->user->country->currency}}</td>
+                    <td class="text-center">{{$order->shipping}} {{' ' . $order->user->country->currency}}</td>
                     <td class="project-state">
+
+
                         @switch($order->payment_status)
                         @case('waiting')
                         <span class="badge badge-danger badge-lg">{{__('Waiting for payment')}}</span>
@@ -150,6 +155,26 @@
                             @break
                         @default
                         @endswitch
+
+                        @switch($order->status)
+                        @case('recieved')
+                        <span class="badge badge-success badge-lg">{{__('Awaiting review from management')}}</span>
+                            @break
+                        @case("processing")
+                        <span class="badge badge-warning badge-lg">{{__('Your order is under review')}}</span>
+                        @break
+                        @case("shipped")
+                        <span class="badge badge-info badge-lg">{{__('Your order has been shipped')}}</span>
+                        @break
+                        @case("completed")
+                        <span class="badge badge-primary badge-lg">{{__('You have successfully received your request')}}</span>
+                        @break
+                        @case("canceled")
+                        <span class="badge badge-danger badge-lg">{{__('The order has been canceled')}}</span>
+                        @break
+                        @default
+                        @endswitch
+
                     </td>
 
                         <td>
@@ -179,24 +204,36 @@
                                     show products
                                 </button>
 
+                                @if ($order->status != 'canceled')
+
                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-primary-{{$order->id}}">
                                     {{__('Change Request Status')}}
                                 </button>
 
+                                @endif
+
+
+
                                 @if (!$order->trashed())
-                                @if (auth()->user()->hasPermission('all_orders-update'))
-                                <a class="btn btn-info btn-sm" href="{{route('orders.edit' , ['lang'=>app()->getLocale() , 'order'=>$order->id , 'user'=>$order->user->id])}}">
-                                    <i class="fas fa-pencil-alt">
-                                    </i>
-                                    Edit
-                                </a>
-                                @else
-                                <a class="btn btn-info btn-sm" href="#" aria-disabled="true">
-                                  <i class="fas fa-pencil-alt">
-                                  </i>
-                                  Edit
-                              </a>
-                              @endif
+
+                                @if ($order->status != 'canceled')
+
+                                    @if (auth()->user()->hasPermission('all_orders-update'))
+                                        <a class="btn btn-info btn-sm" href="{{route('orders.edit' , ['lang'=>app()->getLocale() , 'order'=>$order->id , 'user'=>$order->user->id])}}">
+                                            <i class="fas fa-pencil-alt">
+                                            </i>
+                                            Edit
+                                        </a>
+                                    @else
+                                        <a class="btn btn-info btn-sm" href="#" aria-disabled="true">
+                                        <i class="fas fa-pencil-alt">
+                                        </i>
+                                        Edit
+                                        </a>
+                                    @endif
+
+                                @endif
+
                                 @else
                                 @if (auth()->user()->hasPermission('all_orders-restore'))
 
@@ -263,7 +300,7 @@
 
         </div>
 
-
+{{--
             <div class="col-md-4">
 
                 <div class="card">
@@ -304,7 +341,7 @@
 
                 </div><!-- end of box -->
 
-            </div><!-- end of col -->
+            </div><!-- end of col --> --}}
         </div>
 
       </div>
@@ -338,7 +375,7 @@
                         <div class="col-md-8">
 
                             @php
-                            $order_status = ['recieved' , 'processing' , 'shipped' , 'completed']
+                            $order_status = ['recieved' , 'processing' , 'shipped' , 'completed' , 'canceled']
                             @endphp
 
                             <select style="height: 50px;" class=" form-control @error('status') is-invalid @enderror" name="status" value="{{ old('status') }}" required autocomplete="status">
@@ -356,6 +393,9 @@
                                     @break
                                     @case("completed")
                                     <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('You have successfully received your request')}}</option>
+                                    @break
+                                    @case("canceled")
+                                    <option value="{{$order_status}}" {{ ($order_status == $order->status) ? 'selected' : '' }}>{{__('The order has been canceled')}}</option>
                                     @break
                                     @default
                                 @endswitch
@@ -387,6 +427,49 @@
 
       @endforeach
 
+
+
+      <div class="modal fade" id="modal-order">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 style="direction: rtl;" class="modal-title">{{__('Show Details for order')}}</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+
+
+                <div class="box-body">
+
+                    <div style="display: none; flex-direction: column; align-items: center;" id="loading">
+                        <div class="loader"></div>
+                        <p style="margin-top: 10px">Loading ....</p>
+                    </div>
+
+                    <div id="order-product-list">
+
+
+
+
+
+                    </div><!-- end of order product list -->
+
+
+                </div><!-- end of box body -->
+
+
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{{__('Close')}}</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 
 
   @endsection

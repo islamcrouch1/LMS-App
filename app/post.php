@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Country;
 
-class post extends Model
+class Post extends Model
 {
     use SoftDeletes;
     protected $fillable = [

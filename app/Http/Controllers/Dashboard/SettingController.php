@@ -18,6 +18,6 @@ class SettingController extends Controller
         session()->flash('success' , 'data added successfully');
 
         return  redirect()->back();
-        
+
     }
 }

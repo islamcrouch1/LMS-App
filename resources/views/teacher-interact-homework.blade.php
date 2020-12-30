@@ -86,12 +86,6 @@
                                     @foreach ($order_status as $order_status)
 
                                     @switch($order_status)
-                                        @case('recieved')
-                                        <option value="{{$order_status}}" {{ ($order_status == $homeworkRequest->status) ? 'selected' : '' }}>{{__('Received')}}</option>
-                                            @break
-                                        @case("waiting")
-                                        <option value="{{$order_status}}" {{ ($order_status == $homeworkRequest->status) ? 'selected' : '' }}>{{__('Waiting for the receipt')}}</option>
-                                        @break
                                         @case("solution")
                                         <option value="{{$order_status}}" {{ ($order_status == $homeworkRequest->status) ? 'selected' : '' }}>{{__('The solution is ready')}}</option>
                                         @break
@@ -196,9 +190,9 @@
 
                     <div class="form-group row mb-0">
                         <div class="col-md-10 offset-md-4">
-                            <button type="submit" class="btn btn-primary">
+                            <a type="submit" class="btn btn-primary save_data" style="pointer-events:auto; color:#fff;">
                                 {{ __('Save The Solution') }}
-                            </button>
+                            </a>
                         </div>
                     </div>
 
@@ -382,6 +376,16 @@ $('#comment_image').on('change' ,function(){
     $('.fa-image').css('color' , 'red');
 
 });
+
+$('.save_data').on('click' , function(){
+
+
+    $(".save_data").css("pointer-events", "none");
+
+
+});
+
+
 
 
 

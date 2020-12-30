@@ -35,6 +35,7 @@
 
 
 
+    <link rel="icon" href="{{ asset('newasset/images/white.png') }}">
 
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto:400,500%7CExo+2:600&display=swap" rel="stylesheet">
 
@@ -50,6 +51,7 @@
     <link type="text/css" href="{{ asset('newasset/css/material-icons.css') }}" rel="stylesheet">
 
 
+
     <!-- Font Awesome Icons -->
     <link type="text/css" href="{{ asset('newasset/css/fontawesome.css') }}" rel="stylesheet">
 
@@ -60,6 +62,8 @@
 
     <!-- App CSS -->
     <link type="text/css" href="{{ asset('newasset/css/app.css') }}" rel="stylesheet">
+
+    <link type="text/css" href="{{ asset('newasset/css/select2.css') }}" rel="stylesheet">
 
     <link type="text/css" href="{{ asset('newasset/css/intlTelInput.css') }}" rel="stylesheet">
 
@@ -341,6 +345,8 @@
     <!-- DOM Factory -->
     <script src="{{ asset('newasset/vendor/dom-factory.js') }}"></script>
 
+    <script src="{{ asset('newasset/vendor/select2/select2.min.js') }}"></script>
+
     <!-- MDK -->
     <script src="{{ asset('newasset/vendor/material-design-kit.js') }}"></script>
 
@@ -356,6 +362,8 @@
     <script src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
 
     <script src="{{ asset('newasset/js/video.js') }}"></script>
+
+    <script src="{{ asset('newasset/js/teacher.js') }}"></script>
 
     <script src="{{ asset('newasset/js/fav.js') }}"></script>
 
@@ -465,9 +473,9 @@
 
                 $('.btn').on('click' , function(){
 
-                    $("#phone").val($(".iti__selected-dial-code").html() + $("#phone").val());
+                    $("#phone_hide").val($(".iti__selected-dial-code").html());
 
-                    $("#parent_phone").val($(".iti__selected-dial-code").html() + $("#parent_phone").val());
+                    $("#parent_phone_hide").val($(".iti__selected-dial-code").html());
 
                     $(this).closest('form').submit();
 

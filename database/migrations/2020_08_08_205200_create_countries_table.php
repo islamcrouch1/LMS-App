@@ -18,6 +18,7 @@ class CreateCountriesTable extends Migration
             $table->string('name_ar');
             $table->string('name_en');
             $table->string('code');
+            $table->double('shipping');
             $table->string('currency');
             $table->string('image');
             $table->timestamps();

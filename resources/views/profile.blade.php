@@ -117,14 +117,25 @@
 
                                                         <li class="list-group-item">
                                                             <div class="form-check form-check-inline">
-                                                                <input class="form-check-input" type="checkbox" name="courses[]" id="inlineCheckbox1" value="{{$course->id}}"
+                                                                <input class="form-check-input" type="checkbox" name="courses[]" id="inlineCheckbox1{{$course->id}}" value="{{$course->id}}"
                                                                 @foreach ($user->courses as $userCourse)
                                                                 {{ $course->id == $userCourse->id ? 'checked' : '' }}
                                                                 @endforeach
                                                                 >
-                                                                <label class="form-check-label" for="inlineCheckbox1">{{ app()->getLocale() == 'ar' ? $course->name_ar : $course->name_en}} {{' - '}} {{__('Price of providing homework service for this material:') }} <span class="badge badge-info badge-lg"> {{   $course->homework_price . ' ' . $course->country->currency }} </span> {{__('Your commission from this amount:') }} <span class="badge badge-success badge-lg"> {{  $course->teacher_commission . ' ' . $course->country->currency}} </span></label>
+                                                                <label class="form-check-label" for="inlineCheckbox1{{$course->id}}">{{ app()->getLocale() == 'ar' ? $course->name_ar : $course->name_en}} {{' - '}} {{__('Price of providing homework service for this material:') }} <span class="badge badge-info badge-lg"> {{   $course->homework_price . ' ' . $course->country->currency }} </span> {{__('Your commission from this amount:') }} <span class="badge badge-success badge-lg"> {{  $course->teacher_commission . ' ' . $course->country->currency}} </span></label>
                                                             </div>
                                                         </li>
+
+                                                        @if ($course->homework_services->count() > 0 )
+                                                            <li class="list-group-item">
+                                                                <h6>{{__('Addon Homework Services')}}</h6>
+                                                                @foreach ($course->homework_services as $homework_service)
+                                                                    <label class="form-check-label m-2" for="inlineCheckbox1">{{ app()->getLocale() == 'ar' ? $homework_service->name_ar : $homework_service->name_en}} {{' - '}} {{__('Price of providing this addon service : ') }} <span class="badge badge-info badge-lg"> {{   $homework_service->price . ' ' . $homework_service->country->currency }} </span> {{__('Your commission from this amount:') }} <span class="badge badge-success badge-lg"> {{  $homework_service->teacher_commission . ' ' . $homework_service->country->currency}} </span></label>
+                                                                @endforeach
+                                                            </li>
+                                                        @endif
+
+
 
 
 

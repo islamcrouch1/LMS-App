@@ -31,6 +31,11 @@
             killer: true
         }).show();
     </script>
+
+    @php
+        session()->forget('success');
+    @endphp
+
 @endif
 
 

@@ -59,6 +59,8 @@ Route::group(['prefix'=> '{lang}'], function(){
 
 
     Route::get('/library/{country}', 'LibraryController@index')->name('library');
+    Route::get('/terms-and-conditions/{country}', 'TermsController@index')->name('terms');
+
 
     Route::get('/news/{country}', 'NewsController@index')->name('news');
     Route::get('/news-show/{post}/{country}', 'NewsController@post')->name('news.show');
@@ -119,7 +121,7 @@ Route::group(['prefix'=> '{lang}'], function(){
     Route::get('/error-order/{user}/{country}', 'TeachersController@PaymentError')->name('error-order')->middleware('auth')->middleware('verifiedphone');
 
 
-    Route::get('/course-order/{user}/{country}', 'CourseOrdersController@addOrder')->name('course-order')->middleware('auth')->middleware('verifiedphone');
+    Route::post('/course-order/{user}/{country}', 'CourseOrdersController@addOrder')->name('course-order')->middleware('auth')->middleware('verifiedphone');
     Route::get('/success-order-course/{user}/{country}', 'CourseOrdersController@PaymentSuccess')->name('success-order-course')->middleware('auth')->middleware('verifiedphone');
     Route::get('/error-order-course/{user}/{country}', 'CourseOrdersController@PaymentError')->name('error-order-course')->middleware('auth')->middleware('verifiedphone');
 
@@ -133,6 +135,7 @@ Route::group(['prefix'=> '{lang}'], function(){
     Route::get('/homework/show-solution/{user}/{country}', 'HomeWorkController@showSolution')->name('homework-show')->middleware('auth')->middleware('verifiedphone');
     Route::post('/homework/send-comment/{user}/{country}', 'HomeWorkController@sendComment')->name('homework-comment-send')->middleware('auth')->middleware('verifiedphone');
     Route::post('/homework/rating/{user}/{country}', 'HomeWorkController@rating')->name('homework-rating')->middleware('auth')->middleware('verifiedphone');
+    Route::get('/homework/cancellation/{user}/{country}', 'HomeWorkController@cancell')->name('homework.cancell')->middleware('auth')->middleware('verifiedphone');
 
 
 
@@ -146,6 +149,8 @@ Route::group(['prefix'=> '{lang}'], function(){
 
     Route::post('/teacher/status-homework/{user}/{country}', 'TeacherHomeWorkController@status')->name('teacher.status')->middleware('auth')->middleware('verifiedphone');
     Route::get('/teacher/recieve-homework/{user}/{country}', 'TeacherHomeWorkController@recieve')->name('teacher.recieve')->middleware('auth')->middleware('verifiedphone');
+    Route::get('/teacher/reject-homework/{user}/{country}', 'TeacherHomeWorkController@reject')->name('teacher.reject')->middleware('auth')->middleware('verifiedphone');
+
 
     Route::post('/teacher/fav/{user}/{country}', 'TeacherHomeWorkController@toggle_favorite')->name('teacher.fav')->middleware('auth')->middleware('verifiedphone');
     Route::get('/user/fav/{user}/{country}', 'TeacherHomeWorkController@show_favorite')->name('teacher.favShow')->middleware('auth')->middleware('verifiedphone');
@@ -166,6 +171,13 @@ Route::group(['prefix'=> '{lang}'], function(){
 
 
     Route::get('/resend-code/{user}/{country}', 'PhoneVerificationController@resend')->name('resend-code')->middleware('auth');
+
+    Route::get('/wallet/{user}/{country}', 'WalletController@index')->name('wallet')->middleware('auth');
+    Route::post('/wallet/add/{user}/{country}', 'WalletController@addBalance')->name('wallet.add')->middleware('auth');
+    Route::get('/success-request-wallet/{user}/{country}', 'WalletController@PaymentSuccess')->name('success-request-wallet')->middleware('auth')->middleware('verifiedphone');
+    Route::get('/error-request-wallet/{user}/{country}', 'WalletController@PaymentError')->name('error-request-wallet')->middleware('auth')->middleware('verifiedphone');
+
+
 
     Route::get('phone/verify/{country}', 'PhoneVerificationController@show')->name('phoneverification.notice');
     Route::post('phone/verify/{country}', 'PhoneVerificationController@verify')->name('phoneverification.verify');

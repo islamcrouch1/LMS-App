@@ -51,24 +51,68 @@
                                 <div class="row">
                                   <div class="col-sm-4 border-right">
                                     <div class="description-block">
-                                      <h5 class="description-header">3,200</h5>
-                                      <span class="description-text">SALES</span>
+                                        <h5 class="description-header">{{$country->learning_systems->count()}}</h5>
+                                      <span class="description-text">{{__('Systems')}}</span>
                                     </div>
                                     <!-- /.description-block -->
                                   </div>
                                   <!-- /.col -->
                                   <div class="col-sm-4 border-right">
                                     <div class="description-block">
-                                      <h5 class="description-header">13,000</h5>
-                                      <span class="description-text">FOLLOWERS</span>
+                                        @php
+                                            $stages = 0;
+                                            $classes = 0;
+                                            $courses = 0;
+                                            $lessons = 0;
+                                        @endphp
+                                        @foreach ($country->learning_systems as $learning_system)
+                                            @php
+                                                $stages = $stages + $learning_system->stages->count() ;
+                                            @endphp
+                                            @foreach ($learning_system->stages as $stage)
+                                                @php
+                                                    $classes = $classes + $stage->ed_classes->count() ;
+                                                @endphp
+                                                @foreach ($stage->ed_classes as $class)
+                                                    @php
+                                                        $courses = $courses + $class->courses->count() ;
+                                                    @endphp
+                                                    @foreach ($class->courses as $course)
+                                                        @foreach ($course->chapters as $chapter)
+                                                            @php
+                                                                $lessons = $lessons + $chapter->lessons->count() ;
+                                                            @endphp
+                                                        @endforeach
+                                                    @endforeach
+                                                @endforeach
+                                            @endforeach
+                                        @endforeach
+                                      <h5 class="description-header">{{$stages}}</h5>
+                                      <span class="description-text">{{__('Stages')}}</span>
                                     </div>
                                     <!-- /.description-block -->
                                   </div>
                                   <!-- /.col -->
                                   <div class="col-sm-4">
                                     <div class="description-block">
-                                      <h5 class="description-header">35</h5>
-                                      <span class="description-text">PRODUCTS</span>
+                                      <h5 class="description-header">{{$classes}}</h5>
+                                      <span class="description-text">{{__('Classes')}}</span>
+                                    </div>
+                                    <!-- /.description-block -->
+                                  </div>
+                                  <!-- /.col -->
+                                  <div class="col-sm-4">
+                                    <div class="description-block">
+                                      <h5 class="description-header">{{$courses}}</h5>
+                                      <span class="description-text">{{__('Courses')}}</span>
+                                    </div>
+                                    <!-- /.description-block -->
+                                  </div>
+                                  <!-- /.col -->
+                                  <div class="col-sm-4">
+                                    <div class="description-block">
+                                      <h5 class="description-header">{{$lessons}}</h5>
+                                      <span class="description-text">{{__('Lessons')}}</span>
                                     </div>
                                     <!-- /.description-block -->
                                   </div>

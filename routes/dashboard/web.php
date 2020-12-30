@@ -21,6 +21,10 @@ Route::group(['prefix'=> '{lang}' , 'middleware' => ['role:superadministrator|ad
     Route::get('/activate-users/{user}' , 'AdminUsersController@activate' )->name('users.activate');
     Route::get('/deactivate-users/{user}' , 'AdminUsersController@deactivate' )->name('users.deactivate');
     Route::post('/monitors-users/{user}' , 'AdminUsersController@monitor' )->name('users.monitor');
+    Route::post('/wallet-users/{user}' , 'AdminUsersController@addBalance' )->name('users.wallet');
+    Route::post('/wallet_all-users' , 'AdminUsersController@addBalanceAll' )->name('users.wallet_all');
+
+
 
 
     Route::resource('/dashboard/teachers' , 'TeachersController');
@@ -135,6 +139,10 @@ Route::group(['prefix'=> '{lang}' , 'middleware' => ['role:superadministrator|ad
     Route::get('/trashed-questions' , 'QuestionsController@trashed' )->name('questions.trashed');
     Route::get('/trashed-questions/{question}' , 'QuestionsController@restore' )->name('questions.restore');
 
+
+    Route::resource('/dashboard/homework_services' , 'HomeworkServicesController');
+    Route::get('/trashed-homework_services' , 'HomeworkServicesController@trashed' )->name('homework_services.trashed');
+    Route::get('/trashed-homework_services/{homework_service}' , 'HomeworkServicesController@restore' )->name('homework_services.restore');
 
     Route::resource('/dashboard/withdrawals' , 'WithdrawalsController');
 

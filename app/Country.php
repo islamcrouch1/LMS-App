@@ -25,6 +25,7 @@ use App\Withdraw;
 use App\Report;
 use App\Order;
 use App\Monitor;
+use App\HomeworkService;
 
 
 
@@ -34,7 +35,7 @@ class Country extends Model
 
 
     protected $fillable = [
-        'name_en', 'name_ar', 'code','currency','image',
+        'name_en', 'name_ar', 'code','currency','image', 'shipping' ,
     ];
 
 
@@ -46,6 +47,12 @@ class Country extends Model
     public function categories()
     {
         return $this->hasMany(Category::class);
+    }
+
+
+    public function homework_services()
+    {
+        return $this->hasMany(HomeworkService::class);
     }
 
     public function orders()

@@ -41,7 +41,8 @@ return [
             'homeworks_monitor' => 'c,r,u,d,t,s',
             'finances' => 'c,r,u,d,t,s',
             'teachers' => 'c,r,u,d,t,s',
-
+            'homework_services' => 'c,r,u,d,t,s',
+            'wallet' => 'c,r,u,d,t,s',
 
 
         ],

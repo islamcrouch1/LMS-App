@@ -18,6 +18,7 @@ class CreateCourseOrdersTable extends Migration
             $table->integer('user_id');
             $table->integer('country_id');
             $table->integer('course_id')->nullable();
+            $table->double('wallet_balance' , 8 , 2);
             $table->double('total_price' , 8 , 2);
             $table->string('orderid');
             $table->string('user_name');

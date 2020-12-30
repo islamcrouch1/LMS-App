@@ -37,6 +37,7 @@ class AllOrdersController extends Controller
             ->whenCountry(request()->country_id)
             ->whenStatus(request()->status)
             ->whenPaymentStatus(request()->payment_status)
+            ->latest()
             ->paginate(5);
 
 

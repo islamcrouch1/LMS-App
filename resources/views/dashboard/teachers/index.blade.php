@@ -119,7 +119,7 @@
               <tbody>
                   <tr>
 
-                      @foreach ($users->reverse() as $user)
+                      @foreach ($users as $user)
 
                       @if($user->type == 'teacher')
 
@@ -298,7 +298,7 @@
     <!-- /.content -->
 
 
-    @foreach ($users->reverse() as $user)
+    @foreach ($users as $user)
 
     @if($user->type == 'teacher')
 

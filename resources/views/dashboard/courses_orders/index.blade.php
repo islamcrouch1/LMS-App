@@ -87,7 +87,8 @@
                     <th class="text-center">#id</th>
                     <th class="text-center">{{__('Profile')}}</th>
                     <th class="text-center">{{__('Student Name')}}</th>
-                    <th class="text-center">{{__('Total Price')}}</th>
+                    <th class="text-center">{{__('Paid Amount')}}</th>
+                    <th class="text-center">{{__('Wallet Balance')}}</th>
                     <th class="text-center">{{__('Status')}}</th>
                     <th class="text-center">{{__('Order Date')}}</th>
 
@@ -106,6 +107,7 @@
                         {{ $courses_order->user->name }}
                     </a></small></td>
                     <td  class="text-center">{{ $courses_order->total_price . ' ' .  $courses_order->user->country->currency}}</td>
+                    <td class="text-center">{{$courses_order->wallet_balance}} {{' ' . $courses_order->user->country->currency}}</td>
                     <td class="project-state">
                         @switch($courses_order->status)
                         @case('waiting')

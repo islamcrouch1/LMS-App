@@ -8,12 +8,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Countries</h1>
+            <h1>{{__('Countries')}}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Countries</li>
+              <li class="breadcrumb-item"><a href="#">{{__('Home')}}</a></li>
+              <li class="breadcrumb-item active">{{__('Countries')}}</li>
             </ol>
           </div>
         </div>
@@ -31,16 +31,16 @@
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">
-                <input type="text" name="search" autofocus placeholder="Search.." class="form-control" value="{{request()->search}}">
+                <input type="text" name="search" autofocus placeholder="{{__('Search..')}}" class="form-control" value="{{request()->search}}">
                 </div>
               </div>
               <div class="col-md-4">
-                <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>Search</button>
+                <button class="btn btn-primary" type="submit"><i class="fa fa-search mr-1"></i>{{__('Search')}}</button>
                 @if (auth()->user()->hasPermission('countries-create'))
-                <a href="{{route('countries.create', app()->getLocale()  )}}"> <button type="button" class="btn btn-primary">Create Country</button></a>
+                <a href="{{route('countries.create', app()->getLocale()  )}}"> <button type="button" class="btn btn-primary">{{__('Create Country')}}</button></a>
 
                 @else
-                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">Create Learning System</button></a>
+                <a href="#" aria-disabled="true"> <button type="button" class="btn btn-primary">{{__('Create Country')}}</button></a>
 
                 @endif
               </div>
@@ -55,7 +55,7 @@
         <div class="card-header">
 
 
-        <h3 class="card-title">Countries</h3>
+        <h3 class="card-title">{{__('Countries')}}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
@@ -73,34 +73,34 @@
                           #id
                       </th>
                       <th>
-                        image
+                        {{__('image')}}
                     </th>
                       <th>
-                           Arabic Name
+                           {{__('Arabic Name')}}
                       </th>
                       <th>
-                        English Name
+                        {{__('English Name')}}
                       </th>
                       <th>
-                        Country Code
+                        {{__('Country Code')}}
                       </th>
                       <th>
-                        Currency
+                        {{__('Currency')}}
                     </th>
                     <th>
-                      Created At
+                      {{__('Created At')}}
                   </th>
                     <th>
-                      Updated At
+                      {{__('Updated At')}}
                   </th>
                   <?php if($countries !== Null){$country = $countries[0];} ?>
                   @if ($country->trashed())
                   <th>
-                    Deleted At
+                    {{__('Deleted At')}}
                   </th>
                   @endif
                       <th style="" class="">
-                        Actions
+                        {{__('Actions')}}
                       </th>
                   </tr>
               </thead>
@@ -160,13 +160,13 @@
                         <a class="btn btn-info btn-sm" href="{{route('countries.edit' , ['lang'=>app()->getLocale() , 'country'=>$country->id])}}">
                             <i class="fas fa-pencil-alt">
                             </i>
-                            Edit
+                            {{__('Edit')}}
                         </a>
                         @else
                         <a class="btn btn-info btn-sm" href="#" aria-disabled="true">
                           <i class="fas fa-pencil-alt">
                           </i>
-                          Edit
+                          {{__('Edit')}}
                       </a>
                       @endif
                         @else
@@ -175,13 +175,13 @@
                         <a class="btn btn-info btn-sm" href="{{route('countries.restore' , ['lang'=>app()->getLocale() , 'country'=>$country->id])}}">
                           <i class="fas fa-pencil-alt">
                           </i>
-                          Restore
+                          {{__('Restore')}}
                       </a>
                       @else
                       <a class="btn btn-info btn-sm" href="#" aria-disabled="true">
                         <i class="fas fa-pencil-alt">
                         </i>
-                        Restore
+                        {{__('Restore')}}
                     </a>
                     @endif
                                 @endif
@@ -224,7 +224,7 @@
 
           <div class="row mt-3"> {{ $countries->appends(request()->query())->links() }}</div>
 
-          @else <h3 class="pl-2">No Countries To Show</h3>
+          @else <h3 class="pl-2">{{__('No Countries To Show')}}</h3>
           @endif
         </div>
         <!-- /.card-body -->

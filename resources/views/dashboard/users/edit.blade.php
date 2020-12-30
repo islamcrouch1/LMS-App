@@ -113,6 +113,20 @@
                             </div>
                         </div>
 
+                        <div class="form-group row" style="display:none">
+                            <label for="phone_hide" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="phone_hide" type="text" class="form-control @error('phone_hide') is-invalid @enderror" name="phone_hide" value="{{ old('phone_hide') }}" required autofocus>
+
+                                @error('phone_hide')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="form-group row parent-phone-div">
                             <label for="parent_phone" class="col-md-2 col-form-label text-md-right">{{ __('Parent Phone') }}</label>
 
@@ -120,6 +134,20 @@
                                 <input id="parent_phone" type="tel" class="form-control @error('parent_phone') is-invalid @enderror" name="parent_phone" value="{{ $user->parent_phone }}" autocomplete="parent_phone">
 
                                 @error('parent_phone')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row" style="display:none">
+                            <label for="parent_phone_hide" class="col-md-4 col-form-label text-md-right">{{ __('Parent Phone') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="parent_phone_hide" type="tel" class="form-control @error('parent_phone_hide') is-invalid @enderror" name="parent_phone_hide" value="{{ old('parent_phone_hide') }}" autocomplete="parent_phone_hide">
+
+                                @error('parent_phone_hide')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

@@ -12,7 +12,7 @@ class HomeWorkOrder extends Model
 {
 
     protected $fillable = [
-        'user_id', 'teacher_id', 'course_id', 'quantity', 'total_price' , 'orderid' , 'status', 'country_id' , 'user_name' , 'teacher_name',
+        'user_id', 'teacher_id', 'course_id', 'quantity', 'total_price' , 'orderid' , 'status', 'country_id' , 'user_name' , 'teacher_name', 'wallet_balance' ,
     ];
 
 
@@ -31,6 +31,11 @@ class HomeWorkOrder extends Model
     public function home_works()
     {
         return $this->hasMany(HomeWork::class);
+    }
+
+    public function homework_services()
+    {
+        return $this->belongsToMany(HomeworkService::class);
     }
 
 

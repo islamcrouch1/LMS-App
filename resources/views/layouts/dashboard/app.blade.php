@@ -11,6 +11,7 @@
 
   <!-- Font Awesome -->
 
+  <link rel="icon" href="{{ asset('newasset/images/white.png') }}">
 
   <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
 
@@ -78,6 +79,23 @@
                             }
 
                             });
+
+
+                            $('.radio1').on('click' ,function(){
+
+                                $('.down_link').css('display' , 'block');
+
+                                });
+
+                                $('.radio2').on('click' ,function(){
+
+                                    $('.down_link').css('display' , 'none');
+
+                                    $('input[name=down_link]').val('#');
+
+                                    });
+
+
          });
 
 
@@ -160,6 +178,10 @@
 
 .btn{
     margin:2px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice{
+    direction: rtl !important;
 }
 
 </style>
@@ -312,6 +334,20 @@
 
 
 
+        $('.radio1').on('click' ,function(){
+
+        $('.down_link').css('display' , 'block');
+
+        });
+
+        $('.radio2').on('click' ,function(){
+
+            $('.down_link').css('display' , 'none');
+
+            $('input[name=down_link]').val('#');
+
+            });
+
 
 
 
@@ -332,19 +368,7 @@
 
 
 
-            $('.radio1').on('click' ,function(){
 
-                $('.down_link').css('display' , 'block');
-
-                });
-
-                $('.radio2').on('click' ,function(){
-
-                    $('.down_link').css('display' , 'none');
-
-                    $('input[name=down_link]').val('#');
-
-                    });
 
                     $('.type-select').on('change', function() {
 
@@ -362,13 +386,13 @@
 
                     $('.btn').on('click' , function(){
 
-                    $("#phone").val($(".iti__selected-dial-code").html() + $("#phone").val());
+                        $("#phone_hide").val($(".iti__selected-dial-code").html());
 
-                    $("#parent_phone").val($(".iti__selected-dial-code").html() + $("#parent_phone").val());
+                        $("#parent_phone_hide").val($(".iti__selected-dial-code").html());
 
-                    $(this).closest('form').submit();
+                        $(this).closest('form').submit();
 
-                    $(".btn").attr("disabled", true);
+                        $(".btn").attr("disabled", true);
 
                     });
 

@@ -288,15 +288,15 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body"  style="text-align:{{app()->getLocale() == 'ar' ? 'right' : 'left' }}">
 
                 <div class="form-group row">
                     <label for="course" class="col-md-4 col-form-label">{{ __('Select Course') }}</label>
                     <div class="col-md-8">
-                        <select style="height: 50px;" class=" form-control @error('course') is-invalid @enderror" id="selectedCourse{{$user->user->id}}" name="selectedCourse" value="{{ old('course') }}" required autocomplete="course">
+                        <select style="height: 50px;" class=" form-control @error('course') is-invalid @enderror"  id="selectedCourse{{$user->user->id}}" name="selectedCourse" value="{{ old('course') }}" required autocomplete="course">
                         {{-- <option value="0">{{ __('Select Course') }}</option> --}}
                         @foreach ($user->user->courses as $course)
-                        <option data-teacher="{{$user->user->id}}" data-price="{{$course->homework_price}}" value="{{ $course->id }}">{{ app()->getLocale() =='ar' ? $course->name_ar : $course->name_en }} {{' - '}} {{ app()->getLocale() =='ar' ? $course->ed_class->name_ar : $course->ed_class->name_en }}</option>
+                        <option data-teacher="{{$user->user->id}}" data-course_id="{{$course->id . $user->user->id}}" data-price="{{$course->homework_price}}" value="{{ $course->id }}">{{ app()->getLocale() =='ar' ? $course->name_ar : $course->name_en }} {{' - '}} {{ app()->getLocale() =='ar' ? $course->ed_class->name_ar : $course->ed_class->name_en }}</option>
                         @endforeach
                         </select>
                         @error('course')
@@ -306,10 +306,52 @@
                     @enderror
                     </div>
                 </div>
+
+
+                <div class="homework_services_list">
+
+
+                    @foreach ($user->user->courses as $course)
+                    <div style="display:none" class="form-group homework_services{{$course->id . $user->user->id}}">
+                        @if ($course->homework_services->count() > 0)
+                        <label class="form-label selsect2" for="select03">{{__('Choose Addon Homework Services')}}</label>
+                        @else
+                        <label class="form-label selsect2" for="select03">{{__('No Addon Homework Services Availabele')}}</label>
+                        @endif
+                        <div class="form-check form-check-inline">
+                                @foreach ($course->homework_services as $homework_service)
+                                <input data-select="{{$user->user->id}}" class="form-check-input homework_services_input" type="checkbox" name="homework_services[]" id="inlineCheckbox1{{$homework_service->id . $course->id . $user->user->id}}" value="{{$homework_service->id}}" data-price="{{$homework_service->price}}">
+                                <label class="form-check-label" for="inlineCheckbox1{{$homework_service->id . $course->id . $user->user->id}}">{{ app()->getLocale() == 'ar' ? $homework_service->name_ar : $homework_service->name_en}} {{' - '}} {{   $homework_service->price . ' ' . $homework_service->country->currency }}</label>
+                                @endforeach
+                        </div>
+                    </div>
+                    @endforeach
+
+
+                </div>
+
+
+
+
+
+
+
                 <div class="form-group row">
-                    <label for="course" class="col-md-8 col-form-label">{{ __('Select the number of times you want the service') }}</label>
+                    <label for="course" class="col-md-6 col-form-label">{{ __('Select the number of times you want the service') }}</label>
                     <div class="col-md-4">
-                        <input id="quantitys{{$user->user->id}}" type="number" name="quantity" class="form-control input-sm product-quantity" min="1" value="1">
+                        <input id="quantitys{{$user->user->id}}" type="number" name="quantity" class="form-control input-sm product-quantity" min="1" value="1" onkeydown="return false">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="course" class="col-md-6 col-form-label">{{ __('Use from your wallet balance') }}</label>
+                    @if (Auth::check())
+                        @php
+                           $student = App\User::find(Auth::id());
+                        @endphp
+                    @endif
+                    <div class="col-md-4">
+                        <input id="used_balance{{$user->user->id}}" type="number" name="used_balance" class="form-control input-sm used_balance" min="0" value="0" data-wallet_balance="{{$student->wallet->balance}}">
                     </div>
                 </div>
 
@@ -341,268 +383,24 @@
     @endforeach
 
 
+    <div style="z-index: 10000000000000000 !important" class="modal fade" id="balance_alert" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">{{__('Alert')}}</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              {{__("You have exceeded the maximum balance in your wallet, the available balance is now in the wallet: ")}} <span class="available-quantity"></span> {{$scountry->currency}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
 @endsection
 
 
 
-@push('scripts-front')
-
-<script>
-
-$('#classes option').hide();
-$('#courses option').hide();
-
-$('#stages').change(function() {
-  $('#classes option').hide();
-  $('#courses option').hide();
-  $('#classes option[value="' + $(this).val() + '"]').show();
-
-
-  // add this code to select 1'st of streets automaticaly
-  // when city changed
-  if ($('#classes option[value="' + $(this).val() + '"]').length) {
-    $('#classes option[value="' + $(this).val() + '"]').first().prop('selected', true);
-    $('#courses option[value="' + $('#classes').find(':selected').data('foo') + '"]').show();
-
-
-    if ($('#courses option[value="' + $('#classes').find(':selected').data('foo') + '"]').length) {
-    $('#courses option[value="' + $('#classes').find(':selected').data('foo') + '"]').first().prop('selected', true);
-
-    var url = $('#courses').find(':selected').data('url');
-
-    $('#loader').css('display', 'flex');
-
-
-
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function(data) {
-
-            $('#loader').css('display', 'none');
-            $('#course-teachers').empty();
-            $('#course-teachers').append(data);
-
-        }
-    });
-
-    }
-    // in case if there's no corresponding street:
-    // reset select element
-    else {
-        $('#courses').val('');
-    };
-
-  }
-  // in case if there's no corresponding street:
-  // reset select element
-  else {
-    $('#courses').val('');
-    $('#classes').val('');
-  };
-});
-
-
-$('#classes').change(function() {
-  $('#courses option').hide();
-  $('#courses option[value="' + $(this).find(':selected').data('foo') + '"]').show();
-
-  // add this code to select 1'st of streets automaticaly
-  // when city changed
-  if ($('#courses option[value="' + $(this).find(':selected').data('foo') + '"]').length) {
-    $('#courses option[value="' + $(this).find(':selected').data('foo') + '"]').first().prop('selected', true);
-
-    var url = $('#courses').find(':selected').data('url');
-
-    $('#loader').css('display', 'flex');
-
-
-
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function(data) {
-
-            $('#loader').css('display', 'none');
-            $('#course-teachers').empty();
-            $('#course-teachers').append(data);
-
-        }
-    });
-
-}
-  // in case if there's no corresponding street:
-  // reset select element
-  else {
-    $('#courses').val('');
-  };
-});
-
-
-
-$(document).ready(function(){
-
-    $('#courses').on('change' ,function(){
-
-
-    var url = $(this).find(':selected').data('url');
-
-    $('#loader').css('display', 'flex');
-
-
-
-    $.ajax({
-        url: url,
-        method: 'GET',
-        success: function(data) {
-
-            $('#loader').css('display', 'none');
-            $('#course-teachers').empty();
-            $('#course-teachers').append(data);
-
-        }
-    });
-
-    });
-
-
-
-
-
-
-
-    $('.add-homework').on('click' , function(e){
-
-
-            e.preventDefault();
-
-            var url = $(this).data('url');
-
-            var check = $(this).data('check');
-
-            var method = $(this).data('method');
-
-            var loader = $(this).data('product');
-            var selectid = $(this).data('select');
-
-            var usertype = $(this).data('type');
-
-            loader = '#' + loader;
-
-
-
-
-            if (check == false) {
-
-            console.log(usertype);
-
-            $('#exampleModalCenter').modal({
-                keyboard: false
-                });
-
-            }else{
-
-                if(usertype == 'teacher'){
-
-                    $('#exampleModalCenter1').modal({
-                        keyboard: false
-                    });
-
-                }else{
-
-
-                    $('#selectedCourse' + selectid + ' option').first().prop('selected', true);
-
-                    var price = $('#selectedCourse' + selectid ).find(':selected').data('price');
-
-                    var teacherid = $('#selectedCourse' + selectid).find(':selected').data('teacher');
-
-
-                    var totalprice = '#total-price' + teacherid ;
-
-
-                    var quantity = '#quantitys' + teacherid ;
-
-
-                    $(quantity).val(1);
-
-
-                    $(totalprice).html(price);
-
-                    var modal = '#exampleModalCenter2' + teacherid ;
-
-
-                    $(modal).modal({
-                        keyboard: false
-                    })
-
-                }
-
-
-            }
-
-
-        $('#selectedCourse' + selectid).change(function() {
-
-            var price = $('#selectedCourse' + selectid).find(':selected').data('price');
-
-            var teacherid = $('#selectedCourse' + selectid).find(':selected').data('teacher');
-
-
-            var totalprice = '#total-price' + teacherid ;
-
-            var quantity = '#quantitys' + teacherid ;
-
-
-            $(quantity).val(1);
-
-
-            $(totalprice).html(price);
-
-        });
-
-
-        $('body').on('keyup change', '.product-quantity', function() {
-
-            var quantity = Number($(this).val()); //2
-
-            var price = $('#selectedCourse'  + selectid).find(':selected').data('price');
-
-
-            var teacherid = $('#selectedCourse'  + selectid).find(':selected').data('teacher');
-
-
-            var totalprice = '#total-price' + teacherid ;
-
-
-            $(totalprice).html((quantity * price));
-
-
-
-
-        });//end of product quantity change
-
-
-
-
-  });
-
-
-
-  $('.orderbtn').on('click' , function(){
-
-
-    $(this).closest('form').submit();
-
-    $(".orderbtn").off('click');
-
-    });
-
-
-});
-
-
-
-</script>
-
-@endpush

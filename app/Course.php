@@ -34,6 +34,11 @@ class Course extends Model
         return $this->belongsToMany(User::class);
     }
 
+    public function homework_services()
+    {
+        return $this->belongsToMany(HomeworkService::class);
+    }
+
     public function teachers()
     {
         return $this->belongsToMany(Teacher::class);

@@ -103,6 +103,12 @@
                         @case('homework')
                         <span class="badge badge-success badge-lg">{{__('Request Homework service')}}</span>
                             @break
+                        @case('library')
+                        <span class="badge badge-info badge-lg">{{__('Library Order')}}</span>
+                            @break
+                        @case('course')
+                        <span class="badge badge-primary badge-lg">{{__('Buying educational courses')}}</span>
+                            @break
                         @endswitch
 
 

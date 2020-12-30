@@ -113,6 +113,8 @@
                   <tr>
 
                       @foreach ($posts->reverse() as $post)
+                      @if (auth()->user()->hasRole('superadministrator') || auth()->user()->monitor->countries()->where('country_id', $post->country_id)->first() != null )
+
                     <td>
                         {{ $post->id }}
                     </td>
@@ -216,6 +218,7 @@
 
                     </td>
                 </tr>
+                        @endif
                       @endforeach
 
 

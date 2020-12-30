@@ -40,6 +40,10 @@ class PasswordResetController extends Controller
         $scountry = Country::findOrFail($country);
         $countries = Country::all();
 
+        $request->phone = str_replace(' ', '', $request->phone);
+        $request->phone = $request->phone_hide . $request->phone;
+        $request->merge(['phone' => $request->phone]);
+
         $user = User::where('phone' , $request->phone)->first();
 
 

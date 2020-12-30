@@ -64,6 +64,8 @@
                                                     <td>{{ $product->stock }}</td>
                                                     <td>{{ number_format($product->sale_price, 2) }}</td>
                                                     <td>
+                                                        @if ($product->stock > '0')
+
                                                         <a href=""
                                                            id="product-{{ $product->id }}"
                                                            data-name="{{ $product->name_en }}"
@@ -72,6 +74,11 @@
                                                            class="btn  btn-sm {{ in_array($product->id, $order->products->pluck('id')->toArray()) ? 'btn-default disabled' : 'btn-success add-product-btn' }}">
                                                             <i class="fa fa-plus"></i>
                                                         </a>
+
+                                                        @else
+                                                        {{__('Stock Empty')}}
+                                                        @endif
+
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -162,7 +169,7 @@
                                 @foreach ($order->products as $product)
                                 <tr>
                                     <td>{{ $product->name_en }}</td>
-                                    <td><input type="number" name="products[{{ $product->id }}][quantity]" data-price="{{ number_format($product->sale_price, 2) }}" class="form-control input-sm product-quantity" min="1" value="{{ $product->pivot->quantity }}"></td>
+                                    <td><input type="number" name="products[{{ $product->id }}][quantity]" data-stock="{{$product->stock}}" data-price="{{ number_format($product->sale_price, 2) }}" class="form-control input-sm product-quantity" min="1" value="{{ $product->pivot->quantity }}"></td>
                                     <td class="product-price">{{ number_format($product->sale_price * $product->pivot->quantity, 2) }}</td>
                                     <td>
                                         <button class="btn btn-danger btn-sm remove-product-btn" data-id="{{ $product->id }}"><span class="fa fa-trash"></span></button>
@@ -176,7 +183,7 @@
 
                         <h4 style="padding:10px">Total : <span class="total-price">{{ number_format($order->total_price, 2) }}</span></h4>
 
-                        <button class="btn btn-primary btn-block disabled" id="add-order-form-btn"><i class="fa fa-plus"></i> Edit order</button>
+                        <button class="btn btn-primary btn-block" id="add-order-form-btn"><i class="fa fa-plus"></i> Edit order</button>
 
                     </form>
 
@@ -244,6 +251,22 @@
 </div>
 
 
+
+<div style="z-index: 10000000000000000 !important" class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">{{__('Alert')}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {{__("The required quantity is not available in stock .. The quantity available for order now is:")}} <span class="available-quantity"></span>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 

@@ -90,7 +90,9 @@
                             <div class="col-md-10">
                                 <select class=" form-control @error('country') is-invalid @enderror" id="country" name="country" value="{{ old('country') }}" required autocomplete="country">
                                 @foreach ($countries as $country)
+                                @if (auth()->user()->hasRole('superadministrator') || auth()->user()->monitor->countries()->where('country_id', $country->id)->first() != null )
                                 <option value="{{ $country->id }}" >{{ $country->name_en }}</option>
+                                @endif
                                 @endforeach
                                 </select>
                                 @error('country')

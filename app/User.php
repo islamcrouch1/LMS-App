@@ -32,13 +32,16 @@ use App\Withdraw;
 use App\HomeWorkComment;
 use App\Report;
 use App\Notification;
-
 use App\CourseOrder;
-
 use App\UserLesson;
+use App\WalletRequest;
+
 
 use App\ExamUser;
 use App\Monitor;
+
+use App\Wallet;
+
 
 
 
@@ -91,6 +94,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
     public function getNameAttribute($value){
         return ucfirst($value);
+    }
+
+    public function wallet_requests()
+    {
+        return $this->hasMany(WalletRequest::class);
     }
 
     public function course_orders()
@@ -249,6 +257,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function cart()
     {
         return $this->hasOne(Cart::class);
+    }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
     }
 
     public function hasVerifiedPhone()

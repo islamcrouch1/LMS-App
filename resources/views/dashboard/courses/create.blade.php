@@ -127,6 +127,24 @@
                             </div>
                         </div>
 
+                        <div class="form-group row">
+                            <label for="homework_services" class="col-md-2 col-form-label">{{ __('Addon Homework Services') }}</label>
+                            <div class="col-md-10">
+                                <select style="height: 50px;" class=" select4 form-control @error('homework_services') is-invalid @enderror" name="homework_services[]" value="{{ old('homework_services') }}" multiple="multiple">
+
+
+                                    @foreach ($country->homework_services as $homework_service)
+                                    <option value="{{$homework_service->id}}">{{app()->getLocale() == 'ar' ?  $homework_service->name_ar . ' - ' . $homework_service->price  . $homework_service->country->currency : $homework_service->name_en . ' - ' . $homework_service->price . $homework_service->country->currency}}</option>
+                                    @endforeach
+                                </select>
+                                @error('homework_services')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                            </div>
+                        </div>
+
 
 
 

@@ -58,9 +58,10 @@ class CountriesController extends Controller
 
             'name_ar' => "required|string|max:255|unique:countries",
             'name_en' => "required|string|max:255|unique:countries",
-            'code' => "string",
-            'currency' => "string",
+            'code' => "required|string",
+            'currency' => "required|string",
             'image' => "required|image",
+            'shipping' => "required|double",
 
 
             ]);
@@ -71,19 +72,20 @@ class CountriesController extends Controller
                 'name_en' => $request['name_en'],
                 'code' => $request['code'],
                 'currency' => $request['currency'],
-                'image' => $request['image']->store('images/countries', 'public')
+                'image' => $request['image']->store('images/countries', 'public'),
+                'shipping' => $request['shipping'],
             ]);
 
 
 
-       
-            
+
+
             session()->flash('success' , 'Country created successfully');
 
-            
+
             $countries = Country::whenSearch(request()->search)
             ->paginate(5);
-    
+
             return view('dashboard.countries.index')->with('countries' , $countries);
     }
 
@@ -127,12 +129,13 @@ class CountriesController extends Controller
             'code' => "string",
             'currency' => "string",
             'image' => "image",
+            'shipping' => "required|double",
 
 
             ]);
 
             if($request->hasFile('image')){
-                
+
                 \Storage::disk('public')->delete($country->image);
                 $country->update([
                     'image' => $request['image']->store('images/countries', 'public'),
@@ -144,18 +147,19 @@ class CountriesController extends Controller
                 'name_en' => $request['name_en'],
                 'code' => $request['code'],
                 'currency' => $request['currency'],
+                'shipping' => $request['shipping'],
 
 
             ]);
 
 
 
-            
+
             session()->flash('success' , 'Country updated successfully');
 
             $countries = Country::whenSearch(request()->search)
             ->paginate(5);
-    
+
             return view('dashboard.countries.index')->with('countries' , $countries);
 
 
@@ -169,7 +173,7 @@ class CountriesController extends Controller
      */
     public function destroy($lang , $country)
     {
-        
+
         $country = Country::withTrashed()->where('id' , $country)->first();
 
         if($country->trashed()){
@@ -178,12 +182,12 @@ class CountriesController extends Controller
                 $country->forceDelete();
 
                 session()->flash('success' , 'Country Deleted successfully');
-    
+
                 $countries = Country::onlyTrashed()->paginate(5);
                 return view('dashboard.countries.index' , ['countries' => $countries]);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-    
+
                 $countries = Country::onlyTrashed()->paginate(5);
                 return view('dashboard.countries.index' , ['countries' => $countries]);
             }
@@ -196,20 +200,20 @@ class CountriesController extends Controller
                 $country->delete();
 
                 session()->flash('success' , 'Country trashed successfully');
-        
+
                 $countries = Country::whenSearch(request()->search)
                 ->paginate(5);
-        
+
                 return view('dashboard.countries.index')->with('countries' , $countries);
             }else{
                 session()->flash('success' , 'Sorry.. you do not have permission to make this action');
-        
+
                 $countries = Country::whenSearch(request()->search)
                 ->paginate(5);
-        
+
                 return view('dashboard.countries.index')->with('countries' , $countries);
             }
- 
+
         }
 
 
@@ -218,10 +222,10 @@ class CountriesController extends Controller
 
     public function trashed()
     {
-       
+
         $countries = Country::onlyTrashed()->paginate(5);
         return view('dashboard.countries.index' , ['countries' => $countries]);
-        
+
     }
 
     public function restore( $lang , $country)
@@ -230,7 +234,7 @@ class CountriesController extends Controller
         $country = Country::withTrashed()->where('id' , $country)->first()->restore();
 
         session()->flash('success' , 'Country restored successfully');
-    
+
         $countries = Country::whenSearch(request()->search)
         ->paginate(5);
 

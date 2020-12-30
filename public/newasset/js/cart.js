@@ -173,6 +173,40 @@ $(".img").change(function() {
 
     });
 
+    $('body').on('keyup change', '.used_balance1', function() {
+
+
+        var used_balance = Number($(this).val());
+
+        var wallet_balance = $(this).data('wallet_balance');
+
+        if(used_balance > wallet_balance){
+
+            $('#balance_alert').modal({
+                keyboard: false
+            });
+
+            $('.available-quantity').empty();
+            $('.available-quantity').html(wallet_balance);
+
+            $(this).val(wallet_balance);
+
+
+        }
+
+        if(used_balance < 0 ){
+
+            $(this).val(0);
+        }
+
+
+        calculateTotal();
+
+
+
+
+
+    });//end of product quantity change
 
 
 
@@ -183,12 +217,34 @@ $(".img").change(function() {
 function calculateTotal() {
 
     var price = 0;
+    var price1 = 0;
+
+    var used_balance = parseFloat($('.used_balance1').val());
+
+    var shipping = parseFloat($('.shipping_fee').html());
+
 
     $('.order-list .product-price').each(function(index) {
 
         price += parseFloat($(this).html().replace(/,/g, ''));
 
     });//end of product price
+
+    price = price - used_balance + shipping ;
+
+    if(price < '0'){
+
+        $('.order-list .product-price').each(function(index) {
+
+            price1 += parseFloat($(this).html().replace(/,/g, ''));
+
+        });//end of product price
+
+        $('.used_balance').val(price1 + shipping)
+
+        price = 0 ;
+
+    }
 
     $('.total-price').html(price.toFixed(2));
 

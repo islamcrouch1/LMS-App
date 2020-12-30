@@ -16,6 +16,7 @@ class NotificationController extends Controller
         $notification = Notification::findOrFail($request->notification);
 
 
+
         if($notification->status == 0){
 
             $notification->update([

@@ -17,7 +17,7 @@
     <!-- /.card-body -->
     </div>
     <!-- /.card -->
-</div>  
+</div>
 @endif --}}
 
 
@@ -31,6 +31,12 @@
             killer: true
         }).show();
     </script>
+
+    @php
+        session()->forget('success');
+    @endphp
+
+
 @endif
 
 

@@ -34,7 +34,13 @@
                                 {{__('Order No')}}
                             </th>
                             <th>
-                                {{__('Total')}}
+                                {{__('Paid Amount')}}
+                            </th>
+                            <th>
+                                {{__('Wallet Balance')}}
+                            </th>
+                            <th>
+                                {{__('Shipping fee')}}
                             </th>
                             <th>
                                 {{__('Order Date')}}
@@ -54,6 +60,8 @@
                         <tr>
                             <td style="">{{$order->id}}</td>
                             <td style="">{{$order->total_price}} {{' ' . $user->country->currency}}</td>
+                            <td style="">{{$order->wallet_balance}} {{' ' . $user->country->currency}}</td>
+                            <td style="">{{$order->shipping}} {{' ' . $user->country->currency}}</td>
                             <td style="">{{$order->created_at}}</td>
                             <td style="">
 
@@ -69,6 +77,9 @@
                                 @break
                                 @case("completed")
                                 <span class="badge badge-primary badge-lg">{{__('You have successfully received your request')}}</span>
+                                @break
+                                @case("canceled")
+                                <span class="badge badge-danger badge-lg">{{__('The order has been canceled')}}</span>
                                 @break
                                 @default
                                 @endswitch
@@ -130,7 +141,7 @@
         @endphp
 
         @foreach ($user->home_work_orders->reverse() as $homeworkOrder)
-        @if ($homeworkOrder->status == 'done')
+        @if ($homeworkOrder->status == 'done' || $homeworkOrder->status == 'canceled')
             @php
                 $homeWorkCount = $homeWorkCount + 1 ;
             @endphp
@@ -161,7 +172,10 @@
                                 {{__('Order No')}}
                             </th>
                             <th>
-                                {{__('Total')}}
+                                {{__('Paid Amount')}}
+                            </th>
+                            <th>
+                                {{__('Wallet Balance')}}
                             </th>
                             <th>
                                 {{__('Course')}}
@@ -180,24 +194,91 @@
                     <tbody class="list order-list">
 
                         @foreach ($user->home_work_orders->reverse() as $homeworkOrder)
-                        @if ($homeworkOrder->status == 'done')
+                        @if ($homeworkOrder->status == 'done' || $homeworkOrder->status == 'canceled' )
                         <tr>
                             <td style="">{{$homeworkOrder->id}}</td>
-                            <td style="">{{$homeworkOrder->total_price}} {{' ' . $user->country->currency}}</td>
+                            <td style="">
+                                {{$homeworkOrder->total_price}} {{' ' . $user->country->currency}}
+                                @if ($homeworkOrder->status == 'canceled')
+
+
+                                @php
+                                $rejected_count = 0 ;
+                                $refund = 0 ;
+                                $order_requests_count = 0 ;
+                                $homework_services_price = 0 ;
+                                @endphp
+
+                                @foreach ($homeworkOrder->home_works as $homework_request)
+
+
+
+
+                                @if ($homework_request->status == 'rejected')
+
+                                @php
+                                    $rejected_count = $rejected_count + 1 ;
+                                @endphp
+
+                                @endif
+
+                                @endforeach
+
+                                @php
+
+                                    foreach ($homeworkOrder->homework_services as $homework_services) {
+
+                                        $homework_services_price += $homework_services->price;
+
+                                    }
+
+                                $order_requests_count = $homeworkOrder->quantity + $homeworkOrder->home_works->count() - $rejected_count;
+                                $refund = (($homeworkOrder->quantity) * $homeworkOrder->course->homework_price) +  (($homeworkOrder->quantity) * $homework_services_price);
+
+                                @endphp
+
+
+                                    <br>
+                                    {{__('Refund : ') . $refund}}{{' ' . $user->country->currency}}
+                                @endif
+                            </td>
+                            <td style="">{{$homeworkOrder->wallet_balance}} {{' ' . $user->country->currency}}</td>
                             <td style="">{{ app()->getLocale() == 'ar' ? $homeworkOrder->course->name_ar : $homeworkOrder->course->name_en}}</td>
                             <td style="">{{$homeworkOrder->created_at}}</td>
-                            <td style=""><span class="badge badge-success badge-lg"> {{__('Payment is accepted')}} <span></td>
+                            <td style="">
+
+                                    @switch($homeworkOrder->status)
+                                    @case('done')
+                                    <span class="badge badge-success badge-lg"> {{__('Payment is accepted')}} <span>
+                                        @break
+                                    @case('canceled')
+                                    <span class="badge badge-danger badge-lg">{{__('the request has been canceled')}}</span>
+                                    @break
+                                    @default
+                                    @endswitch
+
+                            </td>
 
 
 
 
                             <td>
+                                @if ($homeworkOrder->status == 'canceled')
+
+                                @else
 
                                 <a href="{{route('homework' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id])}}" style="color:#fff;" class="btn btn-primary btn-sm">
                                     <i class="fa fa-user-graduate"></i>
                                     {{__('Use')}}
 
                                 </a>
+
+                                <a href="#" style="color:#fff;" class="btn btn-danger btn-sm show_details" data-select="{{$homeworkOrder->id}}" >
+                                    <i class="fa fa-times-circle"></i>
+                                    {{__('Cancelling order')}}
+                                </a>
+
+                                @endif
 
                             </td>
                         </tr>
@@ -265,7 +346,10 @@
                                 {{__('Order No')}}
                             </th>
                             <th>
-                                {{__('Total')}}
+                                {{__('Paid Amount')}}
+                            </th>
+                            <th>
+                                {{__('Wallet Balance')}}
                             </th>
                             <th>
                                 {{__('Course')}}
@@ -288,6 +372,7 @@
                         <tr>
                             <td style="">{{$courseOrder->id}}</td>
                             <td style="">{{$courseOrder->total_price}} {{' ' . $user->country->currency}}</td>
+                            <td style="">{{$courseOrder->wallet_balance}} {{' ' . $user->country->currency}}</td>
                             <td style="">{{ app()->getLocale() == 'ar' ? $courseOrder->course->name_ar : $courseOrder->course->name_en}}</td>
                             <td style="">{{$courseOrder->created_at}}</td>
                             <td style=""><span class="badge badge-success badge-lg"> {{__('Payment is accepted')}} <span></td>
@@ -477,4 +562,140 @@
 
 @endforeach
 
+
+@foreach ($user->home_work_orders->reverse() as $homeworkOrder)
+
+@if ($homeworkOrder->status == 'done')
+
+
+<div style="z-index: 10000000000000000 !important" class="modal fade" id="exampleModalCenter2-{{$homeworkOrder->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">{{__('Cancelling order')}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="text-align:{{app()->getLocale() == 'ar' ? 'right' : 'left' }}">
+
+            <h5 class="card-title" style="text-align:{{app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{__('Dear student, if you cancel the order, you will get a refund of the amount paid in your own wallet with us, and if there are complete orders, they will be deducted from the amount and the rest of the amount will be refunded in the wallet')}}</h5>
+
+
+            @php
+            $waiting_count = 0 ;
+            $rejected_count = 0 ;
+            $refund = 0 ;
+            $order_requests_count = 0 ;
+            $homework_services_price = 0 ;
+            @endphp
+
+            @foreach ($homeworkOrder->home_works as $homework_request)
+
+
+
+            @if ($homework_request->status == 'waiting')
+
+                @php
+                    $waiting_count = $waiting_count + 1 ;
+                @endphp
+
+            @endif
+
+            @if ($homework_request->status == 'rejected')
+
+            @php
+                $rejected_count = $rejected_count + 1 ;
+            @endphp
+
+            @endif
+
+            @endforeach
+
+            @php
+
+                foreach ($homeworkOrder->homework_services as $homework_services) {
+
+                    $homework_services_price += $homework_services->price;
+
+                }
+
+            $order_requests_count = $homeworkOrder->quantity + $homeworkOrder->home_works->count() - $rejected_count;
+            $refund = (($homeworkOrder->quantity + $waiting_count) * $homeworkOrder->course->homework_price) +  (($homeworkOrder->quantity + $waiting_count) * $homework_services_price);
+
+            @endphp
+
+
+
+
+            <h5 class="card-text mt-2" style="text-align:{{app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{__('The number of completed applications : ') . ($order_requests_count - $homeworkOrder->quantity - $waiting_count)}}</h5>
+            <h5 class="card-text" style="text-align:{{app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{__('The amount that will be redeemed in the wallet : ') . $refund . ' ' . $user->country->currency}}</h5>
+
+
+
+        </div>
+        <div class="modal-footer">
+
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-md-6" style="text-align: center;">
+
+                        <a href="{{route('homework.cancell' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'homework_order' =>$homeworkOrder->id])}}" style="color:#fff;" class="btn btn-danger btn-sm btnAction" >
+                            <i class="fa fa-times-circle"></i>
+                            {{__('Cancelling order')}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+      </div>
+    </div>
+</div>
+
+@elseif ($homeworkOrder->status == 'canceled')
+
+
+
+
+@endif
+
+@endforeach
+
 @endsection
+
+
+@push('scripts-front')
+
+<script>
+
+$('.btnAction').on('click' , function(){
+
+
+
+$(".btnAction").css("pointer-events", "none");
+
+});
+
+
+
+$('.show_details').on('click' , function(e){
+
+var selectid = $(this).data('select');
+
+
+e.preventDefault();
+
+$('#exampleModalCenter2-' + selectid).modal({
+    keyboard: false
+    });
+
+});
+
+
+</script>
+
+@endpush

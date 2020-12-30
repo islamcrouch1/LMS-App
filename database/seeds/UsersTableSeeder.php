@@ -59,7 +59,8 @@ class UsersTableSeeder extends Seeder
             'quantity' => '10',
             'total_price' => '50',
             'orderid' => '45454545455',
-            'status' => 'done'
+            'status' => 'done',
+            'wallet_balance'=>'0',
         ]);
 
 
@@ -76,6 +77,20 @@ class UsersTableSeeder extends Seeder
         $cart = \App\Cart::create([
             'user_id' => '3',
         ]);
+
+
+        \App\Wallet::create([
+            'user_id' => '1',
+        ]);
+
+        \App\Wallet::create([
+            'user_id' => '2',
+        ]);
+
+        \App\Wallet::create([
+            'user_id' => '3',
+        ]);
+
 
         $teacher = \App\Teacher::create([
             'user_id' => '2',
@@ -98,6 +113,7 @@ class UsersTableSeeder extends Seeder
             'code' => '00965',
             'currency' => 'KWD',
             'image' => 'images/countries/dSroDy5KlCP8nU4H5eowlWxDuabJrVrBx47Jrdkf.png',
+            'shipping'=> '5',
 
         ]);
 
@@ -107,7 +123,7 @@ class UsersTableSeeder extends Seeder
             'code' => '002',
             'currency' => 'EGP',
             'image' => 'images/countries/dSroDy5KlCP8nU4H5eowlWxDuabJrVrBx47Jrdkf.png',
-
+            'shipping'=> '30',
         ]);
 
 

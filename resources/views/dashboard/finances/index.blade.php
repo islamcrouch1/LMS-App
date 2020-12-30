@@ -81,7 +81,7 @@
                                         @foreach ($country->orders as $order)
                                         @if ($order->payment_status == 'done')
                                         @php
-                                            $total_sales = $total_sales + $order->total_price;
+                                            $total_sales = $total_sales + $order->total_price + $order->wallet_balance;
                                         @endphp
                                         @endif
                                             @foreach ($order->products as $product)
@@ -130,7 +130,7 @@
                                     @foreach ($country->courses_orders as $order)
                                     @if ($order->status == 'done')
                                     @php
-                                        $total_sales = $total_sales + $order->total_price;
+                                        $total_sales = $total_sales + $order->total_price + $order->wallet_balance;
                                     @endphp
                                     @endif
                                     @endforeach
@@ -149,7 +149,7 @@
                                         @foreach ($course->course_orders as $order)
                                             @if ($order->status == 'done')
                                             @php
-                                                $total_sales_course = $total_sales_course + $order->total_price;
+                                                $total_sales_course = $total_sales_course + $order->total_price + $order->wallet_balance;
                                             @endphp
                                             @endif
                                         @endforeach
@@ -175,34 +175,22 @@
                                 </div>
 
                                 <div class="row">
-                                    @php
-                                        $total_sales = 0;
-                                    @endphp
-                                    @foreach ($country->homeworks_orders as $order)
-                                    @if ($order->status == 'done')
-                                    @php
-                                        $total_sales = $total_sales + $order->total_price;
-                                    @endphp
-                                    @endif
-                                    @endforeach
-                                    <div class="col-lg-4 mb-2">
-                                        <div class="card border-1 border-left-3 border-left-accent text-center mb-lg-0">
-                                            <div class="card-body">
-                                                <h4 class="h2 mb-0">{{ $total_sales . ' ' . $country->currency }}</h4>
-                                                <div>{{__('Total sales')}}</div>
-                                            </div>
-                                        </div>
-                                    </div>
+
 
                                     @php
-                                    $OutstandingBalance = 0 ;
-                                    $countH = 0 ;
-                                    $balanceCount = 0;
-                                    $balance = 0 ;
-                                    $amount = 0;
-                                    $teachers_profits = 0;
-                                    $withdraw_done = 0;
-                                    $withdraw_hold = 0;
+
+                                        $total_homework_sales = 0;
+                                        $total_homework_teacher_commision = 0;
+
+                                        $OutstandingBalance = 0 ;
+                                        $countH = 0 ;
+                                        $balanceCount = 0;
+                                        $balance = 0 ;
+                                        $amount = 0;
+                                        $teachers_profits = 0;
+                                        $withdraw_done = 0;
+                                        $withdraw_hold = 0;
+
                                     @endphp
 
                                     @foreach ($country->withdraws as $withdraw)
@@ -220,41 +208,102 @@
                                     @endphp
                                     @endforeach
 
-                                    @foreach ($country->homeworks_orders as $homeworkOrder)
 
-                                    @if ($homeworkOrder->status == 'done')
+
+                                    @foreach ($country->homeworks_orders as $homework_order)
+
+                                    @if ($homework_order->status == 'done'  || $homework_order->status == 'canceled')
 
                                         @php
+
+                                            $waiting_count = 0 ;
+                                            $rejected_count = 0 ;
+                                            $done_count = 0 ;
+                                            $order_requests_count = 0 ;
+                                            $homework_services_price = 0;
+                                            $homework_services_teacher_commision = 0;
+
 
                                             $balanceCount = 0;
                                             $countH = 0;
                                             $commision = 0;
                                             $profits = 0;
-                                            $teachers_profits = $teachers_profits + ($homeworkOrder->course->teacher_commission *  ($homeworkOrder->quantity + $homeworkOrder->home_works->count()));
+                                            $total_profits = 0;
 
+                                            foreach ($homework_order->homework_services as $homework_services) {
 
+                                                $homework_services_price += $homework_services->price;
+                                                $homework_services_teacher_commision += $homework_services->teacher_commission;
 
-                                            foreach ($homeworkOrder->home_works as $homeWorkRequset) {
-                                                if($homeWorkRequset->status != 'done'){
-                                                    $countH = $countH + 1;
-                                                }
-                                                if($homeWorkRequset->status == 'done'){
-                                                    $balanceCount = $balanceCount + 1;
-                                                }
                                             }
-                                            $commision = ($homeworkOrder->quantity + $countH ) * $homeworkOrder->course->teacher_commission;
-                                            $OutstandingBalance = $OutstandingBalance + $commision ;
 
-                                            $balance = $balance + ($balanceCount * $homeworkOrder->course->teacher_commission) ;
+
+                                            foreach ($homework_order->home_works as $homework_request) {
+
+                                                if ($homework_request->status == 'rejected'){
+
+                                                    $rejected_count = $rejected_count + 1 ;
+
+                                                }
+
+
+                                                if ($homework_request->status == 'waiting'){
+
+                                                    $waiting_count = $waiting_count + 1 ;
+
+                                                }
+
+                                                if ($homework_request->status == 'done'){
+
+                                                    $done_count = $done_count + 1 ;
+
+                                                }
+
+                                            }
+
+
+
+
+                                            $order_requests_count = $homework_order->quantity + $homework_order->home_works->count() - $rejected_count;
+
+
+
+                                            if($homework_order->status == 'canceled'){
+
+                                                $total_homework_sales +=  ( ($order_requests_count - $homework_order->quantity ) *  $homework_order->course->homework_price ) + ( ($order_requests_count - $homework_order->quantity ) *  $homework_services_price);
+                                                $total_homework_teacher_commision +=  ( ($order_requests_count - $homework_order->quantity ) *  $homework_order->course->teacher_commission ) + ( ($order_requests_count - $homework_order->quantity ) *  $homework_services_teacher_commision);
+                                                $commision = (( $order_requests_count - $homework_order->quantity - $done_count ) * $homework_order->course->teacher_commission) + (( $order_requests_count - $homework_order->quantity - $done_count ) * $homework_services_teacher_commision);
+                                                $OutstandingBalance = $OutstandingBalance + $commision ;
+
+
+                                            }else{
+
+                                                $total_homework_sales += ( ($order_requests_count ) *  $homework_order->course->homework_price ) + ( ($order_requests_count) *  $homework_services_price);
+                                                $total_homework_teacher_commision +=  ( ($order_requests_count) *  $homework_order->course->teacher_commission ) + ( ($order_requests_count) *  $homework_services_teacher_commision);
+                                                $commision = (($order_requests_count - $done_count ) * $homework_order->course->teacher_commission) + (($order_requests_count - $done_count ) * $homework_services_teacher_commision );
+                                                $OutstandingBalance = $OutstandingBalance + $commision ;
+
+
+                                            }
 
                                         @endphp
 
                                     @endif
                                     @endforeach
+
                                     <div class="col-lg-4 mb-2">
                                         <div class="card border-1 border-left-3 border-left-accent text-center mb-lg-0">
                                             <div class="card-body">
-                                                <h4 class="h2 mb-0">{{ $total_sales - $teachers_profits }}{{' ' . $country->currency }}</h4>
+                                                <h4 class="h2 mb-0">{{ $total_homework_sales . ' ' . $country->currency }}</h4>
+                                                <div>{{__('Total sales')}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 mb-2">
+                                        <div class="card border-1 border-left-3 border-left-accent text-center mb-lg-0">
+                                            <div class="card-body">
+                                                <h4 class="h2 mb-0">{{ $total_homework_sales - $total_homework_teacher_commision }}{{' ' . $country->currency }}</h4>
                                                 <div>{{__('Profits')}}</div>
                                             </div>
                                         </div>
@@ -262,7 +311,7 @@
                                     <div class="col-lg-4 mb-2">
                                         <div class="card border-1 border-left-3 border-left-accent text-center mb-lg-0">
                                             <div class="card-body">
-                                                <h4 class="h2 mb-0">{{ $teachers_profits}} {{' ' . $country->currency }}</h4>
+                                                <h4 class="h2 mb-0">{{ $total_homework_teacher_commision}} {{' ' . $country->currency }}</h4>
                                                 <div>{{__('Profits For Teachers')}}</div>
                                             </div>
                                         </div>
@@ -302,7 +351,7 @@
                                     <div class="col-lg-4 mb-2">
                                         <div class="card border-1 border-left-3 border-left-accent text-center mb-lg-0">
                                             <div class="card-body">
-                                                <h4 class="h2 mb-0">{{ $balance}} {{' ' . $country->currency }}</h4>
+                                                <h4 class="h2 mb-0">{{ $total_homework_teacher_commision - $OutstandingBalance }} {{' ' . $country->currency }}</h4>
                                                 <div>{{__('Teachers profits not outstanding')}}</div>
                                             </div>
                                         </div>

@@ -21,8 +21,8 @@ use App\Events\NewNotification;
 
 
 use App\Classes\PaymentService;
-
-
+use App\HomeworkService;
+use App\WalletRequest;
 
 class TeachersController extends Controller
 {
@@ -81,7 +81,7 @@ class TeachersController extends Controller
     }
 
 
-    public function addOrder($lang , $user  ,  $country ,Request $requset )
+    public function addOrder($lang , $user  ,  $country ,Request $request )
     {
 
 
@@ -90,61 +90,155 @@ class TeachersController extends Controller
         $scountry = Country::findOrFail($country);
         $countries = Country::all();
 
-        $quantity = $requset->quantity;
+        $homework_services = $request->homework_services;
+        $homework_services_price = 0 ;
 
-        $teacher = User::findOrFail($requset->teacher);
+        foreach($homework_services as $homework_service){
 
-        $course = Course::findOrFail($requset->selectedCourse);
+            $homework_service = HomeworkService::find($homework_service);
+            $homework_services_price += $homework_service->price;
+
+        }
+
+
+        $quantity = $request->quantity;
+
+        $used_balance = $request->used_balance ;
+
+        $balance = $user->wallet->balance;
+
+        if($used_balance > $balance){
+
+            if(app()->getLocale() == 'ar'){
+
+                session()->flash('success' , 'رصيدك الحالي في المحفظة لا يكفي لإتمام الطلب');
+
+            }else{
+
+                session()->flash('success' , 'Your current wallet balance is insufficient to complete the order');
+            }
+
+            return redirect()->route('teachers' , ['lang' => app()->getLocale() , 'country'=>$scountry->id]);
+        }
+
+
+
+
+        $teacher = User::findOrFail($request->teacher);
+
+        $course = Course::findOrFail($request->selectedCourse);
 
         $price = $course->homework_price;
 
-        $total_price = $quantity * $price ;
+        $total_price = ($quantity * $price) - $used_balance + ($homework_services_price * $quantity);
+
+
 
         $orderid = time().rand(999,9999) ;
 
 
-        $homeworkorder = HomeWorkOrder::create([
-            'user_id' => $user->id,
-            'teacher_id' => $teacher->id,
-            'user_name' => $user->name,
-            'teacher_name' => $teacher->name,
-            'country_id'=>$user->country->id,
-            'course_id' => $course->id,
-            'quantity' => $quantity,
-            'total_price' => $total_price,
-            'orderid' => $orderid ,
-            'status' => 'waiting',
-
-        ]);
+        if($total_price == '0'){
 
 
+            $homeworkorder = HomeWorkOrder::create([
+                'user_id' => $user->id,
+                'teacher_id' => $teacher->id,
+                'user_name' => $user->name,
+                'teacher_name' => $teacher->name,
+                'country_id'=>$user->country->id,
+                'course_id' => $course->id,
+                'quantity' => $quantity,
+                'total_price' => $total_price,
+                'orderid' => $orderid ,
+                'status' => 'done',
+                'wallet_balance'=>$used_balance,
+            ]);
+
+            $homeworkorder->homework_services()->sync($request->homework_services);
+
+
+            if($used_balance > 0){
+
+                $user->wallet->update([
+
+                    'balance' => $user->wallet->balance - $used_balance ,
+                ]);
+
+                $request_ar = 'استخدام رصيد في شراء خدمة حل الواجبات';
+                $request_en = 'Use of credit to purchase assignment service';
+
+
+                $wallet_request = WalletRequest::create([
+                    'user_id' => $user->id,
+                    'wallet_id' => $user->wallet->id,
+                    'status'=>'done',
+                    'request_ar' => $request_ar,
+                    'request_en' => $request_en,
+                    'balance' => - $used_balance,
+                    'orderid' => $homeworkorder->orderid ,
+                ]);
+
+            }
 
 
 
-        $payment = new PaymentService();
 
 
-        $array['CstFName']                    = $user->name;
-        $array['CstEmail']                    = $user->email;
-        $array['CstMobile']                   = $user->phone;
-        $array['payment_gateway']             = 'knet'; // cc || knet
-        $array['total_price']                 = $total_price;
-        $array['order_id']                    = $orderid;
-        $array['products']['ProductName']     = 'Payment for homework request - ' . $course->name_en . ' - ' . $course->ed_class->name_en;
-        $array['products']['ProductQty']      = $quantity;
-        $array['products']['ProductPrice']    = $price;
-        $array['CurrencyCode']                = $user->country->currency;
-        $payment->setSuccessUrl(route('success-order' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id]))->setErrorUrl(route('error-order' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id]));
-        $result = $payment->pay($array);
-        if($result['status'] == "success") {
+            return redirect()->route('success-order' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'OrderID'=>$orderid , 'Result'=>'CAPTURED']);
 
-            return redirect(url($result['paymentURL']));
-            // $paymentURL = $result['paymentURL'];
-            // return redirect()->$paymentURL ;
+
         }else{
 
-            return redirect()->route('error-order' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'OrderID'=>$orderid]);
+            $homeworkorder = HomeWorkOrder::create([
+                'user_id' => $user->id,
+                'teacher_id' => $teacher->id,
+                'user_name' => $user->name,
+                'teacher_name' => $teacher->name,
+                'country_id'=>$user->country->id,
+                'course_id' => $course->id,
+                'quantity' => $quantity,
+                'total_price' => $total_price,
+                'orderid' => $orderid ,
+                'status' => 'waiting',
+                'wallet_balance'=>$used_balance,
+
+            ]);
+
+            $payment = new PaymentService();
+
+
+            $array['CstFName']                    = $user->name;
+            $array['CstEmail']                    = $user->email;
+            $array['CstMobile']                   = $user->phone;
+            $array['payment_gateway']             = 'knet'; // cc || knet
+            $array['total_price']                 = $total_price;
+            $array['order_id']                    = $orderid;
+            $array['products']['ProductName']     = 'Payment for homework request - ' . $course->name_en . ' - ' . $course->ed_class->name_en;
+            $array['products']['ProductQty']      = $quantity;
+            $array['products']['ProductPrice']    = $price;
+            $array['CurrencyCode']                = $user->country->currency;
+            $payment->setSuccessUrl(route('success-order' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'used_balance' => $used_balance , 'homework_services'=>$request->homework_services]))->setErrorUrl(route('error-order' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id]));
+            $result = $payment->pay($array);
+            if($result['status'] == "success") {
+
+                return redirect(url($result['paymentURL']));
+                // $paymentURL = $result['paymentURL'];
+                // return redirect()->$paymentURL ;
+            }else{
+
+                return redirect()->route('error-order' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'OrderID'=>$orderid]);
+            }
+
         }
+
+
+
+
+
+
+
+
+
 
 
         // return view('teacher-show' , compact('countries' , 'scountry' , 'user'  , 'links' ));
@@ -163,10 +257,42 @@ class TeachersController extends Controller
 
         if($request->Result == 'CAPTURED') {
 
+
+            if($request->used_balance > 0){
+
+                $user->wallet->update([
+
+                    'balance' => $user->wallet->balance - $request->used_balance ,
+                ]);
+
+                $request_ar = 'استخدام رصيد في شراء خدمة حل الواجبات';
+                $request_en = 'Use of credit to purchase assignment service';
+
+
+                $wallet_request = WalletRequest::create([
+                    'user_id' => $user->id,
+                    'wallet_id' => $user->wallet->id,
+                    'status'=>'done',
+                    'request_ar' => $request_ar,
+                    'request_en' => $request_en,
+                    'balance' => - $request->used_balance,
+                    'orderid' => $homeworkOrder->orderid ,
+                ]);
+
+
+
+
+
+
+            }
+
+
             $homeworkOrder->update([
                 'status' => "done",
             ]);
 
+
+            $homeworkOrder->homework_services()->sync($request->homework_services);
 
 
             $title_ar = 'طلب شراء جديد لخدمة حل الواجب';

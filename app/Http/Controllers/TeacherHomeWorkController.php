@@ -27,7 +27,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 
 class TeacherHomeWorkController extends Controller
 {
-    public function index($lang , $user , $country)
+    public function index($lang , $user , $country ,Request $request)
     {
 
 
@@ -39,6 +39,14 @@ class TeacherHomeWorkController extends Controller
 
         $scountry = Country::findOrFail($user->country_id);
         $countries = Country::all();
+
+
+        if($request->homeworkRequest1){
+
+            $homeworkRequest1 = HomeWork::findOrFail($request->homeworkRequest1);
+            return view('teacher-homework' , compact('countries' , 'scountry' , 'user'  , 'links' , 'homeWorks' , 'homeworkRequest1' ));
+
+        }
 
 
         return view('teacher-homework' , compact('countries' , 'scountry' , 'user'  , 'links' , 'homeWorks' ));
@@ -56,10 +64,8 @@ class TeacherHomeWorkController extends Controller
 
         $homeworkRequest = HomeWork::findOrFail($request->homeworkRequest);
 
-
         $scountry = Country::findOrFail($user->country_id);
         $countries = Country::all();
-
 
         return view('teacher-interact-homework' , compact('countries' , 'scountry' , 'user'  , 'links'  , 'homeworkRequest' ));
 
@@ -90,11 +96,7 @@ class TeacherHomeWorkController extends Controller
         }
 
 
-        $homeWorks = HomeWork::where('teacher_id' , $user->id)->get();
-
-
         $scountry = Country::findOrFail($user->country_id);
-        $countries = Country::all();
 
         $student = User::find($homeworkRequest1->user_id);
 
@@ -152,7 +154,102 @@ class TeacherHomeWorkController extends Controller
         }
 
 
-        return view('teacher-homework' , compact('countries' , 'scountry' , 'user'  , 'links' , 'homeWorks' , 'homeworkRequest1' ));
+        return redirect()->route('teacher.homework' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id , 'homeworkRequest1'=> $homeworkRequest1]);
+
+
+    }
+
+    public function reject($lang , $user , $country , Request $request)
+    {
+
+
+        $links = Link::all();
+        $user = User::find($user);
+
+        $homeworkRequest1 = HomeWork::findOrFail($request->homeworkRequest);
+
+
+        $homework_order = HomeWorkOrder::findOrFail($homeworkRequest1->home_work_order_id);
+
+
+        $homework_order->update([
+            'quantity' => $homework_order->quantity + 1 ,
+        ]);
+
+
+        if($homeworkRequest1->status == 'waiting'){
+
+            $homeworkRequest1->update([
+
+                'status' => 'rejected',
+                'recieve_time' => Carbon::now()->toDateTimeString(),
+
+            ]);
+
+        }
+
+
+        $scountry = Country::findOrFail($user->country_id);
+        $student = User::find($homeworkRequest1->user_id);
+
+
+        $title_ar = 'تم رفض استلام طلبك';
+        $body_ar = 'لقد قام المعلم ' . $user->name . ' برفض طلبك بسبب عدم تطابق الطلب مع الخدمة التي اخترتها يرجى اختيار الخدمة المناسبة وقم باعادة ارسال الطلب ';
+        $title_en = 'Your request has been rejected';
+        $body_en  = 'teacher ' . $user->name . ' rejected your request because the request does not match the service you chose. Please choose the appropriate service and re-send the request' ;
+
+
+
+
+    $notification = Notification::create([
+        'user_id' => $student->id,
+        'user_name'  => $user->name,
+        'user_image' => asset('storage/images/users/' . $user->profile),
+        'title_ar' => $title_ar,
+        'body_ar' => $body_ar ,
+        'title_en' => $title_en,
+        'body_en' => $body_en ,
+        'date' => $homeworkRequest1->recieve_time,
+        'url' =>  route('homework' , ['lang'=>app()->getLocale() , 'user'=>$student->id ,  'country'=>$scountry->id]),
+    ]);
+
+
+
+    $data =[
+        'notification_id' => $notification->id,
+        'user_id' => $student->id,
+        'user_name'  => $user->name,
+        'user_image' => asset('storage/images/users/' . $user->profile),
+        'title_ar' => $title_ar,
+        'body_ar' => $body_ar ,
+        'title_en' => $title_en,
+        'body_en' => $body_en ,
+        'date' => $homeworkRequest1->recieve_time,
+        'status'=> $notification->status,
+        'url' =>  route('homework' , ['lang'=>app()->getLocale() , 'user'=>$student->id ,  'country'=>$scountry->id]),
+        'change_status' =>  route('notification-change', ['lang'=>app()->getLocale() , 'user'=>$student->id , 'country'=>$scountry->id , 'notification'=>$notification->id]),
+
+   ];
+
+
+   event(new NewNotification($data));
+
+
+
+        if(app()->getLocale() == 'ar'){
+
+            session()->flash('success' , 'تم رفض الطلب بنجاح' );
+
+        }else{
+
+            session()->flash('success' , 'The request was successfully rejected');
+        }
+
+
+
+        return redirect()->route('teacher.homework' , ['lang'=>app()->getLocale() , 'user'=>$user->id ,  'country'=>$scountry->id]);
+
+
 
 
     }

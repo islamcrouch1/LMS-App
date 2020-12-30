@@ -63,17 +63,28 @@
                                                     <td>{{ $product->name_en }}</td>
                                                     <td>{{ $product->stock }}</td>
                                                     <td>{{ number_format($product->sale_price, 2) . ' ' . $product->country->currency }}</td>
-                                                    <td>
-                                                        <a href=""
-                                                           id="product-{{ $product->id }}"
-                                                           data-name="{{ $product->name_en }}"
-                                                           data-currency="{{ $product->country->currency }}"
-                                                           data-id="{{ $product->id }}"
-                                                           data-price="{{ $product->sale_price }}"
-                                                           class="btn btn-success btn-sm add-product-btn">
-                                                            <i class="fa fa-plus"></i>
-                                                        </a>
-                                                    </td>
+
+                                                        <td>
+                                                            @if ($product->stock > '0')
+
+                                                            <a href=""
+                                                            id="product-{{ $product->id }}"
+                                                            data-name="{{ $product->name_en }}"
+                                                            data-currency="{{ $product->country->currency }}"
+                                                            data-id="{{ $product->id }}"
+                                                            data-price="{{ $product->sale_price }}"
+                                                            data-type="{{$product->type}}"
+                                                            data-shipping="{{$product->country->shipping}}"
+                                                            class="btn btn-success btn-sm add-product-btn">
+                                                                <i class="fa fa-plus"></i>
+                                                            </a>
+                                                            @else
+                                                            {{__('Stock Empty')}}
+                                                            @endif
+
+                                                        </td>
+
+
                                                 </tr>
                                             @endforeach
 
@@ -173,8 +184,22 @@
                             </tbody>
 
                         </table><!-- end of table -->
+                        <div class="row">
+                            <div class="col-md-12 text-right pr-3">
 
-                        <h4 style="padding:10px">Total : <span class="total-price">0</span>{{' ' . $product->country->currency }}</h4>
+                                <h4 style="font-size: 15px; direction:rtl">{{ __('Shipping Fee : ') }}
+                                    <span style="font-size: 15px; direction:rtl" class="shipping_fee">0</span> <span style="font-size: 15px"> {{' ' . $product->country->currency}}</span>
+                                </h4>
+
+
+                                <h4 style="padding:10px; direction:rtl">{{__('Total : ')}}<span class="total-price">0</span>{{' ' . $product->country->currency }}</h4>
+
+                            </div>
+                        </div>
+
+
+
+
 
                         <button class="btn btn-primary btn-block disabled" id="add-order-form-btn"><i class="fa fa-plus"></i> Add order</button>
 
@@ -206,11 +231,11 @@
 
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" href="#div-{{ $order->id }}">{{ $order->created_at }}</a>
+                                            <a data-toggle="collapse" href="#div-order-{{ $order->id }}">{{ $order->created_at }}</a>
                                         </h4>
                                     </div>
 
-                                    <div id="div-{{ $order->id }}" class="panel-collapse collapse">
+                                    <div id="div-order-{{ $order->id }}" class="panel-collapse collapse">
 
                                         <div class="panel-body">
 

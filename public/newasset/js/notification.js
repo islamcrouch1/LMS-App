@@ -59,17 +59,28 @@ $(document).ready(function(){
 
 
 
-        $(document).on('click', '.noty', function () {
+        $(document).on('click', '.noty', function (e) {
 
 
+
+            e.preventDefault();
 
             let url = $(this).data('url');
+
+            let link_target = $(this).attr('href');
+
 
             console.log(url)
 
             $.ajax({
                 url: url,
                 method: 'GET',
+                success: function(data) {
+
+
+                    window.location.href = link_target;
+
+                }
             });//end of ajax call
 
 

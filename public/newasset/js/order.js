@@ -8,6 +8,8 @@ $(document).ready(function () {
         var id = $(this).data('id');
         var price = $(this).data('price').toFixed(2);
         var currency = $(this).data('currency');
+        var type = $(this).data('type');
+        var shipping = $(this).data('shipping');
 
         $(this).removeClass('btn-success').addClass('btn-default disabled');
 
@@ -15,7 +17,7 @@ $(document).ready(function () {
             `<tr>
                 <td>${name}</td>
                 <td><input type="number" name="products[${id}][quantity]" data-price="${price}" class="form-control input-sm product-quantity" min="1" value="1"></td>
-                <td class="product-price">${price + ' ' + currency}</td>
+                <td data-type="${type}" data-shipping="${shipping}" class="product-price">${price + ' ' + currency}</td>
                 <td><button class="btn btn-danger btn-sm remove-product-btn" data-id="${id}"><span class="fa fa-trash"></span></button></td>
             </tr>`;
 
@@ -50,10 +52,31 @@ $(document).ready(function () {
     $('body').on('keyup change', '.product-quantity', function() {
 
         var quantity = Number($(this).val()); //2
-        var unitPrice = parseFloat($(this).data('price').replace(/,/g, '')); //150
-        console.log(unitPrice);
-        $(this).closest('tr').find('.product-price').html((quantity * unitPrice).toFixed(2));
-        calculateTotal();
+
+        var stock = $(this).data('stock');
+
+
+        if ( quantity > stock){
+
+            $('#exampleModalCenter1').modal({
+                keyboard: false
+              });
+
+              $('.available-quantity').empty();
+              $('.available-quantity').html(stock);
+
+              $(this).val(stock);
+
+        }else{
+
+            var unitPrice = parseFloat($(this).data('price').replace(/,/g, '')); //150
+            console.log(unitPrice);
+            $(this).closest('tr').find('.product-price').html((quantity * unitPrice).toFixed(2));
+            calculateTotal();
+
+        }
+
+
 
     });//end of product quantity change
 
@@ -76,6 +99,10 @@ $(document).ready(function () {
                 $('#order-product-list').empty();
                 $('#order-product-list').append(data);
 
+                $('#modal-order').modal({
+                    keyboard: false
+                });
+
             }
         })
 
@@ -94,12 +121,25 @@ $(document).ready(function () {
 function calculateTotal() {
 
     var price = 0;
+    var shipping = 0;
 
     $('.order-list .product-price').each(function(index) {
 
         price += parseFloat($(this).html().replace(/,/g, ''));
+        console.log($(this).data('type'));
+        if($(this).data('type') == 'physical_product'){
+            shipping = $(this).data('shipping');
+        }
 
     });//end of product price
+
+    console.log(shipping);
+    console.log($('.shipping_fee').html());
+
+    $('.shipping_fee').html(shipping.toFixed(2));
+
+
+    price = price + shipping ;
 
     $('.total-price').html(price.toFixed(2));
 

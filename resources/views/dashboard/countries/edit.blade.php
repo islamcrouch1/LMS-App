@@ -86,6 +86,22 @@
                         </div>
 
 
+
+                        <div class="form-group row">
+                            <label for="shipping" class="col-md-2 col-form-label">{{ __('Shipping Fee') }}</label>
+
+                            <div class="col-md-10">
+                                <input id="shipping" type="text" class="form-control @error('shipping') is-invalid @enderror" name="shipping" value="{{ old('shipping') }}"  autocomplete="shipping">
+
+                                @error('shipping')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
                         <div class="form-group row">
                             <label for="image" class="col-md-2 col-form-label">{{ __('Country Flag') }}</label>
                             <img class="img-thumbnail" style="width:50%" src="{{ asset('storage/' . $country->image) }}">
@@ -101,7 +117,7 @@
                             </div>
                         </div>
 
-                        
+
 
 
                         <div class="form-group row mb-0">

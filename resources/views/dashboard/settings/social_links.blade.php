@@ -31,7 +31,7 @@
                         @csrf
 
                         @php
-                            $social_sites = ['facebook' , 'youtube' , 'instagram'];
+                            $social_sites = ['facebook' , 'youtube' , 'instagram' , 'twitter' , 'snapchat' , 'whatsapp'];
                         @endphp
 
                         @foreach ($social_sites as $social_site)
@@ -41,8 +41,41 @@
                             <div class="col-md-10">
                                 <input id="{{$social_site}}" type="text" class="form-control" name="{{$social_site}}_link" value="{{ setting($social_site . '_link') }}" autofocus>
                             </div>
+
                         </div>
                         @endforeach
+
+
+                        <div class="form-group row">
+                            <label for="terms_ar" class="col-md-2 col-form-label">{{ __('Arabic Terms And Conditions') }}</label>
+
+                            <div class="col-md-10">
+                                <textarea id="terms_ar" type="text" class="form-control ckeditor @error('terms_ar') is-invalid @enderror" name="terms_ar"autocomplete="description">{{ setting('terms_ar') }}</textarea>
+
+                                @error('terms_ar')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label for="terms_en" class="col-md-2 col-form-label">{{ __('Arabic Terms And Conditions') }}</label>
+
+                            <div class="col-md-10">
+                                <textarea id="terms_en" type="text" class="form-control ckeditor @error('terms_en') is-invalid @enderror" name="terms_en"autocomplete="description">{{ setting('terms_en') }}</textarea>
+
+                                @error('terms_en')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
 
 
 

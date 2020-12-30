@@ -77,9 +77,12 @@ class CoursesController extends Controller
             'homework_price' => "required|string",
             'teacher_commission' => "required|string",
             'course_price' => "required|string",
+            'homework_services' => "array"
 
 
             ]);
+
+
 
 
 
@@ -97,6 +100,9 @@ class CoursesController extends Controller
                 'image' => $request['image']->store('images/courses', 'public')
 
             ]);
+
+
+            $course->homework_services()->sync($request->homework_services);
 
 
             $exam = Exam::create([
@@ -158,10 +164,12 @@ class CoursesController extends Controller
             'homework_price' => "required|string",
             'teacher_commission' => "required|string",
             'course_price' => "required|string",
+            'homework_services' => "array"
 
 
 
             ]);
+
 
             if($request->hasFile('image')){
 
@@ -183,6 +191,9 @@ class CoursesController extends Controller
                 'course_price' => $request['course_price'],
 
             ]);
+
+
+            $course->homework_services()->sync($request->homework_services);
 
 
 

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class CourseOrder extends Model
 {
     protected $fillable = [
-        'user_id', 'course_id', 'total_price' , 'orderid' , 'status', 'user_name' , 'country_id'
+        'user_id', 'course_id', 'total_price' , 'orderid' , 'status', 'user_name' , 'country_id' , 'wallet_balance',
     ];
 
 

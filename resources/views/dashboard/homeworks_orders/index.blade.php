@@ -47,6 +47,7 @@
                   <option value="" selected>{{__('All Status')}}</option>
                     <option value="waiting" {{request()->status == 'waiting' ? 'selected' : ''}}>{{__('Waiting for payment')}}</option>
                     <option value="done" {{request()->status == 'done' ? 'selected' : ''}}>{{__('Payment Done')}}</option>
+                    <option value="canceled" {{request()->status == 'canceled' ? 'selected' : ''}}>{{__('the request has been canceled')}}</option>
                 </select>
               </div>
               <div class="col-md-3">
@@ -88,7 +89,10 @@
                     <th class="text-center">{{__('Profile')}}</th>
                     <th class="text-center">{{__('Teacher Name')}}</th>
                     <th class="text-center">{{__('Student Name')}}</th>
-                    <th class="text-center">{{__('Total Price')}}</th>
+                    <th class="text-center">{{__('Course')}}</th>
+                    <th class="text-center">{{__('Paid Amount')}}</th>
+                    <th class="text-center">{{__('Wallet Balance')}}</th>
+                    <th class="text-center">{{__('Quantity')}}</th>
                     <th class="text-center">{{__('Status')}}</th>
                     <th class="text-center">{{__('Order Date')}}</th>
 
@@ -112,7 +116,78 @@
                     <td  class="text-center"><small><a href="{{route('users.show' , [app()->getLocale() , $homeworks_order->user->id])}}">
                         {{ $homeworks_order->user->name }}
                     </a></small></td>
-                    <td  class="text-center">{{ $homeworks_order->total_price . ' ' .  $homeworks_order->user->country->currency}}</td>
+                    <td>
+                        {{ app()->getLocale() == 'ar' ? $homeworks_order->course->name_ar . ' - ' . $homeworks_order->course->ed_class->name_ar : $homeworks_order->course->name_en . ' - ' . $homeworks_order->course->ed_class->name_ar}}
+
+                        <br>
+                        @if ($homeworks_order->homework_services->count() == '0')
+                            <span class="badge badge-info badge-lg">{{__('Normal Homework')}}</span>
+                        @else
+                            @foreach ($homeworks_order->homework_services as $homework_service)
+                                <span class="badge badge-info badge-lg">{{app()->getLocale() == 'ar' ? $homework_service->name_ar : $homework_service->name_en}}</span>
+                            @endforeach
+                        @endif
+                    </td>
+                    <td  class="text-center">
+                        {{ $homeworks_order->total_price . ' ' .  $homeworks_order->user->country->currency}}
+
+                        @php
+                        $rejected_count = 0 ;
+                        $refund = 0 ;
+                        $order_requests_count = 0 ;
+                        $homework_services_price = 0 ;
+                        @endphp
+
+                        @foreach ($homeworks_order->home_works as $homework_request)
+
+
+
+
+                        @if ($homework_request->status == 'rejected')
+
+                        @php
+                            $rejected_count = $rejected_count + 1 ;
+                        @endphp
+
+                        @endif
+
+                        @endforeach
+
+                        @php
+
+                            foreach ($homeworks_order->homework_services as $homework_services) {
+
+                                $homework_services_price += $homework_services->price;
+
+                            }
+
+                        $order_requests_count = $homeworks_order->quantity + $homeworks_order->home_works->count() - $rejected_count;
+                        $refund = (($homeworks_order->quantity) * $homeworks_order->course->homework_price) +  (($homeworks_order->quantity) * $homework_services_price);
+
+                        @endphp
+
+
+                            @if ($homeworks_order->status == 'canceled')
+
+                                <br>
+                                {{__('Refund : ') . $refund}}
+
+                            @endif
+
+
+                    </td>
+                    <td class="text-center">{{$homeworks_order->wallet_balance}} {{' ' . $homeworks_order->user->country->currency}}</td>
+                    <td  class="text-center">
+                        {{ $order_requests_count }}
+
+                        @if ($homeworks_order->status == 'canceled')
+
+                        <br>
+                        {{__('Count Refunded : ') . $homeworks_order->quantity}}
+
+                        @endif
+
+                    </td>
                     <td class="project-state">
                         @switch($homeworks_order->status)
                         @case('waiting')
@@ -121,8 +196,17 @@
                         @case('done')
                         <span class="badge badge-success badge-lg">{{__('Payment Done')}}</span>
                             @break
+                            @case('canceled')
+                            <span class="badge badge-danger badge-lg">{{__('the request has been canceled')}}</span>
+                            @break
                         @default
                         @endswitch
+
+
+
+
+
+
                     </td>
                     <td  class="text-center"><small>{{ $homeworks_order->created_at }}</small></td>
 

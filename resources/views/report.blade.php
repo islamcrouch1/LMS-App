@@ -23,6 +23,8 @@
                         <div class="col-md-10">
                             <select class="form-control" id="status" name="service" required style="padding-bottom: 5px;">
                                     <option value="homework"> {{__('Request Homework service')}} </option>
+                                    <option value="library"> {{__('Library Order')}} </option>
+                                    <option value="course"> {{__('Buying educational courses')}} </option>
                             </select>
 
                             @error('service')

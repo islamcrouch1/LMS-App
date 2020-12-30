@@ -26,6 +26,29 @@
                 <p class="text-50 small mt-n1 mb-0">{{__('Copyright 2020')}} &copy; {{__('All rights reserved.')}}</p>
             </div>
 
+
+            <div class="col-md-12 m-2">
+                <a href="{{ setting('facebook_link') }}" >
+                    <img style="width:40px; padding:5px;" src="{{asset('newasset/images/socila-media/facebook-black-18dp.svg')}}" alt="">
+                </a>
+                <a href="{{ setting('youtube_link') }}" >
+                    <img style="width:40px; padding:5px" src="{{asset('newasset/images/socila-media/iconfinder_1_Youtube_colored_svg_5296521.svg')}}" alt="">
+                </a>
+                <a href="{{ setting('twitter_link') }}" >
+                    <img style="width:40px; padding:5px" src="{{asset('newasset/images/socila-media/iconfinder_1_Twitter2_colored_svg_5296515.svg')}}" alt="">
+                </a>
+                <a href="{{ setting('instagram_link') }}" >
+                    <img style="width:40px; padding:5px" src="{{asset('newasset/images/socila-media/iconfinder_1_Instagram_colored_svg_1_5296765.svg')}}" alt="">
+                </a>
+                <a href="{{ setting('snapchat_link') }}" >
+                    <img style="width:40px; padding:5px" src="{{asset('newasset/images/socila-media/iconfinder_1_Snapchat_colored_svg_5296508.svg')}}" alt="">
+                </a>
+                <a href="{{ setting('whatsapp_link') }}" >
+                    <img style="width:40px; padding:5px" src="{{asset('newasset/images/socila-media/iconfinder_1_Whatsapp2_colored_svg_5296520.svg')}}" alt="">
+                </a>
+
+            </div>
+
         </div>
     </div>
 </div>

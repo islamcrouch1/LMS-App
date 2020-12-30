@@ -14,6 +14,8 @@ use App\Cart;
 use App\Link;
 use App\Teacher;
 use App\BankInformation;
+use App\Wallet;
+
 
 
 use Illuminate\Http\Request;
@@ -87,6 +89,8 @@ class RegisterController extends Controller
                 'profile' => ['image'],
                 'type' => ['required','string'],
                 'parent_phone' => ['string'],
+                'parent_phone_hide' => ['string'],
+                'phone_hide' => ['string'],
             ]);
 
 
@@ -145,6 +149,10 @@ class RegisterController extends Controller
 
 
             $data['phone'] = str_replace(' ', '', $data['phone']);
+            $data['parent_phone'] = str_replace(' ', '', $data['parent_phone']);
+            $data['phone'] = $data['phone_hide'] . $data['phone'] ;
+            $data['parent_phone'] = $data['parent_phone_hide'] . $data['parent_phone'] ;
+
 
 
 
@@ -167,6 +175,10 @@ class RegisterController extends Controller
             $user->attachRole('user');
 
             Cart::create([
+                'user_id' => $user->id,
+            ]);
+
+            Wallet::create([
                 'user_id' => $user->id,
             ]);
 

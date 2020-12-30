@@ -15,6 +15,8 @@ class WelcomeController extends Controller
         // $this->middleware('auth');
         $this->middleware('role:superadministrator|administrator');
 
+
+
     }
     public function index()
     {
@@ -25,6 +27,6 @@ class WelcomeController extends Controller
         $users_count = User::count() - 1 ;
         $orders_count = Order::count();
 
-        return view('dashboard.welcome', compact('categories_count', 'products_count', 'users_count', 'orders_count', 'sales_data'));
+        return view('dashboard.welcome', compact('categories_count', 'products_count', 'users_count', 'orders_count'));
     }
 }

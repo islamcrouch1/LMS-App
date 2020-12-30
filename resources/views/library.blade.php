@@ -148,46 +148,61 @@
                                         <p class="flex text-50 lh-1 mb-0"><small>{{__('Price')}} {{ ' : ' . $product->sale_price . ' ' . $product->country->currency}}</small></p>
                                         <p class="flex text-50 lh-1 mb-0"><small>{{__('Stock')}} {{ ' : ' . $product->stock}}</small></p>
                                     </div>
+                                    @if ($product->stock <= '0')
+                                        <a>{{__('Out of stock')}}</a>
+                                    @else
+
                                     <a id="cart-{{$product->id}}" class="add-to-cart add-cart" href="#"
-                                            @if (Auth::check())
-                                            data-url="{{ route('cart.add',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'product'=>$product->id , 'country'=>$scountry->id ] ) }}"
-                                            @endif
-                                            data-check="{{Auth::check() ? $check = 'true' : $check = 'false'}}"
-                                            data-method="get"
-                                            data-product_country="{{$product->country->id}}"
-                                            data-user_country="{{Auth::check() ? Auth::user()->country->id : ''}}"
-                                            data-product="loader-{{$product->id}}"
-                                            data-cart="cart-{{$product->id}}"
-                                            data-productid="{{$product->id}}"
-                                    >{{__('Add to cart')}}
-                                        <div id="loader-{{$product->id}}" style="display:none" class="spinner-border text-primary" role="status">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
-                                    </a>
+                                        @if (Auth::check())
+                                        data-url="{{ route('cart.add',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'product'=>$product->id , 'country'=>$scountry->id ] ) }}"
+                                        @endif
+                                        data-check="{{Auth::check() ? $check = 'true' : $check = 'false'}}"
+                                        data-method="get"
+                                        data-product_country="{{$product->country->id}}"
+                                        data-user_country="{{Auth::check() ? Auth::user()->country->id : ''}}"
+                                        data-product="loader-{{$product->id}}"
+                                        data-cart="cart-{{$product->id}}"
+                                        data-productid="{{$product->id}}"
+                                        >{{__('Add to cart')}}
+                                            <div id="loader-{{$product->id}}" style="display:none" class="spinner-border text-primary" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </a>
+
                                     @endif
-                            @else
+
+                                    @endif
+                                    @else
                                         <h3 class="title"><a href="#" class="viewbtn" data-toggle="popover" data-trigger="click" title="{{__('Product Description')}}" data-content="{{ app()->getLocale() == 'ar' ? $product->description_ar : $product->description_en}}" data-tip="{{__('Quick View')}}">
                                             {{ app()->getLocale() == 'ar' ? $product->name_ar : $product->name_en}}</a></h3>
                                         <div class="price">
                                             <p class="flex text-50 lh-1 mb-0"><small>{{__('Price')}} {{ ' : ' . $product->sale_price . ' ' . $product->country->currency}}</small></p>
                                             <p class="flex text-50 lh-1 mb-0"><small>{{__('Stock')}} {{ ' : ' . $product->stock}}</small></p>
                                         </div>
-                                        <a id="cart-{{$product->id}}" class="add-to-cart add-cart" href="#"
-                                                @if (Auth::check())
-                                                data-url="{{ route('cart.add',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'product'=>$product->id , 'country'=>$scountry->id  ] ) }}"
-                                                @endif
-                                                data-check="{{Auth::check() ? $check = 'true' : $check = 'false'}}"
-                                                data-method="get"
-                                                data-product_country="{{$product->country->id}}"
-                                                data-user_country="{{Auth::check() ? Auth::user()->country->id : ''}}"
-                                                data-product="loader-{{$product->id}}"
-                                                data-cart="cart-{{$product->id}}"
-                                                data-productid="{{$product->id}}"
-                                        >{{__('Add to cart')}}
-                                            <div id="loader-{{$product->id}}" style="display:none" class="spinner-border text-primary" role="status">
-                                                <span class="sr-only">Loading...</span>
-                                            </div>
-                                        </a>
+
+                                            @if ($product->stock <= '0')
+                                            <a>{{__('Out of stock')}}</a>
+                                            @else
+
+                                            <a id="cart-{{$product->id}}" class="add-to-cart add-cart" href="#"
+                                                    @if (Auth::check())
+                                                    data-url="{{ route('cart.add',['lang'=>app()->getLocale() , 'user'=>Auth::id() , 'product'=>$product->id , 'country'=>$scountry->id  ] ) }}"
+                                                    @endif
+                                                    data-check="{{Auth::check() ? $check = 'true' : $check = 'false'}}"
+                                                    data-method="get"
+                                                    data-product_country="{{$product->country->id}}"
+                                                    data-user_country="{{Auth::check() ? Auth::user()->country->id : ''}}"
+                                                    data-product="loader-{{$product->id}}"
+                                                    data-cart="cart-{{$product->id}}"
+                                                    data-productid="{{$product->id}}"
+                                            >{{__('Add to cart')}}
+                                                <div id="loader-{{$product->id}}" style="display:none" class="spinner-border text-primary" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                            </a>
+
+                                     @endif
+
                                     @endif
 
                             </div>

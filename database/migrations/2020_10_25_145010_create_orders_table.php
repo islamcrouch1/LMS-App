@@ -20,6 +20,8 @@ class CreateOrdersTable extends Migration
             $table->integer('address_id');
             $table->integer('country_id');
             $table->double('total_price' , 8 , 2);
+            $table->double('wallet_balance' , 8 , 2);
+            $table->double('shipping' , 8 , 2);
             $table->string('payment_status');
             $table->string('status');
             $table->string('orderid');

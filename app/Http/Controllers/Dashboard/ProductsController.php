@@ -330,7 +330,15 @@ class ProductsController extends Controller
 
         }else{
 
+
+
             if(auth()->user()->hasPermission('products-trash')){
+
+                if($Product->orders > '0'){
+                    session()->flash('success' , 'you can not delete this product because it is related with some users orders');
+                    return redirect()->route('products.index' , app()->getLocale());
+                }
+
                 $Product->delete();
 
                 session()->flash('success' , 'Product trashed successfully');
