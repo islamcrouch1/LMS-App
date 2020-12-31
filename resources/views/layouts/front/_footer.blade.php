@@ -16,9 +16,9 @@
 
             <div class="col-md-6">
                 <p class="text-70 brand mb-24pt">
-                    <img class="brand-icon" src="{{ asset('newasset/images/logo/black-70@2x.png') }}" width="30" alt="Luma"> ALMS
+                    <img class="brand-icon" src="{{ asset('newasset/images/logo/black-70@2x.png') }}" width="30" alt="Luma"> iTeaching
                 </p>
-                <p class="measure-lead-max text-50 small mr-8pt">{{__('ALMS is a beautifully crafted user interface for modern Education Platforms, including Courses & Tutorials, Video Lessons, Student and Teacher Dashboard, Curriculum Management, Earnings and Reporting, ERP, HR, CMS, Tasks, Projects, eCommerce and more.')}}</p>
+                <p class="measure-lead-max text-50 small mr-8pt">{{__('iTeaching is a beautifully crafted user interface for modern Education Platforms, including Courses & Tutorials, Video Lessons, Student and Teacher Dashboard, Curriculum Management, Earnings and Reporting, ERP, HR, CMS, Tasks, Projects, eCommerce and more.')}}</p>
                 {{-- <p class="mb-8pt d-flex">
                     <a href="" class="text-70 text-underline mr-8pt small">Terms</a>
                     <a href="" class="text-70 text-underline small">Privacy policy</a>
@@ -74,9 +74,9 @@
 
             <div class="col-md-6">
                 <p class="text-70 brand mb-24pt">
-                    <img class="brand-icon" src="{{ asset('newasset/images/logo/black-70@2x.png') }}" width="30" alt="Luma"> ALMS
+                    <img class="brand-icon" src="{{ asset('newasset/images/logo/black-70@2x.png') }}" width="30" alt="Luma"> iTeaching
                 </p>
-                <p class="measure-lead-max text-50 small mr-8pt">{{__('ALMS is a beautifully crafted user interface for modern Education Platforms, including Courses & Tutorials, Video Lessons, Student and Teacher Dashboard, Curriculum Management, Earnings and Reporting, ERP, HR, CMS, Tasks, Projects, eCommerce and more.')}}</p>
+                <p class="measure-lead-max text-50 small mr-8pt">{{__('iTeaching is a beautifully crafted user interface for modern Education Platforms, including Courses & Tutorials, Video Lessons, Student and Teacher Dashboard, Curriculum Management, Earnings and Reporting, ERP, HR, CMS, Tasks, Projects, eCommerce and more.')}}</p>
                 <p class="text-50 small mt-n1 mb-0">{{__('Copyright 2020')}} &copy; {{__('All rights reserved.')}}</p>
             </div>
         </div>

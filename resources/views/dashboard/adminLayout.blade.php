@@ -21,11 +21,11 @@
 
   {{-- <?php $locale = App::getLocale(); ?>
 
-  <?php if (App::isLocale('en')) {  ?> 
+  <?php if (App::isLocale('en')) {  ?>
       <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   <?php  }else{ ?>
       <link href="{{ asset('css/apprtl.css') }}" rel="stylesheet">
-  <?php  } ?> 
+  <?php  } ?>
 
    --}}
 
@@ -56,7 +56,7 @@
                     <a class="nav-link" href="{{route(Route::currentRouteName() , 'ar')}}">{{ __('Arabic') }}</a>
               </li>
               @endif
-              
+
               <li class="nav-item dropdown">
                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                     {{ Auth::user()->name }} <span class="caret"></span>
@@ -83,16 +83,16 @@
             </ul>
           </nav>
           <!-- /.navbar -->
-        
+
           <!-- Main Sidebar Container -->
           <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="index3.html" class="brand-link">
               <img src="{{ asset('newasset/images/illustration/student/128/white.svg') }}" class="brand-image img-circle elevation-3"
                    style="opacity: .8">
-              <span class="brand-text font-weight-light">ALMS Admin</span>
+              <span class="brand-text font-weight-light">iTeaching Admin</span>
             </a>
-        
+
             <!-- Sidebar -->
             <div class="sidebar">
               <!-- Sidebar user panel (optional) -->
@@ -104,7 +104,7 @@
                   <a href="#" class="d-block">{{ Auth::user()->name }}</a>
                 </div>
               </div>
-        
+
               <!-- Sidebar Menu -->
               <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -137,7 +137,7 @@
                       </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        
+
                      <li class="nav-item">
                             <a href="{{url(app()->getLocale() . '/admin/users' )}}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
@@ -153,8 +153,8 @@
 
                     </ul>
                   </li>
-      
-      
+
+
                 </ul>
               </nav>
               <!-- /.sidebar-menu -->
@@ -163,7 +163,7 @@
           </aside>
               <!-- Content Wrapper. Contains page content -->
             <div class="content-wrapper">
-        
+
           @if (session()->has('success'))
             <div class="col-md-3">
                 <div class="card card-success">
@@ -183,7 +183,7 @@
                 <!-- /.card-body -->
                 </div>
                 <!-- /.card -->
-            </div>  
+            </div>
           @endif
 
 
@@ -197,7 +197,7 @@
         <!-- Control sidebar content goes here -->
       </aside>
       <!-- /.control-sidebar -->
-    
+
       <!-- Main Footer -->
       <footer class="main-footer">
         <strong>Copyright &copy; 2020 <a href="#">AMLS Admin</a>.</strong>

@@ -25,7 +25,7 @@
 
                                 </span>
 
-                                <span class="d-none d-lg-block">ALMS</span>
+                                <span class="d-none d-lg-block">iTeaching</span>
                             </a>
 
                             <ul class="nav navbar-nav d-none d-sm-flex flex justify-content-start ml-8pt">

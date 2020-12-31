@@ -22,7 +22,7 @@
 
                         </span>
 
-                        <span>ALMS</span>
+                        <span>iTeaching</span>
                     </a>
                     <ul class="sidebar-menu">
                         <li class="sidebar-menu-item active">

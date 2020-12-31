@@ -3,7 +3,7 @@
     <a href="{{route('dashboard' , app()->getLocale())}}" class="brand-link">
       <img src="{{ asset('newasset/images/illustration/student/128/white.svg') }}" class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">{{__('ALMS Admin')}}</span>
+      <span class="brand-text font-weight-light">{{__('iTeaching Admin')}}</span>
     </a>
 
     <!-- Sidebar -->
