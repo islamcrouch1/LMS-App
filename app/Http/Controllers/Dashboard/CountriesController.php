@@ -61,7 +61,7 @@ class CountriesController extends Controller
             'code' => "required|string",
             'currency' => "required|string",
             'image' => "required|image",
-            'shipping' => "required|double",
+            'shipping' => "required|string",
 
 
             ]);
@@ -129,7 +129,7 @@ class CountriesController extends Controller
             'code' => "string",
             'currency' => "string",
             'image' => "image",
-            'shipping' => "required|double",
+            'shipping' => "required|string",
 
 
             ]);

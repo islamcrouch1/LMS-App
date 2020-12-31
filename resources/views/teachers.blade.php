@@ -53,7 +53,7 @@
                         <option selected>{{__('Select Course')}}</option>
 
                         @foreach ($scountry->courses as $course)
-                            <option data-url="{{route('teachers.course' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id , 'course'=> $course->id])}}" data-id="{{$course->id}}" value="{{$course->ed_class_id}}">{{app()->getLocale() == 'ar' ? $course->name_ar : $course->name_en}}</option>
+                            <option data-url="{{route('teachers.course' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id , 'course'=> $course->id])}}" data-id="{{$course->id}}" value="{{$course->ed_class_id}}">{{app()->getLocale() == 'ar' ? $course->name_ar . ' - ' . $course->ed_class->name_ar : $course->name_en . ' - ' . $course->ed_class->name_en}}</option>
                         @endforeach
                     </select>
                 </div>

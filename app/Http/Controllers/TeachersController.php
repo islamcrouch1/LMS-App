@@ -93,12 +93,20 @@ class TeachersController extends Controller
         $homework_services = $request->homework_services;
         $homework_services_price = 0 ;
 
-        foreach($homework_services as $homework_service){
 
-            $homework_service = HomeworkService::find($homework_service);
-            $homework_services_price += $homework_service->price;
+
+        if($homework_services != null){
+
+            foreach($homework_services as $homework_service){
+
+                $homework_service = HomeworkService::find($homework_service);
+                $homework_services_price += $homework_service->price;
+
+            }
 
         }
+
+
 
 
         $quantity = $request->quantity;

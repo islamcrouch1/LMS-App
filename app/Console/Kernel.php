@@ -5,6 +5,8 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -16,6 +18,7 @@ class Kernel extends ConsoleKernel
         Commands\QueueWorkCommand::class,
         Commands\DeleteNullableLessons::class,
         Commands\QueueRestartCommand::class,
+        Commands\DeleteOrdersCommand::class,
     ];
 
     /**
@@ -26,20 +29,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+
+        $schedule->command('orders:delete')->everyMinute();
 
 
-        $schedule->command('queue:restartlms')
-        ->everyFiveMinutes();
-        
-        $schedule->command('queue:worklms')
-        ->everyMinute();
-        
-
-
-        $schedule->command('delete:lessons')->everyMinute();
-
-        
     }
 
     /**
