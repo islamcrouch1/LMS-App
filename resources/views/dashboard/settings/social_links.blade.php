@@ -77,6 +77,36 @@
 
 
 
+                        <div class="form-group row">
+                            <label for="shop_name_ar" class="col-md-2 col-form-label">{{ __('Arabic Shop Name') }}</label>
+
+                            <div class="col-md-10">
+                                <input id="shop_name_ar" type="text" class="form-control  @error('shop_name_ar') is-invalid @enderror" name="shop_name_ar"autocomplete="description" value="{{ setting('shop_name_ar') }}">
+
+                                @error('shop_name_ar')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="shop_name_en" class="col-md-2 col-form-label">{{ __('English Shop Name') }}</label>
+
+                            <div class="col-md-10">
+                                <input id="shop_name_en" type="text" class="form-control  @error('shop_name_en') is-invalid @enderror" name="shop_name_en"autocomplete="description" value="{{ setting('shop_name_en') }}">
+
+                                @error('shop_name_en')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
+
 
 
                         <div class="form-group row mb-0">

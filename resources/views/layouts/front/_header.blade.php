@@ -75,8 +75,11 @@
                                     <span class='badge badge-warning' id='lblCartCount'>0</span>
                                     </a>
                                 </li> --}}
-                                <li class="nav-item">
+                                {{-- <li class="nav-item">
                                     <a href="{{ route('login' , ['lang'=>app()->getLocale() , 'country'=>$scountry->id ]) }}" class="nav-link" data-toggle="tooltip" data-title="{{ __('Login') }}" data-placement="bottom" data-boundary="window"><i class="material-icons">lock_open</i></a>
+                                </li> --}}
+                                <li class="nav-item">
+                                    <a href="{{ route('login' , ['lang'=>app()->getLocale() , 'country'=>$scountry->id ]) }}" class="btn btn-outline-white">{{ __('Login') }}</a>
                                 </li>
                                 @if (Route::has('register'))
                                 <li class="nav-item">

@@ -84,7 +84,7 @@
                             <a class="sidebar-menu-button" href="{{route('library' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}">
                                 <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">store_mall_directory
                                 </span>
-                                <span class="sidebar-menu-text">{{ __('Library') }}</span>
+                                <span class="sidebar-menu-text">{{ app()->getLocale() == 'ar' ? setting('shop_name_ar') :  setting('shop_name_en')}}</span>
                             </a>
                         </li>
 

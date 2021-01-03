@@ -181,7 +181,7 @@
         @endforeach
         <a href="{{route('teachers' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}" class="btn btn-lg btn-white btn--raised mb-16pt">{{ __('Teachers') }}</a>
 
-        <a href="{{route('library' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}" class="btn btn-lg btn-white btn--raised mb-16pt">{{ __('Library') }}</a>
+        <a href="{{route('library' , ['lang'=>app()->getLocale() ,  'country'=>$scountry->id])}}" class="btn btn-lg btn-white btn--raised mb-16pt">{{ app()->getLocale() == 'ar' ? setting('shop_name_ar') :  setting('shop_name_en')}}</a>
 
         <p class="mb-0"><a href="{{ route('register' , ['lang'=>app()->getLocale() , 'country'=>$scountry->id ]) }}" class="text-white text-shadow"><strong>{{__('Are you a teacher?')}}</strong></a></p>
 

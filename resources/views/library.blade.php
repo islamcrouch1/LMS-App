@@ -10,7 +10,7 @@
         <div class="row pt-5">
 
             <div class="col-md-4">
-                <h3>{{ __('Library') }}</h3>
+                <h3>{{ app()->getLocale() == 'ar' ? setting('shop_name_ar') :  setting('shop_name_en')}}</h3>
             </div>
             <div class="col-md-8">
                 <form action="">

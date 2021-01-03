@@ -102,7 +102,7 @@
               <li class="nav-item">
                     <a href="{{route('settings.social_links' , app()->getLocale())}}" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>{{__('Social Links')}}</p>
+                        <p>{{__('Settings')}}</p>
                     </a>
               </li>
             </ul>
